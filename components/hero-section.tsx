@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function HeroSection() {
   const [isVisible, setIsVisible] = useState(false);
@@ -57,15 +58,18 @@ export default function HeroSection() {
             )}
             style={{ transitionDelay: "600ms", transform: isVisible ? "translateY(0)" : "translateY(20px)" }}
           >
-            <Link href="#facilities" passHref>
-              <Button
-                size="lg"
-                className="bg-primary text-white hover:bg-primary/90"
-              >
-                Explore Facilities
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+            <Link href="#facilities" passHref legacyBehavior>
+              <a>
+                <Button
+                  size="lg"
+                  className="bg-primary text-white hover:bg-primary/90"
+                >
+                  Explore Facilities
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </a>
             </Link>
+            
             <Button
               size="lg"
               variant="outline"
