@@ -1,121 +1,130 @@
 "use client";
 
-import { useRef } from "react";
-import { useInView } from "@/hooks/use-in-view";
+import { useState } from "react";
+import { FileText, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const fiscalFacilities = [
+const tabs = [
   {
-    title: "VAT or VAT and Tax on Luxury Goods",
-    description:
-      "Delivery of Taxable Goods (BKP) and/or Taxable Services (JKP) from TLDDP, free zones, and bonded stockpiles to Developer and/or Tenants not collected, etc.",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
+    key: "fiscal",
+    label: "Fiscal Facilities",
+    icon: FileText,
+    facilities: [
+      {
+        title: "VAT or VAT and Tax on Luxury Goods",
+        desc: "Delivery of taxable goods/services in free zones or bonded areas not taxed for developers or tenants.",
+      },
+      {
+        title: "Customs, PDRI, and Excises",
+        desc: "Exemption or suspension of import duties for capital and consumption goods.",
+      },
+      {
+        title: "Local Tax",
+        desc: "Incentives for local tax and/or local retribution between 50%–100%.",
+      },
+      {
+        title: "Additional Facilities SEZ Tourism",
+        desc: "Eligible for VAT refund and exemption from PPnBM for residential property.",
+      },
+    ],
   },
   {
-    title: "Customs, PDRI, and Excises",
-    description:
-      "Exemption and/or suspension of import duties on the entry of capital and consumption goods, etc.",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Local Tax",
-    description: "Incentives for local tax and/or local retribution between 50%–100%",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Additional Facilities SEZ Tourism",
-    description: "Eligible for VAT refund; exemption from PPnBM for purchase of residential homes/dwellings",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
+    key: "nonfiscal",
+    label: "Non-Fiscal Facilities",
+    icon: ShieldCheck,
+    facilities: [
+      {
+        title: "One Stop Service",
+        desc: "Business licensing and non-licensing services from KEK Administrator.",
+      },
+      {
+        title: "Building Permit by Developer",
+        desc: "No permit needed if developer has established estate regulations.",
+      },
+      {
+        title: "Land Procurement and Titling",
+        desc: "Up to 80 years of land use and ownership rights with accelerated procedures.",
+      },
+      {
+        title: "Immigration",
+        desc: "VoA extensions, permits for foreigners & families, and residence for owners.",
+      },
+      {
+        title: "No Negative List",
+        desc: "Goods importation without restrictions.",
+      },
+      {
+        title: "Environmental License by Developer",
+        desc: "Licenses issued directly by developer.",
+      },
+      {
+        title: "No Export Obligation",
+        desc: "Tenants not required to export goods.",
+      },
+      {
+        title: "Property Ownership",
+        desc: "Foreigners can own property within SEZ Tourism zones.",
+      },
+      {
+        title: "Excisable Goods",
+        desc: "Not applied to SEZs under specific terms.",
+      },
+    ],
   },
 ];
 
-const nonFiscalFacilities = [
-  {
-    title: "One Stop Service",
-    description: "Business licensing services, other licenses, and non-licensing services carried out by KEK Administrator",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Building Permit by Developer",
-    description: "Tenant doesn’t require building permit if Developer has established Estate Regulation",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Land procurement and Titling",
-    description: "Right to Use up to 80 years, Building Right up to 80 years, Special Accelerated Procedures",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Immigration",
-    description: "VoA can be extended 5x, Limited stay permits for foreigners & families, Residence permits",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Environmental License by Developer",
-    description: "Environmental License authorized by Developer",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "No Export Obligation",
-    description: "Tenants within SEZ don’t have export obligation",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Property Ownership",
-    description: "Foreigners allowed to have property ownership within Tourism SEZ",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-  {
-    title: "Excisable Goods",
-    description: "Excise regulations are not applied to SEZ+ (*terms & conditions apply)",
-    legal: "Government Regulation Number 40 of 2021 on Implementation of Special Economic Zones",
-  },
-];
-
-export default function SpecialEconomicZoneSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, threshold: 0.3 });
+export default function SEZSection() {
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
   return (
-    <section id="sez" ref={ref} className="py-20 bg-white dark:bg-gray-900">
+    <section className="py-20 bg-white dark:bg-gray-900" id="sez">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h2 className={cn("text-3xl md:text-4xl font-bold mb-4 transition-all", isInView && "opacity-100")}>
-            Special Economic Zone (SEZ)
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300">
-            Special Economic Zones (SEZs) are the Government&apos;s strategic policy to be developed as centers of economic growth, national economic equity, supporting industrialization, and increasing employment in Indonesia. The area with the ultimate incentives is presented to domestic and foreign investors.
+        {/* Title & Description */}
+        <div className="text-center mb-12 max-w-4xl mx-auto">
+          <h2 className="text-sm uppercase text-primary font-semibold mb-2">Special Economic Zone</h2>
+          <h3 className="text-3xl md:text-4xl font-bold mb-4">
+            Strategic Zone for Investment
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300">
+            Special Economic Zones (SEZs) are the Government's strategic policy to be developed as centers of economic growth, national economic equity, supporting industrialization, and increasing employment in Indonesia. The area with the ultimate incentives is presented to domestic and foreign investors.
           </p>
         </div>
 
-        <div className="mb-10">
-          <h3 className="text-2xl font-semibold text-primary mb-6">Fiscal Facilities</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fiscalFacilities.map((facility, index) => (
-              <div key={index} className="p-6 rounded-lg shadow border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700">
-                <h4 className="font-semibold text-lg mb-2">{facility.title}</h4>
-                <p className="text-gray-600 dark:text-gray-300 mb-2">{facility.description}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Legal Basis:</span> {facility.legal}
-                </p>
-              </div>
-            ))}
-          </div>
+        {/* Tabs */}
+        <div className="flex justify-center gap-4 mb-8 flex-wrap">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all duration-200",
+                activeTab.key === tab.key
+                  ? "bg-primary text-white border-primary"
+                  : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-primary hover:text-white hover:border-primary"
+              )}
+            >
+              <tab.icon className="w-5 h-5" />
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div>
-          <h3 className="text-2xl font-semibold text-primary mb-6">Non-Fiscal Facilities</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {nonFiscalFacilities.map((facility, index) => (
-              <div key={index} className="p-6 rounded-lg shadow border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700">
-                <h4 className="font-semibold text-lg mb-2">{facility.title}</h4>
-                <p className="text-gray-600 dark:text-gray-300 mb-2">{facility.description}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  <span className="font-semibold">Legal Basis:</span> {facility.legal}
-                </p>
+        {/* Facility Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {activeTab.facilities.map((item, idx) => (
+            <div
+              key={idx}
+              className="p-6 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800 hover:shadow-md transition"
+            >
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                {item.title}
+              </h4>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">{item.desc}</p>
+              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 italic">
+                Legal Basis: Government Regulation No. 40 of 2021
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
