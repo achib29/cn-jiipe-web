@@ -10,7 +10,9 @@ const companies = [
   {
     name: "Hailiang Group",
     description: "A global leader in copper processing and non-ferrous metal manufacturing.",
-    icon: <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={48} height={48} />,
+    icon: () => (
+      <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={48} height={48} />
+    ),
   },
   {
     name: "Xinyi Glass Indonesia",
