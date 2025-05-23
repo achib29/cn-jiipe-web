@@ -1,10 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useRef } from "react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
-import { Factory, Lightbulb, Droplets, FlaskRound as Flask, Atom } from "lucide-react";
 
 const companies = [
   {
@@ -17,22 +17,30 @@ const companies = [
   {
     name: "Xinyi Glass Indonesia",
     description: "A major manufacturer of high-quality float glass and automotive glass.",
-    icon: <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={48} height={48} />,
+    icon: () => (
+      <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={48} height={48} />
+    ),
   },
   {
     name: "Xinyi Solar",
     description: "A key player in photovoltaic glass and solar energy solutions.",
-    icon: <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={48} height={48} />,
+    icon: () => (
+      <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={48} height={48} />
+    ),
   },
   {
     name: "Hebang Biotechnology",
     description: "Specializing in green chemical production and bio-based industrial applications.",
-    icon: <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={48} height={48} />,
+    icon: () => (
+      <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={48} height={48} />
+    ),
   },
   {
     name: "Golden-Elephant Sincerity",
     description: "Known for its advanced chemical manufacturing in sulfuric acid and fertilizer production.",
-    icon: <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={48} height={48} />,
+    icon: () => (
+      <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={48} height={48} />
+    ),
   },
 ];
 
@@ -60,7 +68,8 @@ export default function ChineseCompaniesSection() {
             )}
             style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            JIIPE is already home to a growing number of successful Chinese enterprises that have chosen Indonesia as their strategic expansion hub.
+            JIIPE is already home to a growing number of successful Chinese enterprises that have
+            chosen Indonesia as their strategic expansion hub.
           </p>
         </div>
 
@@ -80,7 +89,7 @@ export default function ChineseCompaniesSection() {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="mb-4 p-3 bg-primary/10 rounded-full">
-                    {company.icon}
+                    {company.icon()}
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{company.name}</h3>
                   <p className="text-gray-600 dark:text-gray-400">{company.description}</p>
