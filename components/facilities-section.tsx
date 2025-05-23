@@ -6,6 +6,7 @@ import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSearchParams } from "next/navigation";
 
 export default function FacilitiesSection() {
   const ref = useRef<HTMLDivElement>(null);
