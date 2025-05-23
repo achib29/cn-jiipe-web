@@ -126,16 +126,19 @@ export default function FacilitiesSection() {
           <TabsList className="w-full flex flex-wrap justify-center mb-8w-full flex flex-wrap justify-center mb-8 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
             {facilities.map((facility, index) => (
               <TabsTrigger
-                key={facility.id}
-                value={facility.id}
-                className={cn(
-                  "opacity-0 transition-all duration-700 ease-out",
-                  isInView && "opacity-100 translate-y-0"
-                )}
-                style={{ transitionDelay: `${800 + index * 100}ms`, transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-              >
-                {facility.title}
-              </TabsTrigger>
+              key={facility.id}
+              value={facility.id}
+              className={cn(
+                "px-6 py-3 text-base font-medium rounded-md transition-all duration-700 ease-out",
+                isInView && "opacity-100 translate-y-0"
+              )}
+              style={{
+                transitionDelay: `${800 + index * 100}ms`,
+                transform: isInView ? "translateY(0)" : "translateY(20px)"
+              }}
+            >
+              {facility.title}
+            </TabsTrigger>
             ))}
           </TabsList>
 
