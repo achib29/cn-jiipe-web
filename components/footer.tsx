@@ -10,7 +10,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center">
               <Image
-                src="/logo-jiipe.png"
+                src="/logo-jiipe-white.png"
                 alt="JIIPE Logo"
                 width={140}
                 height={48}
