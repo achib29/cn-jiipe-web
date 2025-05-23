@@ -123,7 +123,7 @@ export default function FacilitiesSection() {
         </div>
 
         <Tabs defaultValue="industrial-area" className="w-full">
-          <TabsList className="w-full flex flex-wrap justify-center mb-8">
+          <TabsList className="w-full flex flex-wrap justify-center mb-8 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
             {facilities.map((facility, index) => (
               <TabsTrigger
                 key={facility.id}
