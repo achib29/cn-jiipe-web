@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, X, Anchor, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,14 +16,14 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
-  { 
-    label: "Facilities", 
+  {
+    label: "Facilities",
     href: "#facilities",
     dropdown: [
       { label: "Industrial Area", href: "#industrial-area" },
       { label: "Port Area", href: "#port-area" },
       { label: "Utilities", href: "#utilities" },
-    ]
+    ],
   },
   { label: "Location", href: "#location" },
   { label: "Contact", href: "#contact" },
@@ -35,15 +35,11 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 10;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
+      setScrolled(window.scrollY > 10);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [scrolled]);
+  }, []);
 
   return (
     <header
@@ -55,21 +51,32 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
+        {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
-        <Image src="/logo-jiipe.png" alt="JIIPE Logo" width={160} height={64} />
+          <Image
+            src={scrolled ? "/logo-jiipe-red.png" : "/logo-jiipe-white.png"}
+            alt="JIIPE Logo"
+            width={160}
+            height={64}
+            className="transition-all duration-300"
+          />
         </Link>
 
-
-        {/* Desktop Navigation */}
+        {/* DESKTOP NAVIGATION */}
         <nav className="hidden md:flex items-center gap-6">
-          {navItems.map((item) => (
+          {navItems.map((item) =>
             item.dropdown ? (
               <DropdownMenu key={item.label}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="link" className={cn(
-                    "font-medium transition-colors",
-                    scrolled ? "text-primary" : "text-white hover:text-primary/90"
-                  )}>
+                  <Button
+                    variant="link"
+                    className={cn(
+                      "font-medium transition-colors",
+                      scrolled
+                        ? "text-primary"
+                        : "text-white hover:text-primary/90"
+                    )}
+                  >
                     {item.label} <ChevronDown className="h-4 w-4 ml-1" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -89,24 +96,23 @@ export default function Navbar() {
                 href={item.href}
                 className={cn(
                   "font-medium transition-colors",
-                  scrolled ? "text-primary" : "text-white hover:text-primary/90"
+                  scrolled
+                    ? "text-primary"
+                    : "text-white hover:text-primary/90"
                 )}
               >
                 {item.label}
               </Link>
             )
-          ))}
+          )}
         </nav>
 
-        <Button
-          variant="primary"
-          className="hidden md:flex"
-          size="sm"
-        >
+        {/* CTA BUTTON */}
+        <Button variant="primary" className="hidden md:flex" size="sm">
           Get In Touch
         </Button>
 
-        {/* Mobile Navigation Button */}
+        {/* MOBILE BUTTON */}
         <button
           className="md:hidden text-primary"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -115,7 +121,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* MOBILE NAVIGATION MENU */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
