@@ -11,35 +11,35 @@ const companies = [
     name: "Hailiang Group",
     description: "A global leader in copper processing and non-ferrous metal manufacturing.",
     icon: () => (
-      <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={48} height={48} />
+      <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={80} height={80} />
     ),
   },
   {
     name: "Xinyi Glass Indonesia",
     description: "A major manufacturer of high-quality float glass and automotive glass.",
     icon: () => (
-      <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={48} height={48} />
+      <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={80} height={80} />
     ),
   },
   {
     name: "Xinyi Solar",
     description: "A key player in photovoltaic glass and solar energy solutions.",
     icon: () => (
-      <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={48} height={48} />
+      <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={80} height={80} />
     ),
   },
   {
     name: "Hebang Biotechnology",
     description: "Specializing in green chemical production and bio-based industrial applications.",
     icon: () => (
-      <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={48} height={48} />
+      <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={80} height={80} />
     ),
   },
   {
     name: "Golden-Elephant Sincerity",
     description: "Known for its advanced chemical manufacturing in sulfuric acid and fertilizer production.",
     icon: () => (
-      <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={48} height={48} />
+      <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={80} height={80} />
     ),
   },
 ];
@@ -88,7 +88,7 @@ export default function ChineseCompaniesSection() {
             >
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="mb-4 p-3 bg-primary/10 rounded-full">
+                  <div className="mb-4">
                     {company.icon()}
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{company.name}</h3>
