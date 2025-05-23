@@ -22,10 +22,6 @@ const tabs = [
         title: "Local Tax",
         desc: "Incentives for local tax and/or local retribution between 50%–100%.",
       },
-      {
-        title: "Additional Facilities SEZ Tourism",
-        desc: "Eligible for VAT refund and exemption from PPnBM for residential property.",
-      },
     ],
   },
   {
@@ -60,10 +56,6 @@ const tabs = [
       {
         title: "No Export Obligation",
         desc: "Tenants not required to export goods.",
-      },
-      {
-        title: "Property Ownership",
-        desc: "Foreigners can own property within SEZ Tourism zones.",
       },
       {
         title: "Excisable Goods",

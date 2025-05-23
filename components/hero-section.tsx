@@ -62,7 +62,7 @@ export default function HeroSection() {
               <a>
                 <Button
                   size="lg"
-                  className="bg-primary text-white hover:bg-primary/90"
+                  className="bg-primary text-white hover:bg-primary/90 px-6 w-auto"
                 >
                   Explore Facilities
                   <ArrowRight className="ml-2 h-4 w-4" />
