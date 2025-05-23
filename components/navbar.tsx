@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
@@ -32,8 +32,10 @@ const navItems = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    setLoaded(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -50,8 +52,13 @@ export default function Navbar() {
           : "bg-transparent py-4"
       )}
     >
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* LOGO */}
+      <div
+        className={cn(
+          "container mx-auto px-4 flex items-center justify-between transition-opacity duration-700 ease-out",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+      >
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
             src={scrolled ? "/logo-jiipe-red.png" : "/logo-jiipe-white.png"}
@@ -62,7 +69,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* DESKTOP NAVIGATION */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navItems.map((item) =>
             item.dropdown ? (
@@ -107,12 +114,12 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* CTA BUTTON */}
+        {/* CTA Button */}
         <Button variant="primary" className="hidden md:flex" size="sm">
           Get In Touch
         </Button>
 
-        {/* MOBILE BUTTON */}
+        {/* Mobile Menu Toggle */}
         <button
           className="md:hidden text-primary"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -121,9 +128,9 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* MOBILE NAVIGATION MENU */}
+      {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg animate-fade-in">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {navItems.map((item) => (
               <div key={item.label}>
