@@ -11,6 +11,7 @@ export default function Home() {
     <div>
       <HeroSection />
       <AboutSection />
+      <SpecialEconomicZoneSection />
       <FacilitiesSection />
       <LocationSection />
       <ChineseCompaniesSection />
