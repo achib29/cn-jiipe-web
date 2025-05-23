@@ -90,7 +90,7 @@ export default function FacilitiesSection() {
   ];
 
   return (
-    <section id="facilities" ref={ref} className="flex bg-white shadow-sm rounded-md border border-gray-300">
+    <section id="facilities" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2
@@ -123,7 +123,7 @@ export default function FacilitiesSection() {
         </div>
 
         <Tabs defaultValue="industrial-area" className="w-full">
-          <TabsList className="w-full flex flex-wrap justify-center mb-8 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
+          <TabsList className="w-full flex flex-wrap justify-center mb-8w-full flex flex-wrap justify-center mb-8 bg-gray-100 dark:bg-gray-800 rounded-lg p-2">
             {facilities.map((facility, index) => (
               <TabsTrigger
                 key={facility.id}
