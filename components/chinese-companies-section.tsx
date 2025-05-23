@@ -10,27 +10,27 @@ const companies = [
   {
     name: "Hailiang Group",
     description: "A global leader in copper processing and non-ferrous metal manufacturing.",
-    icon: <Factory className="h-12 w-12 text-primary" />,
+    icon: <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={48} height={48} />,
   },
   {
     name: "Xinyi Glass Indonesia",
     description: "A major manufacturer of high-quality float glass and automotive glass.",
-    icon: <Lightbulb className="h-12 w-12 text-primary" />,
+    icon: <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={48} height={48} />,
   },
   {
     name: "Xinyi Solar",
     description: "A key player in photovoltaic glass and solar energy solutions.",
-    icon: <Atom className="h-12 w-12 text-primary" />,
+    icon: <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={48} height={48} />,
   },
   {
     name: "Hebang Biotechnology",
     description: "Specializing in green chemical production and bio-based industrial applications.",
-    icon: <Flask className="h-12 w-12 text-primary" />,
+    icon: <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={48} height={48} />,
   },
   {
     name: "Golden Elephant",
     description: "Known for its advanced chemical manufacturing in sulfuric acid and fertilizer production.",
-    icon: <Droplets className="h-12 w-12 text-primary" />,
+    icon: <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={48} height={48} />,
   },
 ];
 
