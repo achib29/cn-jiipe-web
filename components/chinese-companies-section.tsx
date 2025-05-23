@@ -28,7 +28,7 @@ const companies = [
     icon: <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={48} height={48} />,
   },
   {
-    name: "Golden Elephant",
+    name: "Golden-Elephant Sincerity",
     description: "Known for its advanced chemical manufacturing in sulfuric acid and fertilizer production.",
     icon: <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={48} height={48} />,
   },
