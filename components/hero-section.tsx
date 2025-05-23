@@ -57,13 +57,15 @@ export default function HeroSection() {
             )}
             style={{ transitionDelay: "600ms", transform: isVisible ? "translateY(0)" : "translateY(20px)" }}
           >
-            <Button
-              size="lg"
-              className="bg-primary text-white hover:bg-primary/90"
-            >
-              Explore Facilities
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <Link href="#facilities" passHref>
+              <Button
+                size="lg"
+                className="bg-primary text-white hover:bg-primary/90"
+              >
+                Explore Facilities
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
