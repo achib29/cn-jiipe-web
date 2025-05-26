@@ -11,11 +11,11 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
+      <ChineseCompaniesSection />
       <AboutSection />
       <SpecialEconomicZoneSection />
       <FacilitiesSection />
       <LocationSection />
-      <ChineseCompaniesSection />
       <CTASection />
       <ContactSection />
     </div>
