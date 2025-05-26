@@ -81,8 +81,8 @@ export default function CTASection() {
             </Button>
             <Button
               size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10"
+              variant="secondary"
+              className="border-white text-white hover:bg-white/30"
             >
               Download Brochure
             </Button>
