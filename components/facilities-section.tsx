@@ -1,16 +1,32 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Anchor, Truck, Lightbulb, Building2, Warehouse } from "lucide-react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSearchParams } from "next/navigation";
 
 export default function FacilitiesSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
+
+  const [activeTab, setActiveTab] = useState("industrial-area");
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      const validTabs = facilities.map((f) => f.id);
+      if (validTabs.includes(hash)) {
+        setActiveTab(hash);
+        document.getElementById("facilities")?.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    handleHashChange(); // apply on load
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
   const facilities = [
     {
@@ -94,106 +110,57 @@ export default function FacilitiesSection() {
     <section id="facilities" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2
-            className={cn(
-              "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
-              isInView && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-          >
+          <h2 className={cn("text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
             Our Facilities
           </h2>
-          <h3
-            className={cn(
-              "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
-              isInView && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-          >
+          <h3 className={cn("text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
             World-Class Industrial & Port Facilities
           </h3>
-          <p
-            className={cn(
-              "text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out",
-              isInView && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-          >
+          <p className={cn("text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
             JIIPE offers comprehensive facilities designed to support various industries with cutting-edge infrastructure, utilities, and logistics capabilities.
           </p>
         </div>
 
-        <Tabs defaultValue="industrial-area" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full flex flex-wrap justify-center mb-8 bg-gray-100 dark:bg-gray-800">
             {facilities.map((facility, index) => (
-              <TabsTrigger
-                key={facility.id}
-                value={facility.id}
-                className={cn(
-                  "opacity-0 transition-all duration-700 ease-out",
-                  isInView && "opacity-100 translate-y-0"
-                )}
-                style={{ transitionDelay: `${800 + index * 100}ms`, transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-              >
+              <TabsTrigger key={facility.id} value={facility.id} className={cn("opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: `${800 + index * 100}ms`, transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
                 {facility.title}
               </TabsTrigger>
             ))}
           </TabsList>
 
           {facilities.map((facility, index) => (
-            <TabsContent 
-              key={facility.id} 
-              value={facility.id}
-              className={cn(
-                "opacity-0 transition-all duration-1000 ease-out",
-                isInView && "opacity-100 translate-y-0"
-              )}
-              style={{ transitionDelay: "1200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <Card className="border-0 shadow-lg overflow-hidden">
-                  <div className="aspect-video w-full">
-                    <img
-                      src={facility.image}
-                      alt={facility.title}
-                      className="w-full h-full object-cover object-center"
-                    />
+            <TabsContent key={facility.id} value={facility.id} className={cn("opacity-0 transition-all duration-1000 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "1200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
+              {/* this div provides scroll target for anchor */}
+              <div id={facility.id} className="scroll-mt-32">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                  <Card className="border-0 shadow-lg overflow-hidden">
+                    <div className="aspect-video w-full">
+                      <img src={facility.image} alt={facility.title} className="w-full h-full object-cover object-center" />
+                    </div>
+                  </Card>
+                  <div>
+                    <CardHeader>
+                      <div className="mb-4">{facility.icon}</div>
+                      <CardTitle className="text-2xl">{facility.title}</CardTitle>
+                      <CardDescription className="text-base">{facility.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {facility.features.map((feature, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <div className="rounded-full bg-primary/10 p-1 mt-0.5">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary h-3 w-3">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
+                            <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
                   </div>
-                </Card>
-                
-                <div>
-                  <CardHeader>
-                    <div className="mb-4">{facility.icon}</div>
-                    <CardTitle className="text-2xl">{facility.title}</CardTitle>
-                    <CardDescription className="text-base">
-                      {facility.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {facility.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-start gap-2">
-                          <div className="rounded-full bg-primary/10 p-1 mt-0.5">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="text-primary h-3 w-3"
-                            >
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                          </div>
-                          <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
                 </div>
               </div>
             </TabsContent>
