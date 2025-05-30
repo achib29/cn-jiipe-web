@@ -115,9 +115,11 @@ export default function Navbar() {
         </nav>
 
         {/* CTA Button */}
-        <Button variant="primary" className="hidden md:flex" size="sm">
-          Get In Touch
-        </Button>
+        <Link href="#contact" passHref>
+          <Button variant="primary" className="hidden md:flex" size="sm">
+            Get In Touch
+          </Button>
+        </Link>
 
         {/* Mobile Menu Toggle */}
         <button
