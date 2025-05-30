@@ -74,7 +74,7 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-transparent text-white border-white hover:bg-white/10"
+                className="w-full sm:w-auto bg-transparent text-white border-white hover:bg-white/10"
               >
                 Contact Us
               </Button>
