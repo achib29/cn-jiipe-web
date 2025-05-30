@@ -62,7 +62,7 @@ export default function HeroSection() {
               <a>
                 <Button
                   size="lg"
-                  className="bg-primary text-white hover:bg-primary/90 px-6 w-auto"
+                  className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90"
                 >
                   Explore Facilities
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -70,13 +70,16 @@ export default function HeroSection() {
               </a>
             </Link>
             
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-transparent text-white border-white hover:bg-white/10"
-            >
-              Contact Us
-            </Button>
+            <Link href="#contact" passHref>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent text-white border-white hover:bg-white/10"
+              >
+                Contact Us
+              </Button>
+            </Link>
+          
           </div>
         </div>
       </div>
