@@ -8,8 +8,11 @@ import Footer from '@/components/footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'JIIPE - Java Integrated Industrial Port Estate',
+  title: 'JIIPE - 古能工业园官网',
   description: 'Strategic industrial port estate in East Java, Indonesia offering world-class infrastructure and facilities for industrial and logistics operations.',
+  icons: {
+    icon: '/jiipe-favicon.png', //
+  },
 };
 
 export default function RootLayout({
