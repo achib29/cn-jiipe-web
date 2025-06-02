@@ -6,11 +6,12 @@ import { useMemo } from "react";
 
 export default function CompanyCountrySelect({ onChange }: { onChange: (value: string) => void }) {
   const options = useMemo(() => {
-    return countryList().getData().map((c) => ({
+    return countryList().getData().map((c: { label: string; value: string }) => ({
       label: `${getFlagEmoji(c.value)} ${c.label}`,
       value: c.label,
     }));
   }, []);
+
 
   const customStyles = {
     control: (base: any) => ({
