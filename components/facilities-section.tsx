@@ -10,24 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function FacilitiesSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
-
-  const [activeTab, setActiveTab] = useState("industrial-area");
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-      const validTabs = facilities.map((f) => f.id);
-      if (validTabs.includes(hash)) {
-        setActiveTab(hash);
-        document.getElementById("facilities")?.scrollIntoView({ behavior: "smooth" });
-      }
-    };
-
-    handleHashChange(); // apply on load
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
+  
   const facilities = [
     {
       id: "industrial-area",
@@ -106,6 +89,24 @@ export default function FacilitiesSection() {
     }
   ];
 
+  const [activeTab, setActiveTab] = useState("industrial-area");
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      const validTabs = facilities.map((f) => f.id);
+      if (validTabs.includes(hash)) {
+        setActiveTab(hash);
+        document.getElementById("facilities")?.scrollIntoView({ behavior: "smooth" });
+      }
+    };
+
+    handleHashChange(); // apply on load
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  
   return (
     <section id="facilities" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
