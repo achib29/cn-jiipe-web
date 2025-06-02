@@ -11,7 +11,7 @@ export default function CompanyCountrySelect({ onChange }: { onChange: (value: s
       value: c.label,
     }));
   }, []);
-  
+
   const customStyles = {
     control: (base: any) => ({
       ...base,
