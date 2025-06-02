@@ -3,6 +3,7 @@
 import Select from "react-select";
 import countryList from "react-select-country-list";
 import { useMemo } from "react";
+import { Label } from "@/components/ui/label";
 
 export default function CompanyCountrySelect({ onChange }: { onChange: (value: string) => void }) {
   const options = useMemo(() => {
@@ -23,7 +24,7 @@ export default function CompanyCountrySelect({ onChange }: { onChange: (value: s
 
   return (
     <div className="space-y-2">
-      <label className="font-medium">Company Origin Country*</label>
+      <Label className="block font-medium">Company Origin Country*</Label>
       <Select
         options={options}
         styles={customStyles}
