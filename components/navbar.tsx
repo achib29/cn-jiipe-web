@@ -151,15 +151,18 @@ export default function Navbar() {
                 {item.dropdown && (
                   <div className="pl-4 border-l-2 border-gray-200 dark:border-gray-700 mt-1">
                     {item.dropdown.map((subItem) => (
-                      <Link
+                      <button
                         key={subItem.label}
-                        href={subItem.href}
-                        className="block py-2 text-primary/80 font-medium"
-                        onClick={() => setIsMenuOpen(false)}
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          window.location.hash = subItem.href;
+                        }}
+                        className="block py-2 text-left w-full text-primary/80 font-medium"
                       >
                         {subItem.label}
-                      </Link>
+                      </button>
                     ))}
+
                   </div>
                 )}
               </div>
