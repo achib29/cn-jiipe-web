@@ -89,11 +89,16 @@ export default function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {item.dropdown.map((subItem) => (
-                    <DropdownMenuItem key={subItem.label} asChild>
-                      <Link href={subItem.href} className="w-full">
-                        {subItem.label}
-                      </Link>
+                    <DropdownMenuItem
+                      key={subItem.label}
+                      onSelect={() => {
+                        window.location.hash = subItem.href;
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {subItem.label}
                     </DropdownMenuItem>
+
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
