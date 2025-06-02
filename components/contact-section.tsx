@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
+
 
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -104,20 +106,7 @@ export default function ContactSection() {
               {/* Negara */}
               <div className="space-y-2">
                 <Label className="font-medium">Company Origin Country*</Label>
-                <RadioGroup
-                  defaultValue="indonesia"
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, country: val }))}
-                  className="flex flex-col gap-2 mt-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Indonesia" id="indo" />
-                    <Label htmlFor="indo">Indonesia</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Outside of Indonesia" id="intl" />
-                    <Label htmlFor="intl">Outside of Indonesia</Label>
-                  </div>
-                </RadioGroup>
+                <CompanyCountrySelect onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))} />
               </div>
 
               {/* Alasan */}
