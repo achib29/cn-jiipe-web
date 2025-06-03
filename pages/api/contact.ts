@@ -6,24 +6,16 @@ import xlsx from "node-xlsx";
 import fs from "fs";
 import path from "path";
 
-// Setup Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Inisialisasi Resend
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
-// Validasi env penting
-const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-const GOOGLE_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
-
-if (!GOOGLE_PRIVATE_KEY || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_DRIVE_FOLDER_ID) {
-  throw new Error("Missing Google Drive credentials in environment variables");
-}
-
-// Setup Google Auth
+// Inisialisasi Google Auth
 const auth = new JWT({
-  email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: GOOGLE_PRIVATE_KEY,
+  email: process.env.GOOGLE_SERVICE_CLIENT_EMAIL!,
+  key: process.env.GOOGLE_SERVICE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
   scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
+
 const drive = google.drive({ version: "v3", auth });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -57,30 +49,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   fs.writeFileSync(tempPath, buffer);
 
   try {
-    // Upload ke Google Drive
-    const driveRes = await drive.files.create({
-      requestBody: {
-        name: path.basename(tempPath),
-        mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        parents: [GOOGLE_DRIVE_FOLDER_ID],
-      },
-      media: {
-        mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        body: fs.createReadStream(tempPath),
-      },
+    const fileMetadata = {
+      name: path.basename(tempPath),
+      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID!],
+    };
+
+    const media = {
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      body: fs.createReadStream(tempPath),
+    };
+
+    const upload = await drive.files.create({
+      requestBody: fileMetadata,
+      media,
       fields: "id, webViewLink",
     });
 
-    const fileLink = driveRes.data.webViewLink;
+    const fileLink = upload.data.webViewLink;
 
-    // Kirim Email
+    // Kirim email
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
       to: ["abdul.khasib@bkms.jiipe.co.id"],
       subject: "New Contact Inquiry",
       html: `
         <h2>New Inquiry Received</h2>
-        <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; font-family: Arial, sans-serif;">
+        <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
           <tr><td><strong>Name</strong></td><td>${firstName} ${lastName}</td></tr>
           <tr><td><strong>Email</strong></td><td>${email}</td></tr>
           <tr><td><strong>Phone</strong></td><td>${phone}</td></tr>
@@ -100,12 +94,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.status(200).json({ success: true, fileLink });
-  } catch (error) {
-    console.error("Submission failed:", error);
-    res.status(500).json({ success: false, error });
+  } catch (err) {
+    console.error("Submission failed:", err);
+    res.status(500).json({ success: false, error: err });
   } finally {
-    if (fs.existsSync(tempPath)) {
-      fs.unlinkSync(tempPath);
-    }
+    fs.unlinkSync(tempPath);
   }
 }
