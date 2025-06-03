@@ -45,9 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ["Seaport", `${seaport} Tons/year`],
   ];
 
-  const buffer = xlsx.build([{ name: "Inquiry", data, options: {} }]);
-  const tempPath = path.join("/tmp", `inquiry-${Date.now()}.xlsx`);
-  fs.writeFileSync(tempPath, buffer);
+  const buffer = xlsx.build([{ name: "Inquiry", data }]);
 
   try {
     // Upload to Google Drive
@@ -59,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
       media: {
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        body: fs.createReadStream(tempPath),
+        body: Buffer.from(buffer),
       },
       fields: "id, webViewLink",
     });
@@ -97,7 +95,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error("Submission failed:", err);
     res.status(500).json({ success: false, error: err });
   } finally {
-    fs.unlinkSync(tempPath); // Hapus file sementara
   }
 }
   
