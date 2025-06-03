@@ -46,6 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   ];
 
   const buffer = xlsx.build([{ name: "Inquiry", data, options: {} }]);
+  const tempPath = path.join("/tmp", `inquiry-${Date.now()}.xlsx`);
+  fs.writeFileSync(tempPath, buffer);
 
   try {
     // Upload to Google Drive
