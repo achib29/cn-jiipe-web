@@ -69,6 +69,12 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "vaul": "^0.9.9",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "google-auth-library": "^9.15.1",
+    "googleapis": "^149.0.0",
+    "node-xlsx": "^0.24.0",
+    "react-select": "^5.10.1",
+    "react-select-country-list": "^2.2.3",
+    "xlsx": "^0.18.5"
   }
 }
