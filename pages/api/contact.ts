@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ["Seaport", `${seaport} Tons/year`],
   ];
 
-  const buffer = xlsx.build([{ name: "Inquiry", data }]);
+  const buffer = xlsx.build([{ name: "Inquiry", data, options: {} }]);
   const tempPath = path.join("/tmp", `inquiry-${Date.now()}.xlsx`);
   fs.writeFileSync(tempPath, buffer);
 
