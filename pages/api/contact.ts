@@ -9,13 +9,21 @@ import path from "path";
 // Setup Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Setup Google Drive auth
+// Validasi env penting
+const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+const GOOGLE_SERVICE_ACCOUNT_EMAIL = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+const GOOGLE_DRIVE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
+
+if (!GOOGLE_PRIVATE_KEY || !GOOGLE_SERVICE_ACCOUNT_EMAIL || !GOOGLE_DRIVE_FOLDER_ID) {
+  throw new Error("Missing Google Drive credentials in environment variables");
+}
+
+// Setup Google Auth
 const auth = new JWT({
-  email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
-  key: process.env.GOOGLE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+  email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+  key: GOOGLE_PRIVATE_KEY,
   scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
-
 const drive = google.drive({ version: "v3", auth });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -27,7 +35,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     country, reason, industry, landPlot, timeline
   } = req.body;
 
-  // Generate Excel data
   const data = [
     ["Field", "Value"],
     ["Name", `${firstName} ${lastName}`],
@@ -50,30 +57,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   fs.writeFileSync(tempPath, buffer);
 
   try {
-    // Upload to Google Drive
+    // Upload ke Google Drive
     const driveRes = await drive.files.create({
       requestBody: {
         name: path.basename(tempPath),
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID!],
+        parents: [GOOGLE_DRIVE_FOLDER_ID],
       },
       media: {
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        body: fs.createReadStream(tempPath), // ✅ HARUS STREAM
+        body: fs.createReadStream(tempPath),
       },
       fields: "id, webViewLink",
     });
 
     const fileLink = driveRes.data.webViewLink;
 
-    // Kirim email
+    // Kirim Email
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
       to: ["abdul.khasib@bkms.jiipe.co.id"],
       subject: "New Contact Inquiry",
       html: `
         <h2>New Inquiry Received</h2>
-        <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
+        <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse; font-family: Arial, sans-serif;">
           <tr><td><strong>Name</strong></td><td>${firstName} ${lastName}</td></tr>
           <tr><td><strong>Email</strong></td><td>${email}</td></tr>
           <tr><td><strong>Phone</strong></td><td>${phone}</td></tr>
@@ -93,10 +100,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     res.status(200).json({ success: true, fileLink });
-  } catch (err) {
-    console.error("Submission failed:", err);
-    res.status(500).json({ success: false, error: err });
+  } catch (error) {
+    console.error("Submission failed:", error);
+    res.status(500).json({ success: false, error });
   } finally {
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
   }
 }
-  
