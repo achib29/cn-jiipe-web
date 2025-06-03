@@ -59,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
       media: {
         mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        body: Buffer.from(buffer),
+        body: fs.createReadStream(tempPath), // ✅ HARUS STREAM
       },
       fields: "id, webViewLink",
     });
