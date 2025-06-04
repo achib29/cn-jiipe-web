@@ -6,20 +6,30 @@ import xlsx from "node-xlsx";
 import fs from "fs";
 import path from "path";
 
-// Inisialisasi Resend
-const resend = new Resend(process.env.RESEND_API_KEY!);
+// === Validasi Environment Variables ===
+const resendKey = process.env.RESEND_API_KEY;
+const googleEmail = process.env.GOOGLE_SERVICE_CLIENT_EMAIL;
+const googleKeyRaw = process.env.GOOGLE_SERVICE_PRIVATE_KEY;
+const driveFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
-// Inisialisasi Google Auth
+if (!resendKey || !googleEmail || !googleKeyRaw || !driveFolderId) {
+  throw new Error("Missing one or more required environment variables.");
+}
+
+// === Inisialisasi Resend
+const resend = new Resend(resendKey);
+
+// === Google Auth
 const auth = new JWT({
-  email: process.env.GOOGLE_SERVICE_CLIENT_EMAIL!,
-  key: process.env.GOOGLE_SERVICE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+  email: googleEmail,
+  key: googleKeyRaw.replace(/\\n/g, "\n"),
   scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
 
 const drive = google.drive({ version: "v3", auth });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== "POST") return res.status(405).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
 
   const {
     firstName, lastName, phone, email, company,
@@ -49,9 +59,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   fs.writeFileSync(tempPath, buffer);
 
   try {
+    // === Upload ke Google Drive
     const fileMetadata = {
       name: path.basename(tempPath),
-      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID!],
+      parents: [driveFolderId],
     };
 
     const media = {
@@ -65,9 +76,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       fields: "id, webViewLink",
     });
 
-    const fileLink = upload.data.webViewLink;
+    const fileLink = upload.data.webViewLink || "Link unavailable";
 
-    // Kirim email
+    // === Kirim Email
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
       to: ["abdul.khasib@bkms.jiipe.co.id"],
@@ -95,9 +106,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200).json({ success: true, fileLink });
   } catch (err) {
-    console.error("Submission failed:", err);
-    res.status(500).json({ success: false, error: err });
+    console.error("❌ Submission failed:", err);
+    res.status(500).json({ success: false, error: "Failed to process inquiry" });
   } finally {
-    fs.unlinkSync(tempPath);
+    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
   }
 }
