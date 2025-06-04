@@ -60,10 +60,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // === Upload ke Google Drive
-    const fileMetadata = {
+    const fileMetadata: any = {
       name: path.basename(tempPath),
-      parents: [driveFolderId],
     };
+
+    if (process.env.GOOGLE_DRIVE_FOLDER_ID) {
+      fileMetadata.parents = [process.env.GOOGLE_DRIVE_FOLDER_ID];
+    }
+
 
     const media = {
       mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
