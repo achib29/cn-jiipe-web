@@ -23,11 +23,12 @@ export default function AboutSection() {
             style={{ transform: isInView ? "translateX(0)" : "translateX(-50px)" }}
           >
             <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
-              <img
-                src="https://images.pexels.com/photos/2226458/pexels-photo-2226458.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt="JIIPE Industrial Port"
-                className="w-full h-full object-cover object-center"
-              />
+              <iframe
+                src="https://player.bilibili.com/player.html?isOutside=true&aid=114674855057896&bvid=BV1NAMgz6EHR&cid=30471687081&p=1"
+                allowFullScreen
+                frameBorder="0"
+                className="w-full h-full rounded-lg"
+              /> 
             </div>
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/30 to-transparent pointer-events-none" />
           </div>

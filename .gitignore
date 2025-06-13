@@ -34,3 +34,4 @@ google-credentials.json
 # Optional lock files (jika kamu pakai salah satu saja)
 package-lock.json
 yarn.lock
+.vercel
