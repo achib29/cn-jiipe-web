@@ -37,9 +37,9 @@ export default function RootLayout({
 
         {/* ChatSimple Widget */}
         <chat-bot
-          platform_id="0633efa7-7842-4c57-be89-04ecd02cb3a3"
-          user_id="5c60a06c-b262-4c9f-8a3d-225f0a49f8a0"
-          chatbot_id="c4625f04-a66a-4877-8c7d-deb8a32869c7"
+          platform_id="8b6373a3-874f-42e5-9db5-ba1a4bc31e1e"
+          user_id="874766c7-99d6-4131-8787-9587179b88c7"
+          chatbot_id="66630d29-57a0-45be-a874-c434bf526860"
         >
           <a href="https://www.chatsimple.ai/?utm_source=widget&utm_medium=referral">chatsimple</a>
         </chat-bot>
