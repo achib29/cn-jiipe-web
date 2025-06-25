@@ -25,7 +25,7 @@ export default function FacilitiesSection() {
         "Modern waste management systems",
         "24/7 security and monitoring"
       ],
-      image: "https://images.pexels.com/photos/247763/pexels-photo-247763.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      image: "https://ik.imagekit.io/z3fiyhjnl/PT%20Hailiang%20&%20PT%20Freeport%20Indonesia.jpg"
     },
     {
       id: "port-area",
@@ -40,7 +40,7 @@ export default function FacilitiesSection() {
         "Dry bulk terminal",
         "Advanced loading/unloading equipment"
       ],
-      image: "https://images.pexels.com/photos/753331/pexels-photo-753331.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      image: "https://ik.imagekit.io/z3fiyhjnl/JIIPE%20-%20Ports.jpg"
     },
     {
       id: "utilities",
@@ -55,7 +55,7 @@ export default function FacilitiesSection() {
         "Wastewater treatment plant",
         "Sustainable energy options"
       ],
-      image: "https://images.pexels.com/photos/2581437/pexels-photo-2581437.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      image: "https://ik.imagekit.io/z3fiyhjnl/Utility%20Center.jpg"
     },
     {
       id: "infrastructure",
@@ -70,7 +70,7 @@ export default function FacilitiesSection() {
         "Flood control measures",
         "Public transport facilities"
       ],
-      image: "https://images.pexels.com/photos/4429854/pexels-photo-4429854.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      image: "https://ik.imagekit.io/z3fiyhjnl/Gate%20-%20JIIPE.jpg"
     },
     {
       id: "residential",
@@ -85,7 +85,7 @@ export default function FacilitiesSection() {
         "Healthcare facilities",
         "Recreational areas"
       ],
-      image: "https://images.pexels.com/photos/1115804/pexels-photo-1115804.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+      image: "https://ik.imagekit.io/z3fiyhjnl/AKR%20LAND%201.jpg"
     }
   ];
 

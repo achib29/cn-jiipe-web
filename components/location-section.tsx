@@ -76,17 +76,14 @@ export default function LocationSection() {
               style={{ transitionDelay: "800ms", transform: isInView ? "translateX(0)" : "translateX(-30px)" }}
             >
               {/* Interactive Map - In a real implementation, this would be a Google Maps or similar embed */}
-              <div className="w-full h-full bg-gray-200 dark:bg-gray-800 relative">
-                <img
-                  src="https://images.pexels.com/photos/1654748/pexels-photo-1654748.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                  alt="JIIPE Location Map"
-                  className="w-full h-full object-cover"
+              <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!4v1719400174976!6m8!1m7!1sCAoSLEFGMVFpcE1rTVBhY2xCNWdjSGdNSExzYXJZYzdPMzJwYV9mVnpnSWhya3Vu!2m2!1d-7.0999999!2d112.6144444!3f0!4f0!5f0.7820865974627469https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21714.50257055712!2d112.59440555960974!3d-7.098699198144415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e77fd91cbf94199%3A0x420bcb75aab89777!2sKawasan%20Industri%20JIIPE%20Gresik!5e1!3m2!1sid!2sid!4v1750841399485!5m2!1sid!2sid"
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="p-3 bg-primary text-white rounded-full animate-pulse">
-                    <MapPin className="h-6 w-6" />
-                  </div>
-                </div>
               </div>
             </div>
           </div>
