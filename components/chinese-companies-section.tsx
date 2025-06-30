@@ -35,13 +35,6 @@ const companies = [
       <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={120} height={120} />
     ),
   },
-  {
-    name: "Golden-Elephant Sincerity",
-    description: "Known for its advanced chemical manufacturing in sulfuric acid and fertilizer production.",
-    icon: () => (
-      <Image src="/images/logos/golden-elephant.png" alt="Golden Elephant" width={120} height={120} />
-    ),
-  },
 ];
 
 export default function ChineseCompaniesSection() {
