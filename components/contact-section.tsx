@@ -1,5 +1,12 @@
 "use client";
 
+// ✅ Tambahkan ini persis di sini
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 import { useRef, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
