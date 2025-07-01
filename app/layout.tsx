@@ -38,6 +38,12 @@ export default function RootLayout({
             gtag('config', 'G-YR9GTV5FCH');
           `}
         </Script>
+
+        {/* Cloudflare Turnstile */}
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body className={inter.className}>
         <ThemeProvider

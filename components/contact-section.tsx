@@ -1,6 +1,6 @@
 "use client";
 
-// ✅ Tambahkan ini persis di sini
+// ✅ Tambahkan deklarasi gtag
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -54,11 +54,26 @@ export default function ContactSection() {
       });
     }
 
+    // ✅ Ambil token Turnstile
+    const token = (
+      document.querySelector(
+        'input[name="cf-turnstile-response"]'
+      ) as HTMLInputElement
+    )?.value;
+
+    if (!token) {
+      alert("Turnstile verification failed. Please refresh and try again.");
+      return;
+    }
+
     // ✅ Kirim inquiry
     const res = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        cfTurnstileResponse: token,
+      }),
     });
 
     if (res.ok) {
@@ -211,6 +226,14 @@ export default function ContactSection() {
                   <Label className="font-medium">Est. Vol. Throughput via Seaport (Tons/Year)*</Label>
                   <Input name="seaport" type="number" onChange={handleChange} required />
                 </div>
+              </div>
+
+              {/* Turnstile */}
+              <div className="mt-4">
+                <div
+                  className="cf-turnstile"
+                  data-sitekey="0x4AAAAAABjC5aD3ciiyisDM"
+                ></div>
               </div>
 
               {/* Submit */}
