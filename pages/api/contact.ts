@@ -3,9 +3,13 @@ import { Resend } from "resend";
 
 // === Validasi Environment Variables ===
 const resendKey = process.env.RESEND_API_KEY;
+const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
 
 if (!resendKey) {
   throw new Error("Missing RESEND_API_KEY");
+}
+if (!turnstileSecret) {
+  throw new Error("Missing TURNSTILE_SECRET_KEY");
 }
 
 // === Inisialisasi Resend
@@ -17,8 +21,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const {
     firstName, lastName, phone, email, company,
     power, water, gas, seaport,
-    country, reason, industry, landPlot, timeline
+    country, reason, industry, landPlot, timeline,
+    cfTurnstileResponse
   } = req.body;
+
+  // === Validasi token Turnstile
+  if (!cfTurnstileResponse) {
+    return res.status(400).json({ error: "Missing Turnstile token." });
+  }
+
+  const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      secret: turnstileSecret,
+      response: cfTurnstileResponse,
+    }),
+  });
+
+  const verifyData = await verifyRes.json();
+  if (!verifyData.success) {
+    console.error("❌ Turnstile verification failed:", verifyData);
+    return res.status(400).json({ error: "Failed Turnstile verification." });
+  }
 
   try {
     // === Kirim Email
