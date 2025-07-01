@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
@@ -23,6 +24,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh" suppressHydrationWarning>
+      <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-YR9GTV5FCH"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-YR9GTV5FCH');
+          `}
+        </Script>
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
@@ -41,7 +57,9 @@ export default function RootLayout({
           user_id="874766c7-99d6-4131-8787-9587179b88c7"
           chatbot_id="66630d29-57a0-45be-a874-c434bf526860"
         >
-          <a href="https://www.chatsimple.ai/?utm_source=widget&utm_medium=referral">chatsimple</a>
+          <a href="https://www.chatsimple.ai/?utm_source=widget&utm_medium=referral">
+            chatsimple
+          </a>
         </chat-bot>
         <script src="https://cdn.chatsimple.ai/chat-bot-loader.js" defer></script>
       </body>
