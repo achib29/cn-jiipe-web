@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
 
-
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
@@ -39,6 +38,16 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    // ✅ Tracking Google Analytics
+    if (typeof window.gtag !== "undefined") {
+      window.gtag("event", "inquiry_submit", {
+        event_category: "Contact Form",
+        event_label: "Submit Inquiry",
+      });
+    }
+
+    // ✅ Kirim inquiry
     const res = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -56,27 +65,32 @@ export default function ContactSection() {
     <section id="contact" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className={cn(
-            "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
-            isInView && "opacity-100 translate-y-0"
-          )}>
+          <h2
+            className={cn(
+              "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+          >
             Contact Us
           </h2>
-          <h3 className={cn(
-            "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
-            isInView && "opacity-100 translate-y-0"
-          )}>
+          <h3
+            className={cn(
+              "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+          >
             Get In Touch With Our Team
           </h3>
         </div>
 
-        <Card className={cn(
-          "max-w-4xl mx-auto border-0 shadow-xl overflow-hidden opacity-0 transition-all duration-1000 ease-out",
-          isInView && "opacity-100 translate-y-0"
-        )}>
+        <Card
+          className={cn(
+            "max-w-4xl mx-auto border-0 shadow-xl overflow-hidden opacity-0 transition-all duration-1000 ease-out",
+            isInView && "opacity-100 translate-y-0"
+          )}
+        >
           <CardContent className="p-4 md:p-10">
             <form className="space-y-8" onSubmit={handleSubmit}>
-
               {/* Nama */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -105,7 +119,9 @@ export default function ContactSection() {
 
               {/* Negara */}
               <div className="space-y-2">
-                <CompanyCountrySelect onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))} />
+                <CompanyCountrySelect
+                  onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))}
+                />
               </div>
 
               {/* Alasan */}
@@ -134,7 +150,12 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">Industry*</Label>
-                  <select name="industry" className="w-full border rounded-md p-2" onChange={handleChange} required>
+                  <select
+                    name="industry"
+                    className="w-full border rounded-md p-2"
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="">Select your Industry</option>
                     <option value="Chemical">Chemical</option>
                     <option value="Energy">Energy</option>
@@ -150,7 +171,12 @@ export default function ContactSection() {
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">Timeline Construction*</Label>
-                  <select name="timeline" className="w-full border rounded-md p-2" onChange={handleChange} required>
+                  <select
+                    name="timeline"
+                    className="w-full border rounded-md p-2"
+                    onChange={handleChange}
+                    required
+                  >
                     <option value="">Select your Timeline</option>
                     <option value="0-6 months">0–6 months</option>
                     <option value="6-12 months">6–12 months</option>
