@@ -18,7 +18,7 @@ export default function FacilitiesSection() {
       icon: <Building2 className="h-10 w-10 mb-4 text-primary" />,
       description: "A 1,800-hectare industrial zone designed to accommodate various industries with flexible lot sizes.",
       features: [
-        "Flexible lot sizes from 0.5 to 50 hectares",
+        "Flexible lot sizes",
         "Ready-to-build land plots",
         "Dedicated areas for specific industries",
         "High-standard infrastructure and roads",
