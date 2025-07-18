@@ -49,8 +49,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // === Kirim Email
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
-      to: ["abdul.khasib@bkms.jiipe.co.id"],
-      subject: "New Contact Inquiry",
+      to: [
+        "abdul.khasib@bkms.jiipe.co.id",
+        "donny.muchelly@bkms.jiipe.co.id"
+      ],
+      subject: "New Contact Inquiry Baidu Ads",
       html: `
         <h2>New Inquiry Received</h2>
         <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
