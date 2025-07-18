@@ -24,7 +24,7 @@ export default function AboutSection() {
           >
             <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
               <iframe
-                src="https://player.bilibili.com/player.html?isOutside=true&aid=114674855057896&bvid=BV1NAMgz6EHR&cid=30471687081&p=1"
+                src="https://player.bilibili.com/player.html?isOutside=true&aid=114872088010011&bvid=BV1ubguzDEyd&cid=31119049247&p=1"
                 allowFullScreen
                 frameBorder="0"
                 className="w-full h-full rounded-lg"
