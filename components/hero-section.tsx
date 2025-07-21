@@ -1,18 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default function HeroSection() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   return (
     <section
       id="home"
@@ -31,33 +24,15 @@ export default function HeroSection() {
       {/* Hero Content */}
       <div className="container mx-auto px-4 z-10 mt-20">
         <div className="max-w-3xl">
-          <h1
-            className={cn(
-              "text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 opacity-0 transition-all duration-1000 ease-out",
-              isVisible && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "200ms", transform: isVisible ? "translateY(0)" : "translateY(20px)" }}
-          >
-            印度尼西亚首屈一指的综合工业与港口园区
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+            印尼西亚首屈一指的综合工业与港口园区
           </h1>
           
-          <p
-            className={cn(
-              "text-xl text-gray-200 mb-8 opacity-0 transition-all duration-1000 ease-out",
-              isVisible && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "400ms", transform: isVisible ? "translateY(0)" : "translateY(20px)" }}
-          >
+          <p className="text-xl text-gray-200 mb-8">
             战略区位，配备世界级基础设施、专属深水港及全方位公用设施，助力您的业务增长。
           </p>
           
-          <div
-            className={cn(
-              "flex flex-col sm:flex-row gap-4 opacity-0 transition-all duration-1000 ease-out",
-              isVisible && "opacity-100 translate-y-0"
-            )}
-            style={{ transitionDelay: "600ms", transform: isVisible ? "translateY(0)" : "translateY(20px)" }}
-          >
+          <div className="flex flex-col sm:flex-row gap-4">
             <Link href="#facilities" passHref legacyBehavior>
               <a>
                 <Button
@@ -79,15 +54,14 @@ export default function HeroSection() {
                 联系我们
               </Button>
             </Link>
-          
           </div>
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
+      {/* Scroll Indicator Tanpa Animasi */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center">
         <div className="w-1 h-10 relative">
-          <div className="absolute inset-0 bg-white rounded-full animate-scroll-down"></div>
+          <div className="absolute inset-0 bg-white rounded-full"></div>
         </div>
       </div>
     </section>
