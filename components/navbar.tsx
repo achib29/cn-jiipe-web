@@ -32,10 +32,8 @@ const navItems = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setLoaded(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -46,17 +44,14 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-50",
         scrolled
           ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-md py-2"
           : "bg-transparent py-4"
       )}
     >
       <div
-        className={cn(
-          "container mx-auto px-4 flex items-center justify-between transition-opacity duration-700 ease-out",
-          loaded ? "opacity-100" : "opacity-0"
-        )}
+        className="container mx-auto px-4 flex items-center justify-between"
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -65,7 +60,6 @@ export default function Navbar() {
             alt="JIIPE Logo"
             width={160}
             height={64}
-            className="transition-all duration-300"
           />
         </Link>
 
@@ -78,7 +72,7 @@ export default function Navbar() {
                   <Button
                     variant="link"
                     className={cn(
-                      "font-medium transition-colors",
+                      "font-medium",
                       scrolled
                         ? "text-primary"
                         : "text-white hover:text-primary/90"
@@ -98,7 +92,6 @@ export default function Navbar() {
                     >
                       {subItem.label}
                     </DropdownMenuItem>
-
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -107,7 +100,7 @@ export default function Navbar() {
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  "font-medium transition-colors",
+                  "font-medium",
                   scrolled
                     ? "text-primary"
                     : "text-white hover:text-primary/90"
@@ -137,7 +130,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg animate-fade-in">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg">
           <div className="container mx-auto px-4 py-4 flex flex-col gap-4">
             {navItems.map((item) => (
               <div key={item.label}>
@@ -162,7 +155,6 @@ export default function Navbar() {
                         {subItem.label}
                       </button>
                     ))}
-
                   </div>
                 )}
               </div>
