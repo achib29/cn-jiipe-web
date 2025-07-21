@@ -14,19 +14,19 @@ import {
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
+  { label: "首页", href: "#home" },
+  { label: "关于JIIPE", href: "#about" },
   {
-    label: "Facilities",
+    label: "核心设施",
     href: "#facilities",
     dropdown: [
-      { label: "Industrial Area", href: "#industrial-area" },
-      { label: "Port Area", href: "#port-area" },
-      { label: "Utilities", href: "#utilities" },
+      { label: "工业区", href: "#industrial-area" },
+      { label: "多功能港口区", href: "#port-area" },
+      { label: "公用设施", href: "#utilities" },
     ],
   },
-  { label: "Location", href: "#location" },
-  { label: "Contact", href: "#contact" },
+  { label: "战略区位", href: "#location" },
+  { label: "联系我们", href: "#contact" },
 ];
 
 export default function Navbar() {
@@ -122,7 +122,7 @@ export default function Navbar() {
         {/* CTA Button */}
         <Link href="#contact" passHref>
           <Button variant="primary" className="hidden md:flex" size="sm">
-            Get In Touch
+            立即咨询
           </Button>
         </Link>
 
@@ -168,7 +168,7 @@ export default function Navbar() {
               </div>
             ))}
             <Button variant="primary" size="sm" className="mt-2">
-              Get In Touch
+              立即咨询
             </Button>
           </div>
         </div>

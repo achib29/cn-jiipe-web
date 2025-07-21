@@ -43,7 +43,7 @@ export default function AboutSection() {
                 )}
                 style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
               >
-                About JIIPE
+                关于印尼吉配保税港工业园（JIIPE）
               </h2>
               <h3
                 className={cn(
@@ -52,7 +52,7 @@ export default function AboutSection() {
                 )}
                 style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
               >
-                A Strategic Integrated Industrial & Port Estate
+                战略枢纽 产业引擎
               </h3>
               <p
                 className={cn(
@@ -61,7 +61,7 @@ export default function AboutSection() {
                 )}
                 style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
               >
-                JIIPE is a 3,000 hectare integrated industrial and port estate strategically located in East Java, Indonesia. Designed to be a center for industrial growth, JIIPE combines world-class infrastructure, utilities, and a dedicated deep-sea port to support businesses across various sectors.
+                作为印尼国家级战略项目，印尼吉配保税港工业园（JIIPE）占地3000公顷，位于印度尼西亚东爪哇省的战略要地。园区旨在打造成为工业增长中心，融合了世界一流的基础设施、公用设施及专属深水港，为跨领域企业提供全方位支持。
               </p>
               <p
                 className={cn(
@@ -70,19 +70,19 @@ export default function AboutSection() {
                 )}
                 style={{ transitionDelay: "800ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
               >
-                With its seamless connectivity to major transportation networks and strategic location in the heart of Indonesia's economic corridor, JIIPE offers unparalleled advantages for businesses looking to establish or expand their operations in Southeast Asia.
+                JIIPE坐拥印尼经济走廊核心位置，无缝连接主要交通网络，为寻求在东南亚建立或拓展业务的企业提供无与伦比的优势。
               </p>
             </div>
 
             {/* Key Features */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
-                "Strategic Location",
-                "Deep-sea Port Access",
-                "Complete Infrastructure",
-                "Power & Utilities",
-                "Tax Incentives",
-                "Skilled Workforce"
+                "战略要地",
+                "深水港口",
+                "设施完备",
+                "能源保障",
+                "税收优惠",
+                "人才资源"
               ].map((feature, index) => (
                 <div
                   key={feature}

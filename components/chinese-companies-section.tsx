@@ -8,29 +8,29 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const companies = [
   {
-    name: "Hailiang Group",
-    description: "A global leader in copper processing and non-ferrous metal manufacturing.",
+    name: "海亮集团",
+    description: "铜加工和有色金属制造领域的全球领导者",
     icon: () => (
       <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={120} height={120} />
     ),
   },
   {
-    name: "Xinyi Glass Indonesia",
-    description: "A major manufacturer of high-quality float glass and automotive glass.",
+    name: "信义玻璃",
+    description: "高品质浮法玻璃和汽车玻璃的主要制造商",
     icon: () => (
       <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={120} height={120} />
     ),
   },
   {
-    name: "Xinyi Solar",
-    description: "A key player in photovoltaic glass and solar energy solutions.",
+    name: "信义光能",
+    description: "光伏玻璃和太阳能解决方案的技术革新者",
     icon: () => (
       <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={120} height={120} />
     ),
   },
   {
-    name: "Hebang Biotechnology",
-    description: "Specializing in green chemical production and bio-based industrial applications.",
+    name: "和邦生物科技",
+    description: "专注于绿色化工和生物基工业应用的先锋",
     icon: () => (
       <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={120} height={120} />
     ),
@@ -52,7 +52,7 @@ export default function ChineseCompaniesSection() {
             )}
             style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            Trusted by Leading Chinese Companies
+            中国领军企业的信赖之选
           </h2>
           <p
             className={cn(
@@ -61,8 +61,7 @@ export default function ChineseCompaniesSection() {
             )}
             style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            JIIPE is already home to a growing number of successful Chinese enterprises that have
-            chosen Indonesia as their strategic expansion hub.
+            印尼吉配保税港工业园（JIIPE）已成为多家快速发展的中国出海企业的基地，将其作为东南亚战略扩张中心。
           </p>
         </div>
 

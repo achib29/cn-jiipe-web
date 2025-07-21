@@ -24,26 +24,27 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 81% 48%;  /* JIIPE Red #DA291C */
+    --primary: 0 81% 48%; /* JIIPE Red #DA291C */
     --primary-foreground: 0 0% 98%;
-    --secondary: 199 100% 44%;  /* JIIPE Ports #00A3E0 */
+    --secondary: 199 100% 44%; /* JIIPE Ports #00A3E0 */
     --secondary-foreground: 0 0% 98%;
-    --muted: 220 3% 34%;  /* JIIPE Industrial #53565A */
+    --muted: 220 3% 34%; /* JIIPE Industrial #53565A */
     --muted-foreground: 0 0% 45.1%;
-    --accent: 199 100% 44%;  /* JIIPE Ports #00A3E0 */
+    --accent: 199 100% 44%; /* JIIPE Ports #00A3E0 */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
-    --ring: 0 81% 48%;  /* Match primary */
-    --chart-1: 0 81% 48%;  /* JIIPE Red */
-    --chart-2: 199 100% 44%;  /* JIIPE Ports */
-    --chart-3: 220 3% 34%;  /* JIIPE Industrial */
-    --chart-4: 0 81% 38%;  /* Darker JIIPE Red */
-    --chart-5: 199 100% 34%;  /* Darker JIIPE Ports */
+    --ring: 0 81% 48%;
+    --chart-1: 0 81% 48%;
+    --chart-2: 199 100% 44%;
+    --chart-3: 220 3% 34%;
+    --chart-4: 0 81% 38%;
+    --chart-5: 199 100% 34%;
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -51,24 +52,24 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 81% 58%;  /* Lighter JIIPE Red for dark mode */
+    --primary: 0 81% 58%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 199 100% 54%;  /* Lighter JIIPE Ports for dark mode */
+    --secondary: 199 100% 54%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 220 3% 44%;  /* Lighter JIIPE Industrial for dark mode */
+    --muted: 220 3% 44%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 199 100% 54%;  /* Lighter JIIPE Ports for dark mode */
+    --accent: 199 100% 54%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
-    --ring: 0 81% 58%;  /* Match primary */
-    --chart-1: 0 81% 58%;  /* Lighter JIIPE Red */
-    --chart-2: 199 100% 54%;  /* Lighter JIIPE Ports */
-    --chart-3: 220 3% 44%;  /* Lighter JIIPE Industrial */
-    --chart-4: 0 81% 48%;  /* JIIPE Red */
-    --chart-5: 199 100% 44%;  /* JIIPE Ports */
+    --ring: 0 81% 58%;
+    --chart-1: 0 81% 58%;
+    --chart-2: 199 100% 54%;
+    --chart-3: 220 3% 44%;
+    --chart-4: 0 81% 48%;
+    --chart-5: 199 100% 44%;
   }
 }
 
@@ -76,13 +77,13 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     scroll-behavior: smooth;
   }
 }
 
-/* Custom animation for scroll down indicator */
 @keyframes scroll-down {
   0% {
     opacity: 1;
@@ -112,4 +113,21 @@ html {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* === Disable Tailwind-based animation globally === */
+.opacity-0 {
+  opacity: 1 !important;
+}
+
+.translate-y-0,
+.translate-x-0 {
+  transform: none !important;
+}
+
+.transition-all,
+.duration-700,
+.duration-1000,
+.ease-out {
+  transition: none !important;
 }

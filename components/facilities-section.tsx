@@ -14,76 +14,76 @@ export default function FacilitiesSection() {
   const facilities = [
     {
       id: "industrial-area",
-      title: "Industrial Area",
+      title: "工业区",
       icon: <Building2 className="h-10 w-10 mb-4 text-primary" />,
-      description: "A 1,800-hectare industrial zone designed to accommodate various industries with flexible lot sizes.",
+      description: "占地1,800公顷的产业集聚区，灵活适配多元产业需求",
       features: [
-        "Flexible lot sizes",
-        "Ready-to-build land plots",
-        "Dedicated areas for specific industries",
-        "High-standard infrastructure and roads",
-        "Modern waste management systems",
-        "24/7 security and monitoring"
+        "灵活的地块面积",
+        "即用型地块",
+        "产业分区",
+        "高规格基建",
+        "现代废物管理系统",
+        "7×24安防体系"
       ],
       image: "https://ik.imagekit.io/z3fiyhjnl/PT%20Hailiang%20&%20PT%20Freeport%20Indonesia.jpg"
     },
     {
       id: "port-area",
-      title: "Port Area",
+      title: "多功能港口区",
       icon: <Anchor className="h-10 w-10 mb-4 text-primary" />,
-      description: "A dedicated deep-sea port with modern facilities to handle various cargo types efficiently.",
+      description: "配备现代化设施的专属深水港，高效处理各类货物",
       features: [
-        "Deep draft berths for large vessels",
-        "Multi-purpose terminal",
-        "Liquid bulk terminal",
-        "Container terminal",
-        "Dry bulk terminal",
-        "Advanced loading/unloading equipment"
+        "大型船舶深水泊位",
+        "多用途码头",
+        "液体散货码头",
+        "集装箱码头",
+        "干散货码头",
+        "先进装卸设备"
       ],
       image: "https://ik.imagekit.io/z3fiyhjnl/JIIPE%20-%20Ports.jpg"
     },
     {
       id: "utilities",
-      title: "Utilities",
+      title: "公用设施",
       icon: <Lightbulb className="h-10 w-10 mb-4 text-primary" />,
-      description: "Comprehensive utility systems designed to support industrial operations efficiently.",
+      description: "高效支撑工业运营的综合性公用工程系统",
       features: [
-        "Dedicated power plant",
-        "Water treatment facilities",
-        "Natural gas distribution",
-        "Telecommunications infrastructure",
-        "Wastewater treatment plant",
-        "Sustainable energy options"
+        "专用发电厂",
+        "水处理设施",
+        "天然气供应系统",
+        "电信基础设施",
+        "污水处理厂",
+        "可持续能源方案"
       ],
       image: "https://ik.imagekit.io/z3fiyhjnl/Utility%20Center.jpg"
     },
     {
       id: "infrastructure",
-      title: "Infrastructure",
+      title: "基础设施",
       icon: <Truck className="h-10 w-10 mb-4 text-primary" />,
-      description: "Well-planned infrastructure network facilitating seamless connectivity within and outside the estate.",
+      description: "规划完善的基础设施网络，可促进园区内外的无缝畅通连接。",
       features: [
-        "Internal road network",
-        "Railway connectivity",
-        "Proximity to major highways",
-        "Drainage systems",
-        "Flood control measures",
-        "Public transport facilities"
+        "内部道路网络",
+        "铁路连接",
+        "邻近主要高速公路",
+        "排水系统",
+        "防洪措施",
+        "公共交通设施"
       ],
       image: "https://ik.imagekit.io/z3fiyhjnl/Gate%20-%20JIIPE.jpg"
     },
     {
       id: "residential",
-      title: "Residential Area",
+      title: "住宅区",
       icon: <Warehouse className="h-10 w-10 mb-4 text-primary" />,
-      description: "Purpose-built residential areas providing comfortable living spaces for the workforce.",
+      description: "专为产业人才打造的高品质生活社区",
       features: [
-        "Employee housing facilities",
-        "Executive residences",
-        "Commercial spaces",
-        "Educational institutions",
-        "Healthcare facilities",
-        "Recreational areas"
+        "员工住房",
+        "行政公寓",
+        "商业配套",
+        "教育机构",
+        "医疗设施",
+        "休闲场所"
       ],
       image: "https://ik.imagekit.io/z3fiyhjnl/AKR%20LAND%201.jpg"
     }
@@ -112,13 +112,13 @@ export default function FacilitiesSection() {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className={cn("text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
-            Our Facilities
+            园区设施概览
           </h2>
           <h3 className={cn("text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
-            World-Class Industrial & Port Facilities
+            世界级工业园与港口设施
           </h3>
           <p className={cn("text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out", isInView && "opacity-100 translate-y-0")} style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}>
-            JIIPE offers comprehensive facilities designed to support various industries with cutting-edge infrastructure, utilities, and logistics capabilities.
+            JIIPE配备全方位工业设施体系，以前沿基础设施、高效公共配套及智能化物流能力，全面支撑多元产业发展。
           </p>
         </div>
 

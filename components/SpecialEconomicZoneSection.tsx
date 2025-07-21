@@ -7,20 +7,20 @@ import { cn } from "@/lib/utils";
 const tabs = [
   {
     key: "fiscal",
-    label: "Fiscal Facilities",
+    label: "财税优惠措施",
     icon: FileText,
     facilities: [
       {
-        title: "VAT or VAT and Tax on Luxury Goods",
-        desc: "Delivery of taxable goods/services in free zones or bonded areas not taxed for developers or tenants.",
+        title: "增值税及奢侈品税减免",
+        desc: "自由区/保税区内应税商品/服务交易免征增值税（开发商及租户适用）",
       },
       {
-        title: "Customs, PDRI, and Excises",
-        desc: "Exemption or suspension of import duties for capital and consumption goods.",
+        title: "海关、进口关税及消费税政策",
+        desc: "资本货物及消费品进口关税豁免或缓征",
       },
       {
-        title: "Local Tax",
-        desc: "Incentives for local tax and/or local retribution between 50%–100%.",
+        title: "地方税收优惠",
+        desc: "享受50%-100%地方税及/或地方行政收费减免",
       },
     ],
   },
@@ -30,36 +30,36 @@ const tabs = [
     icon: ShieldCheck,
     facilities: [
       {
-        title: "One Stop Service",
-        desc: "Business licensing and non-licensing services from KEK Administrator.",
+        title: "一站式服务",
+        desc: "由KEK特区管理局提供涵盖执照与非执照类商务服务",
       },
       {
-        title: "Building Permit by Developer",
-        desc: "No permit needed if developer has established estate regulations.",
+        title: "开发商建设许可",
+        desc: "若开发商已制定园区规范，则无需申请建设许可",
       },
       {
-        title: "Land Procurement and Titling",
-        desc: "Up to 80 years of land use and ownership rights with accelerated procedures.",
+        title: "土地权属保障",
+        desc: "通过加速程序获得最长80年的土地使用权及所有权",
       },
       {
-        title: "Immigration",
-        desc: "VoA extensions, permits for foreigners & families, and residence for owners.",
+        title: "移民便利",
+        desc: "落地签证延期、外籍人士及家属居留许可、业主永久居留权",
       },
       {
-        title: "No Negative List",
-        desc: "Goods importation without restrictions.",
+        title: "零负面清单",
+        desc: "货物进口无限制",
       },
       {
-        title: "Environmental License by Developer",
-        desc: "Licenses issued directly by developer.",
+        title: "开发商环境许可",
+        desc: "环境许可证由开发商直接签发",
       },
       {
-        title: "No Export Obligation",
-        desc: "Tenants not required to export goods.",
+        title: "出口义务豁免",
+        desc: "入驻企业无强制出口要求",
       },
       {
-        title: "Excisable Goods",
-        desc: "Not applied to SEZs under specific terms.",
+        title: "消费税政策",
+        desc: "根据特定条款不适用于经济特区内货物",
       },
     ],
   },
@@ -73,12 +73,12 @@ export default function SEZSection() {
       <div className="container mx-auto px-4">
         {/* Title & Description */}
         <div className="text-center mb-12 max-w-4xl mx-auto">
-          <h2 className="text-sm uppercase text-primary font-semibold mb-2">Special Economic Zone</h2>
+          <h2 className="text-sm uppercase text-primary font-semibold mb-2">经济特区</h2>
           <h3 className="text-3xl md:text-4xl font-bold mb-4">
-            Strategic Zone for Investment
+            战略性投资区域
           </h3>
           <p className="text-gray-600 dark:text-gray-300">
-            Special Economic Zones (SEZs) are the Government's strategic policy to be developed as centers of economic growth, national economic equity, supporting industrialization, and increasing employment in Indonesia. The area with the ultimate incentives is presented to domestic and foreign investors.
+            经济特区（SEZ）是印尼国家战略政策的核心载体，旨在打造经济增长极、促进国民经济均衡发展、加速工业化进程并创造就业机会。该区域为国内外投资者提供最高级别的政策优惠。
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export default function SEZSection() {
               </h4>
               <p className="text-gray-600 dark:text-gray-300 text-sm">{item.desc}</p>
               <div className="mt-4 text-xs text-gray-500 dark:text-gray-400 italic">
-                Legal Basis: Government Regulation No. 40 of 2021
+                法律依据：2021年第40号政府条例
               </div>
             </div>
           ))}

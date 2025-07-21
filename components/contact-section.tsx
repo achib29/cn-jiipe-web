@@ -93,7 +93,7 @@ export default function ContactSection() {
               isInView && "opacity-100 translate-y-0"
             )}
           >
-            Contact Us
+            联系我们
           </h2>
           <h3
             className={cn(
@@ -101,7 +101,7 @@ export default function ContactSection() {
               isInView && "opacity-100 translate-y-0"
             )}
           >
-            Get In Touch With Our Team
+            欢迎咨询园区招商专员
           </h3>
         </div>
 
@@ -116,26 +116,26 @@ export default function ContactSection() {
               {/* Nama */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="font-medium">First Name*</Label>
+                  <Label className="font-medium">名字*</Label>
                   <Input name="firstName" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Last Name*</Label>
+                  <Label className="font-medium">姓氏*</Label>
                   <Input name="lastName" onChange={handleChange} required />
                 </div>
               </div>
 
               {/* Kontak */}
               <div className="space-y-2">
-                <Label className="font-medium">Phone Number*</Label>
+                <Label className="font-medium">手机号码*</Label>
                 <Input name="phone" onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Email*</Label>
+                <Label className="font-medium">电子邮箱*</Label>
                 <Input name="email" type="email" onChange={handleChange} required />
               </div>
               <div className="space-y-2">
-                <Label className="font-medium">Company Name*</Label>
+                <Label className="font-medium">公司名称*</Label>
                 <Input name="company" onChange={handleChange} required />
               </div>
 
@@ -148,22 +148,22 @@ export default function ContactSection() {
 
               {/* Alasan */}
               <div className="space-y-2">
-                <Label className="font-medium">The reason for considering JIIPE*</Label>
+                <Label className="font-medium">考虑JIIPE的原因*</Label>
                 <RadioGroup
                   onValueChange={(val) => setFormData((prev) => ({ ...prev, reason: val }))}
                   className="flex flex-col gap-2 mt-2"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Market" id="market" />
-                    <Label htmlFor="market">To Approach Market</Label>
+                    <Label htmlFor="market">市场拓展</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Seaport" id="seaport" />
-                    <Label htmlFor="seaport">Require a seaport</Label>
+                    <Label htmlFor="seaport">港口需求</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Other" id="other" />
-                    <Label htmlFor="other">Other</Label>
+                    <Label htmlFor="other">其他（请注明</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -171,14 +171,14 @@ export default function ContactSection() {
               {/* Bidang & Waktu */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="font-medium">Industry*</Label>
+                  <Label className="font-medium">所属行业*</Label>
                   <select
                     name="industry"
                     className="w-full border rounded-md p-2"
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select your Industry</option>
+                    <option value="">请选择行业类别</option>
                     <option value="Chemical">Chemical</option>
                     <option value="Energy">Energy</option>
                     <option value="Electronic">Electronic</option>
@@ -188,18 +188,18 @@ export default function ContactSection() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Required Industrial Land Plot (Ha)*</Label>
+                  <Label className="font-medium">所需工业用地面积（公顷）*</Label>
                   <Input name="landPlot" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Timeline Construction*</Label>
+                  <Label className="font-medium">预计建设需时*</Label>
                   <select
                     name="timeline"
                     className="w-full border rounded-md p-2"
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select your Timeline</option>
+                    <option value="">请选择时长</option>
                     <option value="0-6 months">0–6 months</option>
                     <option value="6-12 months">6–12 months</option>
                     <option value="12-24 months">12–24 months</option>
@@ -211,19 +211,19 @@ export default function ContactSection() {
               {/* Utilitas */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="font-medium">Total Required Power (MW)*</Label>
+                  <Label className="font-medium">所需电力总量（兆瓦）*</Label>
                   <Input name="power" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Total Industrial Water (m³/day)*</Label>
+                  <Label className="font-medium">所需工业用水总量（立方米/天）*</Label>
                   <Input name="water" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Total Required Natural Gas (MMBTU/annum)*</Label>
+                  <Label className="font-medium">所需天然气总量（百万英热单位/年）*</Label>
                   <Input name="gas" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
-                  <Label className="font-medium">Est. Vol. Throughput via Seaport (Tons/Year)*</Label>
+                  <Label className="font-medium">预计港口吞吐量（吨/年）*</Label>
                   <Input name="seaport" type="number" onChange={handleChange} required />
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function ContactSection() {
 
               {/* Submit */}
               <Button type="submit" size="lg" className="w-full mt-6">
-                Submit Inquiry
+                立即咨询
               </Button>
             </form>
           </CardContent>

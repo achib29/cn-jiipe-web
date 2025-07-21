@@ -9,7 +9,7 @@ import Footer from '@/components/footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'JIIPE - 古能工业园官网',
+  title: 'JIIPE-吉配工业园官网-印尼吉配经济特区',
   description:
     'Strategic industrial port estate in East Java, Indonesia offering world-class infrastructure and facilities for industrial and logistics operations.',
   icons: {

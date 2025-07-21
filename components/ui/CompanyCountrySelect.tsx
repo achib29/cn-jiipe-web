@@ -24,7 +24,7 @@ export default function CompanyCountrySelect({ onChange }: { onChange: (value: s
 
   return (
     <div className="space-y-2">
-      <Label className="block font-medium">Company Origin Country*</Label>
+      <Label className="block font-medium">公司所在国家*</Label>
       <Select
         options={options}
         styles={customStyles}

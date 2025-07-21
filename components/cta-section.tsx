@@ -51,7 +51,7 @@ export default function CTASection() {
             )}
             style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(30px)" }}
           >
-            Ready to Grow Your Business with JIIPE?
+            准备在JIIPE拓展您的业务版图？
           </h2>
           
           <p
@@ -61,7 +61,7 @@ export default function CTASection() {
             )}
             style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(30px)" }}
           >
-            Join the growing community of businesses that have chosen JIIPE as their strategic location for success in Indonesia and Southeast Asia.
+            欢迎加入日益壮大的企业社区，与众多国际企业共同选择JIIPE作为进军印尼及东南亚市场的战略据点
           </p>
           
           <div
@@ -76,7 +76,7 @@ export default function CTASection() {
               variant="secondary"
               className="bg-white text-primary hover:bg-white/85"
             >
-              Contact Our Team
+              立即联系招商团队
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
@@ -84,7 +84,7 @@ export default function CTASection() {
               variant="secondary"
               className="bg-white text-primary hover:bg-white/85"
             >
-              Download Brochure
+              下载园区手册
             </Button>
           </div>
         </div>

@@ -64,7 +64,7 @@ export default function HeroSection() {
                   size="lg"
                   className="w-full sm:w-auto bg-primary text-white hover:bg-primary/90"
                 >
-                  Explore Facilities
+                  探索设施
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </a>
@@ -76,7 +76,7 @@ export default function HeroSection() {
                 variant="outline"
                 className="w-full sm:w-auto bg-transparent text-white border-white hover:bg-white/10"
               >
-                Contact Us
+                联系我们
               </Button>
             </Link>
           

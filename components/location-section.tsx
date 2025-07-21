@@ -13,23 +13,23 @@ export default function LocationSection() {
   const connectivityData = [
     {
       icon: <Ship className="h-6 w-6 text-primary" />,
-      title: "Sea Connectivity",
-      description: "Direct access to international shipping routes through the Java Sea",
+      title: "海运",
+      description: "直连爪哇海国际航运主干道",
     },
     {
       icon: <Plane className="h-6 w-6 text-primary" />,
-      title: "Air Connectivity",
-      description: "45 minutes from Juanda International Airport",
+      title: "空运",
+      description: "45分钟直达朱安达国际机场",
     },
     {
       icon: <Truck className="h-6 w-6 text-primary" />,
-      title: "Road Connectivity",
-      description: "Connected to major highways for efficient land transportation",
+      title: "陆运",
+      description: "无缝衔接跨爪哇高速等核心干线",
     },
     {
       icon: <Globe className="h-6 w-6 text-primary" />,
-      title: "Global Access",
-      description: "Strategic position in Southeast Asia's growing economic corridor",
+      title: "全球通达性",
+      description: "立足东南亚增长最快的经济走廊核心",
     },
   ];
 
@@ -44,7 +44,7 @@ export default function LocationSection() {
             )}
             style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            Strategic Location
+            战略区位优势
           </h2>
           <h3
             className={cn(
@@ -53,7 +53,7 @@ export default function LocationSection() {
             )}
             style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            Perfectly Positioned for Success
+            得天独厚，铸就成功
           </h3>
           <p
             className={cn(
@@ -62,7 +62,7 @@ export default function LocationSection() {
             )}
             style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
           >
-            JIIPE is strategically located in East Java, Indonesia, offering exceptional connectivity to domestic and international markets through multiple transportation networks.
+            JIIPE坐落于印度尼西亚东爪哇省，通过多元交通网络高效连接国内外市场。
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function LocationSection() {
               {/* Interactive Map - In a real implementation, this would be a Google Maps or similar embed */}
               <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!4v1719400174976!6m8!1m7!1sCAoSLEFGMVFpcE1rTVBhY2xCNWdjSGdNSExzYXJZYzdPMzJwYV9mVnpnSWhya3Vu!2m2!1d-7.0999999!2d112.6144444!3f0!4f0!5f0.7820865974627469https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d21714.50257055712!2d112.59440555960974!3d-7.098699198144415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e77fd91cbf94199%3A0x420bcb75aab89777!2sKawasan%20Industri%20JIIPE%20Gresik!5e1!3m2!1sid!2sid!4v1750841399485!5m2!1sid!2sid"
+                  src="https://uri.amap.com/marker?position=112.606810,-7.085696"
                   className="w-full h-full border-0"
                   allowFullScreen
                   loading="lazy"
@@ -99,20 +99,20 @@ export default function LocationSection() {
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
                 <div>
-                  <h4 className="font-semibold text-lg">East Java, Indonesia</h4>
+                  <h4 className="font-semibold text-lg">东爪哇核心区位</h4>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Located in Gresik, East Java, JIIPE offers a strategic position in Indonesia's industrial heartland.
+                    位于东爪哇省锦石县（Gresik），坐拥印尼工业核心地带的战略位置。
                   </p>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-lg mb-2">Key Distances:</h4>
+                <h4 className="font-semibold text-lg mb-2">关键距离数据：</h4>
                 <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-                  <li>• 45 minutes from Juanda International Airport</li>
-                  <li>• 30 minutes from Surabaya city center</li>
-                  <li>• 60 minutes from industrial areas in Sidoarjo and Pasuruan</li>
-                  <li>• Direct access to shipping routes via Java Sea</li>
+                  <li>• 距朱安达国际机场45分钟车程</li>
+                  <li>• 距泗水市中心30分钟车程</li>
+                  <li>• 距西多阿佐（Sidoarjo）和庞越（Pasuruan）工业区60分钟车程</li>
+                  <li>• 直通爪哇海国际航运航线</li>
                 </ul>
               </div>
             </div>
