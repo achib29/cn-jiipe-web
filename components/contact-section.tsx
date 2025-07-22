@@ -9,6 +9,7 @@ declare global {
 
 import { useRef, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
+import { useRouter } from "next/navigation"; // Pakai Next.js app router
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +17,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
-import ThankYouModal from "@/components/ui/ThankYouModal";
 
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
+  const router = useRouter(); // ADD: for redirect
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -38,8 +39,6 @@ export default function ContactSection() {
     gas: "",
     seaport: "",
   });
-
-  const [showThankYou, setShowThankYou] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -80,24 +79,8 @@ export default function ContactSection() {
     });
 
     if (res.ok) {
-      setShowThankYou(true);
-      // Optionally reset form fields
-      setFormData({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        company: "",
-        country: "",
-        reason: "",
-        industry: "",
-        landPlot: "",
-        timeline: "",
-        power: "",
-        water: "",
-        gas: "",
-        seaport: "",
-      });
+      // Redirect to thank you page!
+      router.push("/thank-you");
     } else {
       alert("Failed to send inquiry.");
     }
@@ -267,9 +250,6 @@ export default function ContactSection() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Thank You Modal */}
-      <ThankYouModal open={showThankYou} onClose={() => setShowThankYou(false)} />
     </section>
   );
 }
