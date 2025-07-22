@@ -162,7 +162,6 @@ export default function ContactSection() {
               {/* Negara */}
               <div className="space-y-2">
                 <CompanyCountrySelect
-                  value={formData.country}
                   onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))}
                 />
               </div>
