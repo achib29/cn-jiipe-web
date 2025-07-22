@@ -50,8 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
       to: [
-        "abdul.khasib@bkms.jiipe.co.id",
-        "donny.muchelly@bkms.jiipe.co.id"
+        "abdul.khasib@bkms.jiipe.co.id"
       ],
       subject: "New Contact Inquiry Baidu Ads",
       html: `

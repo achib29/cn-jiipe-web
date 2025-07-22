@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
+import ThankYouModal from "@/components/ui/ThankYouModal";
 
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,6 +38,8 @@ export default function ContactSection() {
     gas: "",
     seaport: "",
   });
+
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -77,7 +80,24 @@ export default function ContactSection() {
     });
 
     if (res.ok) {
-      alert("Inquiry sent successfully!");
+      setShowThankYou(true);
+      // Optionally reset form fields
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        company: "",
+        country: "",
+        reason: "",
+        industry: "",
+        landPlot: "",
+        timeline: "",
+        power: "",
+        water: "",
+        gas: "",
+        seaport: "",
+      });
     } else {
       alert("Failed to send inquiry.");
     }
@@ -117,31 +137,32 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">名字*</Label>
-                  <Input name="firstName" onChange={handleChange} required />
+                  <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">姓氏*</Label>
-                  <Input name="lastName" onChange={handleChange} required />
+                  <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
                 </div>
               </div>
 
               {/* Kontak */}
               <div className="space-y-2">
                 <Label className="font-medium">手机号码*</Label>
-                <Input name="phone" onChange={handleChange} required />
+                <Input name="phone" value={formData.phone} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">电子邮箱*</Label>
-                <Input name="email" type="email" onChange={handleChange} required />
+                <Input name="email" type="email" value={formData.email} onChange={handleChange} required />
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">公司名称*</Label>
-                <Input name="company" onChange={handleChange} required />
+                <Input name="company" value={formData.company} onChange={handleChange} required />
               </div>
 
               {/* Negara */}
               <div className="space-y-2">
                 <CompanyCountrySelect
+                  value={formData.country}
                   onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))}
                 />
               </div>
@@ -150,6 +171,7 @@ export default function ContactSection() {
               <div className="space-y-2">
                 <Label className="font-medium">考虑JIIPE的原因*</Label>
                 <RadioGroup
+                  value={formData.reason}
                   onValueChange={(val) => setFormData((prev) => ({ ...prev, reason: val }))}
                   className="flex flex-col gap-2 mt-2"
                 >
@@ -175,6 +197,7 @@ export default function ContactSection() {
                   <select
                     name="industry"
                     className="w-full border rounded-md p-2"
+                    value={formData.industry}
                     onChange={handleChange}
                     required
                   >
@@ -189,13 +212,14 @@ export default function ContactSection() {
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用地面积（公顷）*</Label>
-                  <Input name="landPlot" type="number" onChange={handleChange} required />
+                  <Input name="landPlot" type="number" value={formData.landPlot} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计建设需时*</Label>
                   <select
                     name="timeline"
                     className="w-full border rounded-md p-2"
+                    value={formData.timeline}
                     onChange={handleChange}
                     required
                   >
@@ -212,19 +236,19 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">所需电力总量（兆瓦）*</Label>
-                  <Input name="power" type="number" onChange={handleChange} required />
+                  <Input name="power" type="number" value={formData.power} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用水总量（立方米/天）*</Label>
-                  <Input name="water" type="number" onChange={handleChange} required />
+                  <Input name="water" type="number" value={formData.water} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需天然气总量（百万英热单位/年）*</Label>
-                  <Input name="gas" type="number" onChange={handleChange} required />
+                  <Input name="gas" type="number" value={formData.gas} onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计港口吞吐量（吨/年）*</Label>
-                  <Input name="seaport" type="number" onChange={handleChange} required />
+                  <Input name="seaport" type="number" value={formData.seaport} onChange={handleChange} required />
                 </div>
               </div>
 
@@ -244,6 +268,9 @@ export default function ContactSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Thank You Modal */}
+      <ThankYouModal open={showThankYou} onClose={() => setShowThankYou(false)} />
     </section>
   );
 }
