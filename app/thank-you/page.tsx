@@ -1,8 +1,26 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ThankYouPage() {
   const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const allow = sessionStorage.getItem("allowThankYou");
+      if (allow === "1") {
+        setAllowed(true);
+        sessionStorage.removeItem("allowThankYou"); // Hapus supaya user tak bisa refresh/akses lagi
+      } else {
+        // Redirect jika akses langsung/refresh
+        router.replace("/");
+      }
+    }
+  }, [router]);
+
+  if (!allowed) return null; // Atau loader/spinner, dll
+
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
       <div className="bg-white rounded-2xl shadow-xl px-8 py-8 max-w-sm w-full text-center">

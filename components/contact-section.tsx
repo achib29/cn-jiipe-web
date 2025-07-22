@@ -9,7 +9,7 @@ declare global {
 
 import { useRef, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
-import { useRouter } from "next/navigation"; // Pakai Next.js app router
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
 export default function ContactSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
-  const router = useRouter(); // ADD: for redirect
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -79,7 +79,11 @@ export default function ContactSection() {
     });
 
     if (res.ok) {
-      // Redirect to thank you page!
+      // SET flag sessionStorage untuk izinkan akses thank-you
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("allowThankYou", "1");
+      }
+      // Redirect ke thank you page
       router.push("/thank-you");
     } else {
       alert("Failed to send inquiry.");
