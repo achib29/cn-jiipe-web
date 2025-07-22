@@ -11,28 +11,28 @@ const companies = [
     name: "海亮集团",
     description: "铜加工和有色金属制造领域的全球领导者",
     icon: () => (
-      <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={120} height={120} />
+      <Image src="/images/logos/hailiang.png" alt="Hailiang Group" width={250} height={250} objectFit="contain" />
     ),
   },
   {
     name: "信义玻璃",
     description: "高品质浮法玻璃和汽车玻璃的主要制造商",
     icon: () => (
-      <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={120} height={120} />
+      <Image src="/images/logos/xinyi-glass.png" alt="Xinyi Glass Indonesia" width={120} height={120} objectFit="contain" />
     ),
   },
   {
     name: "信义光能",
     description: "光伏玻璃和太阳能解决方案的技术革新者",
     icon: () => (
-      <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={120} height={120} />
+      <Image src="/images/logos/xinyi-solar.png" alt="Xinyi Solar" width={120} height={120} objectFit="contain" />
     ),
   },
   {
     name: "和邦生物科技",
     description: "专注于绿色化工和生物基工业应用的先锋",
     icon: () => (
-      <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={120} height={120} />
+      <Image src="/images/logos/hebang.png" alt="Hebang Biotechnology" width={250} height={250} objectFit="contain" />
     ),
   },
 ];
@@ -65,7 +65,7 @@ export default function ChineseCompaniesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {companies.map((company, index) => (
             <Card
               key={company.name}
@@ -80,7 +80,7 @@ export default function ChineseCompaniesSection() {
             >
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="mb-4">
+                  <div className="flex items-center justify-center mb-4">
                     {company.icon()}
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{company.name}</h3>
