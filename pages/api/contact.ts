@@ -1,14 +1,30 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 
+// === Tambahkan import Gemini jika mau pakai Gemini ===
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 // === Validasi Env ===
 const resendKey = process.env.RESEND_API_KEY;
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+// GROK (xAI)
 const xaiKey = process.env.XAI_API_KEY;
+// GEMINI (Google)
+const geminiKey = process.env.GEMINI_API_KEY;
 
 if (!resendKey) throw new Error("Missing RESEND_API_KEY");
 if (!turnstileSecret) throw new Error("Missing TURNSTILE_SECRET_KEY");
-if (!xaiKey) throw new Error("Missing XAI_API_KEY");
+// Minimal harus ada salah satu kunci AI:
+if (!xaiKey && !geminiKey) throw new Error("Missing AI API KEY (Grok/XAI or Gemini)");
+
+// Fungsi Helper Gemini (Google)
+async function analyzeWithGemini(prompt: string) {
+  const genAI = new GoogleGenerativeAI(geminiKey || "");
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return response.text();
+}
 
 const resend = new Resend(resendKey);
 
@@ -42,21 +58,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Failed Turnstile verification." });
   }
 
-  // === Step 1: Persiapkan prompt ke Grok xAI ===
+  // === Step 1: Persiapkan prompt ===
   const reasonDisplay = reason === "Other" && reasonOther
     ? `Other (${reasonOther})`
     : reason;
 
-  const grokPrompt = [
-    {
-      role: "system",
-      content:
-        "You are a professional business analyst. Analyze the following inquiry: identify the company, explain what industry it operates in, and comment whether the utility requests are reasonable for the industry and company profile. Respond in clear English for management reporting. Keep it concise (max 5 lines), and note if anything seems unusual or suspicious."
-    },
-    {
-      role: "user",
-      content:
-        `Company: ${company}
+  const inquiryPrompt = `
+You are a professional business analyst. Analyze the following inquiry:
+Company: ${company}
 Country: ${country}
 Industry: ${industry}
 Power: ${power} MW
@@ -65,36 +74,70 @@ Gas: ${gas} MMBTU/annum
 Seaport: ${seaport} Tons/year
 Land Plot: ${landPlot} Ha
 Timeline: ${timeline}
-Reason: ${reasonDisplay}`
-    }
-  ];
+Reason: ${reasonDisplay}
+1. Identify the company
+2. Explain what industry it operates in
+3. Comment whether the utility requests are reasonable for the industry and company profile
+4. Respond in clear English for management reporting. Keep it concise (max 5 lines).
+`;
 
-  // === Step 2: Panggil Grok API ===
-  let grokSummary = "";
+  // === Step 2: Panggil AI (Pilih salah satu: Grok atau Gemini) ===
+  let aiSummary = "";
   try {
-    const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${xaiKey}`
-      },
-      body: JSON.stringify({
-        messages: grokPrompt,
-        model: "grok-3-latest",
-        stream: false,
-        temperature: 0.2
-      })
-    });
-    const grokData = await grokRes.json();
-    grokSummary = grokData?.choices?.[0]?.message?.content?.trim() || "";
+    // === Grok (xAI) ===
+    if (xaiKey) {
+      const grokPrompt = [
+        {
+          role: "system",
+          content:
+            "You are a professional business analyst. Analyze the following inquiry: identify the company, explain what industry it operates in, and comment whether the utility requests are reasonable for the industry and company profile. Respond in clear English for management reporting. Keep it concise (max 5 lines), and note if anything seems unusual or suspicious."
+        },
+        {
+          role: "user",
+          content: `
+Company: ${company}
+Country: ${country}
+Industry: ${industry}
+Power: ${power} MW
+Water: ${water} m³/day
+Gas: ${gas} MMBTU/annum
+Seaport: ${seaport} Tons/year
+Land Plot: ${landPlot} Ha
+Timeline: ${timeline}
+Reason: ${reasonDisplay}
+`
+        }
+      ];
+      const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${xaiKey}`
+        },
+        body: JSON.stringify({
+          messages: grokPrompt,
+          model: "grok-3-latest",
+          stream: false,
+          temperature: 0.2
+        })
+      });
+      const grokData = await grokRes.json();
+      aiSummary = grokData?.choices?.[0]?.message?.content?.trim() || "";
+    }
+    // === Gemini (Google) ===
+    else if (geminiKey) {
+      aiSummary = await analyzeWithGemini(inquiryPrompt);
+    }
   } catch (err) {
-    grokSummary = "AI analysis is unavailable at the moment.";
-    console.error("Grok xAI API error:", err);
+    aiSummary = "AI analysis is unavailable at the moment.";
+    console.error("AI (Grok/Gemini) API error:", err);
   }
 
-  // === Step 3: Siapkan body email ===
-  const logoUrl = "https://jiipe.com/logo-jiipe.png"; // ganti sesuai file/logo kamu
+  // === Log hasil AI ke console (biar gampang debugging) ===
+  console.log("AI Summary yang dikirim ke email:", aiSummary);
 
+  // === Step 3: Siapkan body email ===
+  const logoUrl = "https://jiipe.com/logo-jiipe.png"; // ganti sesuai logo kamu
   const html = `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; padding: 24px 0;">
       <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden;">
@@ -105,7 +148,7 @@ Reason: ${reasonDisplay}`
           </div>
           <div style="margin-bottom: 18px; background: #f4f4f4; border-left: 4px solid #b1060f; padding: 12px 18px; font-size:1.04rem;">
             <b>AI Summary & Company Analysis:</b><br>
-            ${grokSummary}
+            ${aiSummary}
           </div>
           <table width="100%" style="border-collapse: collapse; font-size: 1.02rem;">
             <tr><td style="padding:10px 8px;font-weight:600;color:#b1060f;">Name</td><td style="padding:10px 8px;">${firstName} ${lastName}</td></tr>
@@ -139,8 +182,6 @@ Reason: ${reasonDisplay}`
     </div>
   `;
 
-  console.log("AI Summary yang dikirim ke email:", grokSummary);  // <--- Tambahkan di sini
-  
   // === Step 4: Kirim Email ===
   try {
     await resend.emails.send({
