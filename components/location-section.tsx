@@ -124,7 +124,7 @@ export default function LocationSection() {
             <Card
               key={index}
               className={cn(
-                "border-0 shadow-md hover:shadow-lg transition-all duration-300 opacity-0 transition-all duration-700 ease-out",
+                "border-0 shadow-md hover:shadow-lg transition-all duration-700 opacity-0 ease-out",
                 isInView && "opacity-100 translate-y-0"
               )}
               style={{ transitionDelay: `${1200 + index * 100}ms`, transform: isInView ? "translateY(0)" : "translateY(30px)" }}

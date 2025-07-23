@@ -1,6 +1,5 @@
 "use client";
 
-// ✅ Tambahkan deklarasi gtag
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -31,6 +30,7 @@ export default function ContactSection() {
     company: "",
     country: "",
     reason: "",
+    reasonOther: "", // <<-- Tambah field ini
     industry: "",
     landPlot: "",
     timeline: "",
@@ -48,7 +48,12 @@ export default function ContactSection() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    // ✅ Tracking Google Analytics
+    // Validasi jika reason = Other, wajib diisi reasonOther
+    if (formData.reason === "Other" && !formData.reasonOther.trim()) {
+      alert("请填写‘其他’的具体原因。");
+      return;
+    }
+
     if (typeof window.gtag !== "undefined") {
       window.gtag("event", "inquiry_submit", {
         event_category: "Contact Form",
@@ -56,7 +61,6 @@ export default function ContactSection() {
       });
     }
 
-    // ✅ Ambil token Turnstile
     const token = (
       document.querySelector(
         'input[name="cf-turnstile-response"]'
@@ -68,7 +72,6 @@ export default function ContactSection() {
       return;
     }
 
-    // ✅ Kirim inquiry
     const res = await fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -79,11 +82,9 @@ export default function ContactSection() {
     });
 
     if (res.ok) {
-      // SET flag sessionStorage untuk izinkan akses thank-you
       if (typeof window !== "undefined") {
         sessionStorage.setItem("allowThankYou", "1");
       }
-      // Redirect ke thank you page
       router.push("/thank-you");
     } else {
       alert("Failed to send inquiry.");
@@ -158,7 +159,14 @@ export default function ContactSection() {
                 <Label className="font-medium">考虑JIIPE的原因*</Label>
                 <RadioGroup
                   value={formData.reason}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, reason: val }))}
+                  onValueChange={(val) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      reason: val,
+                      // Reset reasonOther jika bukan "Other"
+                      reasonOther: val === "Other" ? prev.reasonOther : "",
+                    }))
+                  }
                   className="flex flex-col gap-2 mt-2"
                 >
                   <div className="flex items-center space-x-2">
@@ -171,9 +179,19 @@ export default function ContactSection() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Other" id="other" />
-                    <Label htmlFor="other">其他（请注明</Label>
+                    <Label htmlFor="other">其他（请注明）</Label>
                   </div>
                 </RadioGroup>
+                {formData.reason === "Other" && (
+                  <Input
+                    name="reasonOther"
+                    value={formData.reasonOther}
+                    onChange={handleChange}
+                    placeholder="请填写具体原因"
+                    className="mt-2"
+                    required
+                  />
+                )}
               </div>
 
               {/* Bidang & Waktu */}
@@ -188,12 +206,12 @@ export default function ContactSection() {
                     required
                   >
                     <option value="">请选择行业类别</option>
-                    <option value="Chemical">Chemical</option>
-                    <option value="Energy">Energy</option>
-                    <option value="Electronic">Electronic</option>
-                    <option value="Metal">Metal</option>
-                    <option value="Supporting & Logistic">Supporting & Logistic</option>
-                    <option value="Other">Other</option>
+                    <option value="Chemical">化工产业</option>
+                    <option value="Energy">能源产业</option>
+                    <option value="Electronic">电子产业</option>
+                    <option value="Metal">金属产业</option>
+                    <option value="Supporting & Logistic">辅助和物流产业</option>
+                    <option value="Other">其他行业</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -210,10 +228,10 @@ export default function ContactSection() {
                     required
                   >
                     <option value="">请选择时长</option>
-                    <option value="0-6 months">0–6 months</option>
-                    <option value="6-12 months">6–12 months</option>
-                    <option value="12-24 months">12–24 months</option>
-                    <option value="> 24 months">More than 24 months</option>
+                    <option value="0-6 months">6个月以内</option>
+                    <option value="6-12 months">6-12个月</option>
+                    <option value="12-24 months">12-24个月</option>
+                    <option value="> 24 months">24个月以上</option>
                   </select>
                 </div>
               </div>

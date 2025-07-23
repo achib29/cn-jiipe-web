@@ -19,7 +19,8 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-400 max-w-xs">
-              A strategic integrated industrial estate and deep seaport in East Java, Indonesia.
+              印度尼西亚东爪哇的一个集战略工业园区与深水港于一体的综合性项目 <br />
+              【印尼锦石经济特区】一个集战略工业园区与深水港于一体的综合性项目
             </p>
             <div className="flex space-x-4">
               <Link href="https://www.facebook.com/jiipe.gresik" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
@@ -51,33 +52,33 @@ export default function Footer() {
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
+            <h3 className="font-semibold text-lg mb-4">快速链接</h3>
             <ul className="space-y-2">
-              <li><Link href="#home" className="text-gray-400 hover:text-white">Home</Link></li>
-              <li><Link href="#about" className="text-gray-400 hover:text-white">About Us</Link></li>
-              <li><Link href="#facilities" className="text-gray-400 hover:text-white">Facilities</Link></li>
-              <li><Link href="#location" className="text-gray-400 hover:text-white">Location</Link></li>
-              <li><Link href="#contact" className="text-gray-400 hover:text-white">Contact</Link></li>
+              <li><Link href="#home" className="text-gray-400 hover:text-white">首页</Link></li>
+              <li><Link href="#about" className="text-gray-400 hover:text-white">关于我们</Link></li>
+              <li><Link href="#facilities" className="text-gray-400 hover:text-white">设施概览</Link></li>
+              <li><Link href="#location" className="text-gray-400 hover:text-white">地理位置</Link></li>
+              <li><Link href="#contact" className="text-gray-400 hover:text-white">联系方式</Link></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Facilities</h3>
+            <h3 className="font-semibold text-lg mb-4">设施详情</h3>
             <ul className="space-y-2">
-              <li><Link href="#industrial-area" className="text-gray-400 hover:text-white">Industrial Area</Link></li>
-              <li><Link href="#port-area" className="text-gray-400 hover:text-white">Port Area</Link></li>
-              <li><Link href="#utilities" className="text-gray-400 hover:text-white">Utilities</Link></li>
-              <li><Link href="#infrastructure" className="text-gray-400 hover:text-white">Infrastructure</Link></li>
-              <li><Link href="#residential" className="text-gray-400 hover:text-white">Residential Area</Link></li>
+              <li><Link href="#industrial-area" className="text-gray-400 hover:text-white">工业区</Link></li>
+              <li><Link href="#port-area" className="text-gray-400 hover:text-white">港口区</Link></li>
+              <li><Link href="#utilities" className="text-gray-400 hover:text-white">公用设施</Link></li>
+              <li><Link href="#infrastructure" className="text-gray-400 hover:text-white">基础设施</Link></li>
+              <li><Link href="#residential" className="text-gray-400 hover:text-white">住宅区</Link></li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">Contact Info</h3>
+            <h3 className="font-semibold text-lg mb-4">联系方式</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-gray-400">East Java, Indonesia</span>
+                <span className="text-gray-400">印度尼西亚东爪哇省</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary shrink-0" />

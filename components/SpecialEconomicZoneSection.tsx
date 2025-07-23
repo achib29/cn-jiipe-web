@@ -26,7 +26,7 @@ const tabs = [
   },
   {
     key: "nonfiscal",
-    label: "Non-Fiscal Facilities",
+    label: "非财政性便利措施",
     icon: ShieldCheck,
     facilities: [
       {

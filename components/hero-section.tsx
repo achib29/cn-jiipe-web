@@ -25,7 +25,8 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 z-10 mt-20">
         <div className="max-w-3xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            印尼西亚首屈一指的综合工业与港口园区
+            印度尼西亚首屈一指的<br />
+            临港综合工业园区
           </h1>
           
           <p className="text-xl text-gray-200 mb-8">
