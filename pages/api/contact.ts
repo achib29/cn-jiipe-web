@@ -1,32 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
-
-// === Tambahkan import Gemini jika mau pakai Gemini ===
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
 // === Validasi Env ===
 const resendKey = process.env.RESEND_API_KEY;
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
-// GROK (xAI)
-const xaiKey = process.env.XAI_API_KEY;
-// GEMINI (Google)
-const geminiKey = process.env.GEMINI_API_KEY;
+const openaiKey = process.env.OPENAI_API_KEY;
 
 if (!resendKey) throw new Error("Missing RESEND_API_KEY");
 if (!turnstileSecret) throw new Error("Missing TURNSTILE_SECRET_KEY");
-// Minimal harus ada salah satu kunci AI:
-if (!xaiKey && !geminiKey) throw new Error("Missing AI API KEY (Grok/XAI or Gemini)");
-
-// Fungsi Helper Gemini (Google)
-async function analyzeWithGemini(prompt: string) {
-  const genAI = new GoogleGenerativeAI(geminiKey || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  return response.text();
-}
+if (!openaiKey) throw new Error("Missing OPENAI_API_KEY");
 
 const resend = new Resend(resendKey);
+const openai = new OpenAI({ apiKey: openaiKey });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
@@ -58,13 +44,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Failed Turnstile verification." });
   }
 
-  // === Step 1: Persiapkan prompt ===
-  const reasonDisplay = reason === "Other" && reasonOther
-    ? `Other (${reasonOther})`
-    : reason;
+  // === Step 1: Persiapkan prompt ke OpenAI ===
+  const reasonDisplay = reason === "Other" && reasonOther ? `Other (${reasonOther})` : reason;
 
-  const inquiryPrompt = `
+  const prompt = `
 You are a professional business analyst. Analyze the following inquiry:
+- Identify the company
+- Explain what industry it operates in
+- Comment whether the utility requests are reasonable for the industry and company profile
+- Respond in clear English for management reporting. Keep it concise (max 5 lines), and note if anything seems unusual or suspicious.
+
+DATA:
 Company: ${company}
 Country: ${country}
 Industry: ${industry}
@@ -75,65 +65,27 @@ Seaport: ${seaport} Tons/year
 Land Plot: ${landPlot} Ha
 Timeline: ${timeline}
 Reason: ${reasonDisplay}
-1. Identify the company
-2. Explain what industry it operates in
-3. Comment whether the utility requests are reasonable for the industry and company profile
-4. Respond in clear English for management reporting. Keep it concise (max 5 lines).
 `;
 
-  // === Step 2: Panggil AI (Pilih salah satu: Grok atau Gemini) ===
+  // === Step 2: Panggil OpenAI API ===
   let aiSummary = "";
   try {
-    // === Grok (xAI) ===
-    if (xaiKey) {
-      const grokPrompt = [
-        {
-          role: "system",
-          content:
-            "You are a professional business analyst. Analyze the following inquiry: identify the company, explain what industry it operates in, and comment whether the utility requests are reasonable for the industry and company profile. Respond in clear English for management reporting. Keep it concise (max 5 lines), and note if anything seems unusual or suspicious."
-        },
-        {
-          role: "user",
-          content: `
-Company: ${company}
-Country: ${country}
-Industry: ${industry}
-Power: ${power} MW
-Water: ${water} m³/day
-Gas: ${gas} MMBTU/annum
-Seaport: ${seaport} Tons/year
-Land Plot: ${landPlot} Ha
-Timeline: ${timeline}
-Reason: ${reasonDisplay}
-`
-        }
-      ];
-      const grokRes = await fetch("https://api.x.ai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${xaiKey}`
-        },
-        body: JSON.stringify({
-          messages: grokPrompt,
-          model: "grok-3-latest",
-          stream: false,
-          temperature: 0.2
-        })
-      });
-      const grokData = await grokRes.json();
-      aiSummary = grokData?.choices?.[0]?.message?.content?.trim() || "";
-    }
-    // === Gemini (Google) ===
-    else if (geminiKey) {
-      aiSummary = await analyzeWithGemini(inquiryPrompt);
-    }
+    const aiRes = await openai.chat.completions.create({
+      model: "gpt-4o", // atau "gpt-4o-mini"
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: prompt }
+      ],
+      max_tokens: 250,
+      temperature: 0.2
+    });
+    aiSummary = aiRes.choices?.[0]?.message?.content?.trim() || "";
   } catch (err) {
     aiSummary = "AI analysis is unavailable at the moment.";
-    console.error("AI (Grok/Gemini) API error:", err);
+    console.error("OpenAI API error:", err);
   }
 
-  // === Log hasil AI ke console (biar gampang debugging) ===
+  // === Log hasil AI ke console (debugging) ===
   console.log("AI Summary yang dikirim ke email:", aiSummary);
 
   // === Step 3: Siapkan body email ===
