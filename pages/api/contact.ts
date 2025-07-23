@@ -139,6 +139,8 @@ Reason: ${reasonDisplay}`
     </div>
   `;
 
+  console.log("AI Summary yang dikirim ke email:", grokSummary);  // <--- Tambahkan di sini
+  
   // === Step 4: Kirim Email ===
   try {
     await resend.emails.send({
