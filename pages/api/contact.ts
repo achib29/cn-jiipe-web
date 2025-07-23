@@ -66,6 +66,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; padding: 24px 0;">
           <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden;">
             <div style="padding: 32px;">
+            <div style="margin-bottom: 24px; font-size:1.08rem;">
+              Dear Sir/Madam,<br>
+              Please find below the details of a new inquiry received from the JIIPE Baidu Ads Landing Page.
+            </div>
               <table width="100%" style="border-collapse: collapse; font-size: 1.02rem;">
                 <tr>
                   <td style="padding: 10px 8px; font-weight: 600; color: #b1060f;">Name</td>
