@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { MapPin, Globe, Plane, Ship, Truck } from "lucide-react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,17 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function LocationSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
+
+  // Load 360° Tour script once after mount
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://tours.jiipe.com/public/shareScript.js";
+    script.async = true;
+    script.setAttribute("data-short", "5Ss66DNIH");
+    script.setAttribute("data-path", "tours");
+    script.setAttribute("data-is-self-hosted", "undefined");
+    document.getElementById("tour-container")?.appendChild(script);
+  }, []);
 
   const connectivityData = [
     {
@@ -36,6 +47,7 @@ export default function LocationSection() {
   return (
     <section id="location" ref={ref} className="py-20 bg-white dark:bg-gray-950">
       <div className="container mx-auto px-4">
+        {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2
             className={cn(
@@ -66,6 +78,7 @@ export default function LocationSection() {
           </p>
         </div>
 
+        {/* Map & Info */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12">
           <div className="lg:col-span-3">
             <div
@@ -75,7 +88,6 @@ export default function LocationSection() {
               )}
               style={{ transitionDelay: "800ms", transform: isInView ? "translateX(0)" : "translateX(-30px)" }}
             >
-              {/* Interactive Map - In a real implementation, this would be a Google Maps or similar embed */}
               <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
                 <iframe
                   src="https://uri.amap.com/marker?position=112.606810,-7.085696"
@@ -119,7 +131,43 @@ export default function LocationSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Judul & 360 Virtual Tour */}
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <h2
+            className={cn(
+              "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+            style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+          >
+            虚拟实景导览
+          </h2>
+          <h3
+            className={cn(
+              "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+            style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+          >
+            360° 虚拟全景参观 JIIPE
+          </h3>
+          <p
+            className={cn(
+              "text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+            style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+          >
+            通过以下虚拟导览，探索JIIPE园区的战略地理位置与关键设施。您可以沉浸式体验港口、工业区与办公区域，了解JIIPE为何是印尼及东南亚理想的投资目的地。
+          </p>
+        </div>
+
+        <div id="tour-container" className="w-full h-[500px] rounded-lg overflow-hidden shadow-xl bg-gray-100" />
+
+
+        {/* Connectivity Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+
           {connectivityData.map((item, index) => (
             <Card
               key={index}
@@ -131,9 +179,7 @@ export default function LocationSection() {
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="p-3 bg-primary/10 rounded-full mb-4">
-                    {item.icon}
-                  </div>
+                  <div className="p-3 bg-primary/10 rounded-full mb-4">{item.icon}</div>
                   <h4 className="font-semibold text-lg mb-2">{item.title}</h4>
                   <p className="text-gray-600 dark:text-gray-400">{item.description}</p>
                 </div>

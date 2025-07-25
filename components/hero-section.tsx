@@ -15,22 +15,23 @@ export default function HeroSection() {
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('https://images.pexels.com/photos/32201256/pexels-photo-32201256.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')",
+          backgroundImage: "url('https://ik.imagekit.io/z3fiyhjnl/jiipe-gresik6.jpg?updatedAt=1753416584960')",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-gray-900/60" />
+        {/* <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 to-gray-900/60" /> */}
       </div>
 
       {/* Hero Content */}
       <div className="container mx-auto px-4 z-10 mt-20">
-        <div className="max-w-3xl">
+        <div className="max-w-[90%] sm:max-w-xl md:max-w-3xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            印度尼西亚首屈一指的<br />
-            临港综合工业园区
+            <span className="whitespace-nowrap">印度尼西亚首屈一指的</span><br />
+            <span className="whitespace-nowrap">临港综合工业园区</span>
           </h1>
           
           <p className="text-xl text-gray-200 mb-8">
-            战略区位，配备世界级基础设施、专属深水港及全方位公用设施，助力您的业务增长。
+            战略区位，配备世界级基础设施、专属深水港及全方位公用设施，<br />
+            助力您的业务增长。
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4">

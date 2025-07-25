@@ -71,21 +71,29 @@ export default function CTASection() {
             )}
             style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(30px)" }}
           >
-            <Button
-              size="lg"
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/85"
+            <a href="#contact">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="bg-white text-primary hover:bg-white/85"
+              >
+                立即联系招商团队
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </a>
+            <a
+              href="https://ik.imagekit.io/z3fiyhjnl/(comp)%2001.16.25%20-%20eBrochure%20CN%202025.pdf?updatedAt=1753416879698"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              立即联系招商团队
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="bg-white text-primary hover:bg-white/85"
-            >
-              下载园区手册
-            </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="bg-white text-primary hover:bg-white/85"
+              >
+                下载园区手册
+              </Button>
+            </a>
           </div>
         </div>
       </div>
