@@ -10,7 +10,7 @@ export default function HeroSection() {
       id="home"
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Responsive Image with <picture> */}
+      {/* Background Image */}
       <picture className="absolute inset-0 z-0 block w-full h-full">
         <source
           media="(min-width: 768px)"
@@ -24,17 +24,18 @@ export default function HeroSection() {
       </picture>
 
       {/* Hero Content */}
-      <div className="container mx-auto px-4 z-10 mt-20">
+      <div className="container mx-auto px-4 z-10 mt-[-60px] sm:mt-16 md:mt-20">
         <div className="max-w-[90%] sm:max-w-xl md:max-w-3xl">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          {/* ✅ Ukuran heading lebih kecil di layar sempit */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             <span className="whitespace-nowrap">印度尼西亚首屈一指的</span>
             <br />
             <span className="whitespace-nowrap">临港综合工业园区</span>
           </h1>
 
-          <p className="text-xl text-gray-200 mb-8">
-            战略区位，配备世界级基础设施、专属深水港及全方位公用设施，
-            <br />
+          {/* ✅ Deskripsi optimal untuk 3 baris di mobile */}
+          <p className="text-base sm:text-lg md:text-xl text-gray-200 mb-8 leading-relaxed max-w-[90%] sm:max-w-full">
+            战略区位，配备世界级基础设施、专属深水港及全方位公用设施、<br />
             助力您的业务增长。
           </p>
 
