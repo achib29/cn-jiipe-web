@@ -72,7 +72,7 @@ export default function ChineseCompaniesSection() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2
             className={cn(
-              "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
+              "text-2xl sm:text-3xl md:text-4xl font-bold mb-6 leading-snug text-center whitespace-nowrap overflow-hidden opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
             style={{
@@ -118,7 +118,6 @@ export default function ChineseCompaniesSection() {
                   <h3 className="text-xl font-semibold mb-2">
                     {company.name}
                   </h3>
-                  {/* ✅ Revisi deskripsi */}
                   <p className="text-sm sm:text-base md:text-lg leading-snug text-gray-600 dark:text-gray-400 max-w-[90%] mx-auto">
                     {company.description}
                   </p>

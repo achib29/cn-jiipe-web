@@ -90,11 +90,10 @@ export default function LocationSection() {
             >
               <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
                 <iframe
-                  src="https://uri.amap.com/marker?position=112.606810,-7.085696"
+                  src="https://api.map.baidu.com/marker?location=-7.0865,112.60311&title=JIIPE&content=Java%20Integrated%20Industrial%20and%20Port%20Estate&output=html&coord_type=bd09ll"
                   className="w-full h-full border-0"
                   allowFullScreen
                   loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
             </div>
@@ -164,10 +163,8 @@ export default function LocationSection() {
 
         <div id="tour-container" className="w-full h-[500px] rounded-lg overflow-hidden shadow-xl bg-gray-100" />
 
-
         {/* Connectivity Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
-
           {connectivityData.map((item, index) => (
             <Card
               key={index}
@@ -175,7 +172,10 @@ export default function LocationSection() {
                 "border-0 shadow-md hover:shadow-lg transition-all duration-700 opacity-0 ease-out",
                 isInView && "opacity-100 translate-y-0"
               )}
-              style={{ transitionDelay: `${1200 + index * 100}ms`, transform: isInView ? "translateY(0)" : "translateY(30px)" }}
+              style={{
+                transitionDelay: `${1200 + index * 100}ms`,
+                transform: isInView ? "translateY(0)" : "translateY(30px)",
+              }}
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
