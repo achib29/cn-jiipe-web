@@ -24,29 +24,34 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     cfTurnstileResponse
   } = req.body;
 
+  const isLocal = req.headers.host?.includes("localhost");
+
+  console.log("✅ Inquiry Received:", req.body);
+
   // === Validasi token Turnstile ===
-  if (!cfTurnstileResponse) {
+  if (!isLocal && !cfTurnstileResponse) {
     return res.status(400).json({ error: "Missing Turnstile token." });
   }
 
-  // Verifikasi Turnstile...
-  const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      secret: turnstileSecret,
-      response: cfTurnstileResponse,
-    }),
-  });
-  const verifyData = await verifyRes.json();
-  if (!verifyData.success) {
-    console.error("❌ Turnstile verification failed:", verifyData);
-    return res.status(400).json({ error: "Failed Turnstile verification." });
+  if (!isLocal) {
+    const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: turnstileSecret,
+        response: cfTurnstileResponse,
+      }),
+    });
+    const verifyData = await verifyRes.json();
+    if (!verifyData.success) {
+      console.error("❌ Turnstile verification failed:", verifyData);
+      return res.status(400).json({ error: "Failed Turnstile verification." });
+    }
   }
 
-  // === Step 1: Persiapkan prompt ke OpenAI ===
   const reasonDisplay = reason === "Other" && reasonOther ? `Other (${reasonOther})` : reason;
 
+  // === OpenAI Analysis ===
   const prompt = `
 You are a professional business analyst. Analyze the following inquiry:
 - Identify the company
@@ -67,11 +72,10 @@ Timeline: ${timeline}
 Reason: ${reasonDisplay}
 `;
 
-  // === Step 2: Panggil OpenAI API ===
   let aiSummary = "";
   try {
     const aiRes = await openai.chat.completions.create({
-      model: "gpt-4o", // atau "gpt-4o-mini"
+      model: "gpt-4o",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: prompt }
@@ -85,11 +89,10 @@ Reason: ${reasonDisplay}
     console.error("OpenAI API error:", err);
   }
 
-  // === Log hasil AI ke console (debugging) ===
-  console.log("AI Summary yang dikirim ke email:", aiSummary);
+  console.log("🔍 AI Summary:", aiSummary);
 
-  // === Step 3: Siapkan body email ===
-  const logoUrl = "https://jiipe.com/logo-jiipe.png"; // ganti sesuai logo kamu
+  // === Email Template ===
+  const logoUrl = "https://jiipe.com/logo-jiipe.png"; // ganti sesuai
   const html = `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; padding: 24px 0;">
       <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden;">
@@ -127,21 +130,17 @@ Reason: ${reasonDisplay}
             T +623198540999
           </div>
           <div style="font-size:0.89rem; color:#888; margin-top: 24px; margin-bottom:0; font-style:italic;">
-            This electronic mail and/or any files transmitted with it may contain confidential or copyright information of PT. Berkah Kawasan Manyar Sejahtera. If you are not an intended recipient, you must not keep, forward, copy, use, or rely on this electronic mail, and any such action is unauthorized and prohibited. If you have received this electronic mail in error, please reply to this electronic mail to notify the sender of its incorrect delivery, and then delete both it and your reply. Finally, you should check this electronic mail and any attachments for the presence of viruses. PT. Berkah Kawasan Manyar Sejahtera accepts no liability for any damages caused by any viruses transmitted by this electronic mail.
+            This electronic mail and/or any files transmitted with it may contain confidential or copyright information of PT. Berkah Kawasan Manyar Sejahtera...
           </div>
         </div>
       </div>
     </div>
   `;
 
-  // === Step 4: Kirim Email ===
   try {
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
-      to: [
-        "abdul.khasib@bkms.jiipe.co.id",
-        "donny.muchelly@bkms.jiipe.co.id"
-      ],
+      to: ["abdul.khasib@bkms.jiipe.co.id"],
       subject: `New Contact Inquiry Baidu Ads from "${company}"`,
       html,
     });

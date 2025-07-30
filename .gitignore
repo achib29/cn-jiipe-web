@@ -1,4 +1,4 @@
-.env*
+.env.local
 bfg-*.jar
 bfg-report/
 *.pack

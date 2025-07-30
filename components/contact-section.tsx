@@ -30,7 +30,7 @@ export default function ContactSection() {
     company: "",
     country: "",
     reason: "",
-    reasonOther: "", // <<-- Tambah field ini
+    reasonOther: "",
     industry: "",
     landPlot: "",
     timeline: "",
@@ -48,7 +48,6 @@ export default function ContactSection() {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    // Validasi jika reason = Other, wajib diisi reasonOther
     if (formData.reason === "Other" && !formData.reasonOther.trim()) {
       alert("请填写‘其他’的具体原因。");
       return;
@@ -61,13 +60,18 @@ export default function ContactSection() {
       });
     }
 
-    const token = (
-      document.querySelector(
-        'input[name="cf-turnstile-response"]'
-      ) as HTMLInputElement
-    )?.value;
+    const isLocal =
+      typeof window !== "undefined" && window.location.hostname === "localhost";
 
-    if (!token) {
+    const token = isLocal
+      ? "bypass"
+      : (
+          document.querySelector(
+            'input[name="cf-turnstile-response"]'
+          ) as HTMLInputElement
+        )?.value;
+
+    if (!isLocal && !token) {
       alert("Turnstile verification failed. Please refresh and try again.");
       return;
     }
@@ -77,13 +81,14 @@ export default function ContactSection() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...formData,
-        cfTurnstileResponse: token,
+        ...(isLocal ? {} : { cfTurnstileResponse: token }),
       }),
     });
 
     if (res.ok) {
       if (typeof window !== "undefined") {
         sessionStorage.setItem("allowThankYou", "1");
+        sessionStorage.setItem("lastName", formData.lastName); // Tambah ini
       }
       router.push("/thank-you");
     } else {
@@ -111,6 +116,14 @@ export default function ContactSection() {
           >
             欢迎咨询园区招商专员
           </h3>
+          <p
+            className={cn(
+              "text-gray-500 text-sm md:text-base leading-relaxed opacity-0 transition-all duration-700 ease-out",
+              isInView && "opacity-100 translate-y-0"
+            )}
+          >
+            提交下方表单后，我们将根据您的企业所属行业，提供对应的 JIIPE 工业园区招商专员联系方式。
+          </p>
         </div>
 
         <Card
@@ -163,7 +176,6 @@ export default function ContactSection() {
                     setFormData((prev) => ({
                       ...prev,
                       reason: val,
-                      // Reset reasonOther jika bukan "Other"
                       reasonOther: val === "Other" ? prev.reasonOther : "",
                     }))
                   }
@@ -256,13 +268,15 @@ export default function ContactSection() {
                 </div>
               </div>
 
-              {/* Turnstile */}
-              <div className="mt-4">
-                <div
-                  className="cf-turnstile"
-                  data-sitekey="0x4AAAAAABjC5aD3ciiyisDM"
-                ></div>
-              </div>
+              {/* Turnstile hanya muncul di production */}
+              {typeof window !== "undefined" && window.location.hostname !== "localhost" && (
+                <div className="mt-4">
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey="0x4AAAAAABjC5aD3ciiyisDM"
+                  ></div>
+                </div>
+              )}
 
               {/* Submit */}
               <Button type="submit" size="lg" className="w-full mt-6">
