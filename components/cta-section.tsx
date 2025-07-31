@@ -85,6 +85,7 @@ export default function CTASection() {
               href="https://ik.imagekit.io/z3fiyhjnl/(comp)%2001.16.25%20-%20eBrochure%20CN%202025.pdf?updatedAt=1753416879698"
               target="_blank"
               rel="noopener noreferrer"
+              data-agl-cvt="6" // ✅ Tracking attribute Baidu AGL
             >
               <Button
                 size="lg"

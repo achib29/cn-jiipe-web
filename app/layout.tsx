@@ -9,7 +9,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'JIIPE-吉配工业园官网-印尼吉配经济特区',
-  description: 'Strategic industrial port estate in East Java, Indonesia offering world-class infrastructure and facilities for industrial and logistics operations.',
+  description:
+    'Strategic industrial port estate in East Java, Indonesia offering world-class infrastructure and facilities for industrial and logistics operations.',
   icons: {
     icon: '/jiipe-favicon.png',
   },
@@ -36,11 +37,13 @@ export default function RootLayout({
             gtag('config', 'G-YR9GTV5FCH');
           `}
         </Script>
+
         {/* Cloudflare Turnstile */}
         <Script
           src="https://challenges.cloudflare.com/turnstile/v0/api.js"
           strategy="afterInteractive"
         />
+
         {/* Baidu Analytics */}
         <Script id="baidu-analytics" strategy="afterInteractive">
           {`
@@ -53,6 +56,24 @@ export default function RootLayout({
             })();
           `}
         </Script>
+
+        {/* ✅ Baidu AGL Basic Code */}
+        <Script id="baidu-agl-base" strategy="afterInteractive">
+          {`
+            window._agl = window._agl || [];
+            (function () {
+              _agl.push(['production', '_f7L2XwGXjyszb4d1e2oxPybgD']);
+              (function () {
+                var agl = document.createElement('script');
+                agl.type = 'text/javascript';
+                agl.async = true;
+                agl.src = 'https://fxgate.baidu.com/angelia/fcagl.js?production=_f7L2XwGXjyszb4d1e2oxPybgD';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(agl, s);
+              })();
+            })();
+          `}
+        </Script>
       </head>
       <body className={inter.className}>
         <ThemeProvider
@@ -62,9 +83,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Semua logic Client (hide Navbar/Footer/widget di /thank-you) ada di ClientRoot */}
-          <ClientRoot>
-            {children}
-          </ClientRoot>
+          <ClientRoot>{children}</ClientRoot>
         </ThemeProvider>
       </body>
     </html>

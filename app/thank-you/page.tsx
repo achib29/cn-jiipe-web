@@ -1,26 +1,41 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+// ✅ Tambahkan deklarasi agar TypeScript mengenali window._agl
+declare global {
+  interface Window {
+    _agl?: any;
+  }
+}
 
 export default function ThankYouPage() {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
-  const [lastName, setLastName] = useState("");
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const allow = sessionStorage.getItem("allowThankYou");
-      const name = sessionStorage.getItem("lastName");
+    if (typeof window !== 'undefined') {
+      const allow = sessionStorage.getItem('allowThankYou');
+      const name = sessionStorage.getItem('lastName');
 
-      if (allow === "1" && name) {
+      if (allow === '1' && name) {
         setAllowed(true);
         setLastName(name);
+
+        // ✅ Baidu AGL Conversion Tracking
+        try {
+          window._agl?.push(['track', ['success', { t: 3 }]]);
+        } catch (e) {
+          console.error('Baidu AGL tracking failed:', e);
+        }
+
         setTimeout(() => {
-          sessionStorage.removeItem("allowThankYou");
-          sessionStorage.removeItem("lastName");
+          sessionStorage.removeItem('allowThankYou');
+          sessionStorage.removeItem('lastName');
         }, 2000);
       } else {
-        router.replace("/");
+        router.replace('/');
       }
     }
   }, [router]);
@@ -47,25 +62,24 @@ export default function ThankYouPage() {
             strokeLinejoin="round"
           />
         </svg>
+
         <h2 className="text-2xl font-semibold mb-2">
-          Thank You{lastName && `, ${lastName}`}!
+          感谢您的咨询{lastName && `, ${lastName}`}!
         </h2>
         <p className="text-gray-700 mb-6">
-          Your inquiry has been received.<br />
-          Our team will contact you as soon as possible.
+          我们已收到您的问询信息，<br />
+          专属顾问团队会尽快与您联系。
         </p>
 
         {/* Chinese Desk Contact */}
         <div className="mb-6 text-center">
-          <h3 className="text-lg font-semibold mb-2">Chinese Desk Contact</h3>
-
-          <p className="text-sm mb-2">Scan WeChat QR Code:</p>
+          <h3 className="text-lg font-semibold mb-2">中国区专属服务</h3>
+          <p className="text-sm mb-2">微信扫码咨询</p>
           <img
             src="/wechat-barcode.png"
             alt="WeChat QR Code"
             className="w-32 h-32 mx-auto border rounded mb-3"
           />
-
           <p className="text-sm flex justify-center items-center gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,19 +89,19 @@ export default function ThankYouPage() {
             >
               <path d="M3 5a2 2 0 0 1 2-2h2.28a2 2 0 0 1 1.83 1.18l1.1 2.45a2 2 0 0 1-.45 2.28l-.9.9a16 16 0 0 0 6.36 6.36l.9-.9a2 2 0 0 1 2.28-.45l2.45 1.1A2 2 0 0 1 21 18.72V21a2 2 0 0 1-2 2h-.5C8.61 23 1 15.39 1 6.5V6a2 2 0 0 1 2-1z" />
             </svg>
-            电话:{" "}
+            电话:{' '}
             <a href="tel:+8613641501595" className="text-blue-600 underline">
               +86 136 4150 1595
             </a>
           </p>
         </div>
-        
-       {/* Button: Close */}
+
+        {/* Button: Close */}
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push('/')}
           className="mt-2 px-6 py-2 bg-primary text-white rounded-lg font-semibold shadow hover:bg-primary/90 transition w-full"
         >
-          Close
+          关闭窗口
         </button>
       </div>
     </div>
