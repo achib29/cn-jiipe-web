@@ -140,7 +140,8 @@ Reason: ${reasonDisplay}
   try {
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
-      to: ["abdul.khasib@bkms.jiipe.co.id"
+      to: ["abdul.khasib@bkms.jiipe.co.id",
+        "donny.muchelly@bkms.jiipe.co.id"
       ],
       subject: `New Contact Inquiry Baidu Ads from "${company}"`,
       html,
