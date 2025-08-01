@@ -5,6 +5,7 @@ import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientRoot from '@/components/ClientRoot';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -58,7 +59,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* ✅ Baidu AGL Basic Code */}
+        {/* Baidu AGL Basic Code */}
         <Script id="baidu-agl-base" strategy="afterInteractive">
           {`
             window._agl = window._agl || [];
@@ -87,6 +88,8 @@ export default function RootLayout({
         </ThemeProvider>
         {/* Vercel Analytics */}
         <Analytics />
+        {/* Vercel Speed Insights */}
+        <SpeedInsights />
       </body>
     </html>
   );
