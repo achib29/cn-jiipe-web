@@ -1,14 +1,5 @@
 "use client";
 
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    _agl?: {
-      push: (...args: any[]) => void;
-    };
-  }
-}
-
 import { useRef, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
 import { useRouter } from "next/navigation";

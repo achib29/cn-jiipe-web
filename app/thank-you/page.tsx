@@ -2,13 +2,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// ✅ Tambahkan deklarasi agar TypeScript mengenali window._agl
-declare global {
-  interface Window {
-    _agl?: any;
-  }
-}
-
 export default function ThankYouPage() {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
@@ -22,13 +15,6 @@ export default function ThankYouPage() {
       if (allow === '1' && name) {
         setAllowed(true);
         setLastName(name);
-
-        // ✅ Baidu AGL Conversion Tracking
-        try {
-          window._agl?.push(['track', ['success', { t: 3 }]]);
-        } catch (e) {
-          console.error('Baidu AGL tracking failed:', e);
-        }
 
         setTimeout(() => {
           sessionStorage.removeItem('allowThankYou');
