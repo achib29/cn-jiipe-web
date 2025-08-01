@@ -3,6 +3,9 @@
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
+    _agl?: {
+      push: (...args: any[]) => void;
+    };
   }
 }
 
@@ -82,8 +85,6 @@ export default function ContactSection() {
       sessionStorage.setItem("lastName", formData.lastName);
     }
 
-    router.push("/thank-you");
-
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -92,19 +93,36 @@ export default function ContactSection() {
         ...(isLocal ? {} : { cfTurnstileResponse: token }),
       }),
     })
+      .then((res) => {
+        if (res.ok) {
+          if (window._agl) {
+            window._agl.push(["track", ["success", { t: 3 }]]);
+          }
+          router.push("/thank-you");
+        } else {
+          alert("Submission failed. Please try again.");
+        }
+      })
       .catch((err) => {
         console.error("Background form submit failed:", err);
+        alert("Submission error. Please try again.");
       })
       .finally(() => setIsSubmitting(false));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
-    <section id="contact" ref={ref} className="py-20 bg-gray-50 dark:bg-gray-900">
+    <section
+      id="contact"
+      ref={ref}
+      className="py-20 bg-gray-50 dark:bg-gray-900"
+    >
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2
@@ -141,37 +159,64 @@ export default function ContactSection() {
         >
           <CardContent className="p-4 md:p-10">
             <form className="space-y-8" onSubmit={handleSubmit}>
-              
               {/* Nama */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">名字*</Label>
-                  <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
+                  <Input
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">姓氏*</Label>
-                  <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
+                  <Input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
 
               {/* Kontak */}
               <div className="space-y-2">
                 <Label className="font-medium">手机号码*</Label>
-                <Input name="phone" value={formData.phone} onChange={handleChange} required />
+                <Input
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">电子邮箱*</Label>
-                <Input name="email" type="email" value={formData.email} onChange={handleChange} required />
+                <Input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">公司名称*</Label>
-                <Input name="company" value={formData.company} onChange={handleChange} required />
+                <Input
+                  name="company"
+                  value={formData.company}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               {/* Negara */}
               <div className="space-y-2">
                 <CompanyCountrySelect
-                  onChange={(val) => setFormData((prev) => ({ ...prev, country: val }))}
+                  onChange={(val) =>
+                    setFormData((prev) => ({ ...prev, country: val }))
+                  }
                 />
               </div>
 
@@ -230,13 +275,21 @@ export default function ContactSection() {
                     <option value="Energy">能源产业</option>
                     <option value="Electronic">电子产业</option>
                     <option value="Metal">金属产业</option>
-                    <option value="Supporting & Logistic">辅助和物流产业</option>
+                    <option value="Supporting & Logistic">
+                      辅助和物流产业
+                    </option>
                     <option value="Other">其他行业</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用地面积（公顷）*</Label>
-                  <Input name="landPlot" type="number" value={formData.landPlot} onChange={handleChange} required />
+                  <Input
+                    name="landPlot"
+                    type="number"
+                    value={formData.landPlot}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计建设需时*</Label>
@@ -260,34 +313,64 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">所需电力总量（兆瓦）*</Label>
-                  <Input name="power" type="number" value={formData.power} onChange={handleChange} required />
+                  <Input
+                    name="power"
+                    type="number"
+                    value={formData.power}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用水总量（立方米/天）*</Label>
-                  <Input name="water" type="number" value={formData.water} onChange={handleChange} required />
+                  <Input
+                    name="water"
+                    type="number"
+                    value={formData.water}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需天然气总量（百万英热单位/年）*</Label>
-                  <Input name="gas" type="number" value={formData.gas} onChange={handleChange} required />
+                  <Input
+                    name="gas"
+                    type="number"
+                    value={formData.gas}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计港口吞吐量（吨/年）*</Label>
-                  <Input name="seaport" type="number" value={formData.seaport} onChange={handleChange} required />
+                  <Input
+                    name="seaport"
+                    type="number"
+                    value={formData.seaport}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
               </div>
 
               {/* Turnstile hanya muncul di production */}
-              {typeof window !== "undefined" && window.location.hostname !== "localhost" && (
-                <div className="mt-4">
-                  <div
-                    className="cf-turnstile"
-                    data-sitekey="0x4AAAAAABjC5aD3ciiyisDM"
-                  ></div>
-                </div>
-              )}
+              {typeof window !== "undefined" &&
+                window.location.hostname !== "localhost" && (
+                  <div className="mt-4">
+                    <div
+                      className="cf-turnstile"
+                      data-sitekey="0x4AAAAAABjC5aD3ciiyisDM"
+                    ></div>
+                  </div>
+                )}
 
               {/* Submit */}
-              <Button type="submit" size="lg" className="w-full mt-6" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full mt-6"
+                disabled={isSubmitting}
+              >
                 {isSubmitting ? "处理中..." : "立即咨询"}
               </Button>
             </form>
@@ -297,4 +380,3 @@ export default function ContactSection() {
     </section>
   );
 }
-
