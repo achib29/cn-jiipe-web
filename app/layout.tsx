@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
-import ClientRoot from '@/components/ClientRoot'; // <-- pastikan import ini!
+import ClientRoot from '@/components/ClientRoot';
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -82,9 +83,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* Semua logic Client (hide Navbar/Footer/widget di /thank-you) ada di ClientRoot */}
           <ClientRoot>{children}</ClientRoot>
         </ThemeProvider>
+        {/* Vercel Analytics */}
+        <Analytics />
       </body>
     </html>
   );
