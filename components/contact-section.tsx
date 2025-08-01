@@ -40,16 +40,15 @@ export default function ContactSection() {
     seaport: "",
   });
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     if (formData.reason === "Other" && !formData.reasonOther.trim()) {
       alert("请填写‘其他’的具体原因。");
+      setIsSubmitting(false);
       return;
     }
 
@@ -61,7 +60,8 @@ export default function ContactSection() {
     }
 
     const isLocal =
-      typeof window !== "undefined" && window.location.hostname === "localhost";
+      typeof window !== "undefined" &&
+      window.location.hostname === "localhost";
 
     const token = isLocal
       ? "bypass"
@@ -73,27 +73,34 @@ export default function ContactSection() {
 
     if (!isLocal && !token) {
       alert("Turnstile verification failed. Please refresh and try again.");
+      setIsSubmitting(false);
       return;
     }
 
-    const res = await fetch("/api/contact", {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("allowThankYou", "1");
+      sessionStorage.setItem("lastName", formData.lastName);
+    }
+
+    router.push("/thank-you");
+
+    fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...formData,
         ...(isLocal ? {} : { cfTurnstileResponse: token }),
       }),
-    });
+    })
+      .catch((err) => {
+        console.error("Background form submit failed:", err);
+      })
+      .finally(() => setIsSubmitting(false));
+  };
 
-    if (res.ok) {
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("allowThankYou", "1");
-        sessionStorage.setItem("lastName", formData.lastName); // Tambah ini
-      }
-      router.push("/thank-you");
-    } else {
-      alert("Failed to send inquiry.");
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -134,6 +141,7 @@ export default function ContactSection() {
         >
           <CardContent className="p-4 md:p-10">
             <form className="space-y-8" onSubmit={handleSubmit}>
+              
               {/* Nama */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -279,8 +287,8 @@ export default function ContactSection() {
               )}
 
               {/* Submit */}
-              <Button type="submit" size="lg" className="w-full mt-6">
-                立即咨询
+              <Button type="submit" size="lg" className="w-full mt-6" disabled={isSubmitting}>
+                {isSubmitting ? "处理中..." : "立即咨询"}
               </Button>
             </form>
           </CardContent>
@@ -289,3 +297,4 @@ export default function ContactSection() {
     </section>
   );
 }
+
