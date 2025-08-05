@@ -87,7 +87,7 @@ export default function ContactSection() {
       .then((res) => {
         if (res.ok) {
           if (window._agl) {
-            window._agl.push(["track", ["success", { t: 3 }]]);
+            window._agl.push(['track', ['success', { t: 3 }]]);
             console.log('Baidu tracking triggered');
           }
           router.push("/thank-you");
