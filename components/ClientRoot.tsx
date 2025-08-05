@@ -16,9 +16,9 @@ export default function ClientRoot({ children }: { children: React.ReactNode }) 
       {!isThankYouPage && (
         <>
           <chat-bot
-            platform_id="8b6373a3-874f-42e5-9db5-ba1a4bc31e1e"
-            user_id="874766c7-99d6-4131-8787-9587179b88c7"
-            chatbot_id="66630d29-57a0-45be-a874-c434bf526860"
+            platform_id="acbaaf56-c3d3-4c77-aa37-ac44cc4c0919"
+            user_id="82a18dfe-0d52-4498-9d7d-408b0af909a0"
+            chatbot_id="e0a54b3e-eaf6-405d-8685-61715efd28aa"
           >
             <a href="https://www.chatsimple.ai/?utm_source=widget&utm_medium=referral">
               chatsimple
