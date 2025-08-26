@@ -1,6 +1,14 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+// Deklarasi agar TS mengenali window._agl (queue dari Baidu)
+declare global {
+  interface Window {
+    _agl?: any[];
+  }
+}
 
 export default function ThankYouPage() {
   const router = useRouter();
@@ -8,21 +16,49 @@ export default function ThankYouPage() {
   const [lastName, setLastName] = useState('');
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const allow = sessionStorage.getItem('allowThankYou');
-      const name = sessionStorage.getItem('lastName');
+    if (typeof window === 'undefined') return;
 
-      if (allow === '1' && name) {
-        setAllowed(true);
-        setLastName(name);
+    const allow = sessionStorage.getItem('allowThankYou');
+    const name = sessionStorage.getItem('lastName');
 
-        setTimeout(() => {
-          sessionStorage.removeItem('allowThankYou');
-          sessionStorage.removeItem('lastName');
-        }, 2000);
-      } else {
-        router.replace('/');
-      }
+    if (allow === '1' && name) {
+      setAllowed(true);
+      setLastName(name);
+
+      // 🔔 Baidu AGL Conversion (type=validation)
+      // Retry singkat untuk memastikan fcagl.js sudah siap.
+      let tries = 0;
+      const maxTries = 5;
+      const intervalMs = 300;
+      const intervalId = setInterval(() => {
+        try {
+          if (Array.isArray(window._agl)) {
+            // NOTE: sesuaikan { t: 3 } dengan konfigurasi konversi dari Baidu Ads
+            window._agl.push(['track', ['success', { t: 3 }]]);
+            clearInterval(intervalId); // cukup sekali kirim
+          }
+        } catch (err) {
+          // jangan hard fail; cukup log
+          console.warn('Baidu AGL tracking error:', err);
+        } finally {
+          tries += 1;
+          if (tries >= maxTries) clearInterval(intervalId);
+        }
+      }, intervalMs);
+
+      // Bersihkan flag agar tidak kebawa ke visit berikutnya
+      const cleanupId = setTimeout(() => {
+        sessionStorage.removeItem('allowThankYou');
+        sessionStorage.removeItem('lastName');
+      }, 2000);
+
+      return () => {
+        clearInterval(intervalId);
+        clearTimeout(cleanupId);
+      };
+    } else {
+      // Direct access → kembalikan ke homepage
+      router.replace('/');
     }
   }, [router]);
 
@@ -82,7 +118,6 @@ export default function ThankYouPage() {
           </p>
         </div>
 
-        {/* Button: Close */}
         <button
           onClick={() => router.push('/')}
           className="mt-2 px-6 py-2 bg-primary text-white rounded-lg font-semibold shadow hover:bg-primary/90 transition w-full"
