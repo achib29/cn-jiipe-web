@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function ThankYouPage() {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
   const [lastName, setLastName] = useState('');
+  const sentRef = useRef(false); // anti double-fire
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -14,42 +15,54 @@ export default function ThankYouPage() {
     const allow = sessionStorage.getItem('allowThankYou');
     const name = sessionStorage.getItem('lastName');
 
+    // hanya boleh masuk dari flow submit form
     if (allow === '1' && name) {
       setAllowed(true);
       setLastName(name);
 
-      // 🔔 Baidu AGL Conversion (type=validation)
-      // Retry singkat (5x / 300ms) untuk memastikan fcagl.js sudah siap.
+      // helper untuk kirim validation sekali saja
+      const pushBaiduSuccess = () => {
+        if (sentRef.current) return;
+        if (window._agl && typeof window._agl.push === 'function') {
+          // NOTE: pastikan nilai "t" sesuai dari Baidu Ads (contoh: '3')
+          // pakai string agar kompatibel
+          // eslint-disable-next-line no-console
+          console.log('[Baidu] push success t="3"');
+          window._agl.push(['track', ['success', { t: '3' }]]);
+          sentRef.current = true;
+          return true;
+        }
+        return false;
+      };
+
+      // retry singkat agar fcagl.js sempat siap (max 5x / 300ms)
       let tries = 0;
       const maxTries = 5;
       const intervalMs = 300;
       const intervalId = setInterval(() => {
-        try {
-          if (window._agl && typeof window._agl.push === 'function') {
-            // NOTE: sesuaikan { t: 3 } dengan parameter konversi dari Baidu Ads
-            window._agl.push(['track', ['success', { t: 3 }]]);
-            clearInterval(intervalId); // cukup sekali kirim
-          }
-        } catch (err) {
-          console.warn('Baidu AGL tracking error:', err);
-        } finally {
-          tries += 1;
-          if (tries >= maxTries) clearInterval(intervalId);
-        }
+        const ok = pushBaiduSuccess();
+        tries += 1;
+        if (ok || tries >= maxTries) clearInterval(intervalId);
       }, intervalMs);
 
-      // Bersihkan flag agar tidak kebawa ke visit berikutnya
-      const cleanupId = setTimeout(() => {
+      // fallback sekali lagi setelah 800ms (aman, terjaga anti double-fire)
+      const fallbackId = setTimeout(() => {
+        pushBaiduSuccess();
+      }, 800);
+
+      // bersihkan flag session agar tidak kebawa ke visit berikutnya
+      const cleanupSessionId = setTimeout(() => {
         sessionStorage.removeItem('allowThankYou');
         sessionStorage.removeItem('lastName');
       }, 2000);
 
       return () => {
         clearInterval(intervalId);
-        clearTimeout(cleanupId);
+        clearTimeout(fallbackId);
+        clearTimeout(cleanupSessionId);
       };
     } else {
-      // Direct access → kembalikan ke homepage
+      // akses langsung → kembalikan ke homepage
       router.replace('/');
     }
   }, [router]);
