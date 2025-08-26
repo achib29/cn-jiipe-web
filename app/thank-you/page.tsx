@@ -3,13 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Deklarasi agar TS mengenali window._agl (queue dari Baidu)
-declare global {
-  interface Window {
-    _agl?: any[];
-  }
-}
-
 export default function ThankYouPage() {
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
@@ -26,19 +19,18 @@ export default function ThankYouPage() {
       setLastName(name);
 
       // 🔔 Baidu AGL Conversion (type=validation)
-      // Retry singkat untuk memastikan fcagl.js sudah siap.
+      // Retry singkat (5x / 300ms) untuk memastikan fcagl.js sudah siap.
       let tries = 0;
       const maxTries = 5;
       const intervalMs = 300;
       const intervalId = setInterval(() => {
         try {
-          if (Array.isArray(window._agl)) {
-            // NOTE: sesuaikan { t: 3 } dengan konfigurasi konversi dari Baidu Ads
+          if (window._agl && typeof window._agl.push === 'function') {
+            // NOTE: sesuaikan { t: 3 } dengan parameter konversi dari Baidu Ads
             window._agl.push(['track', ['success', { t: 3 }]]);
             clearInterval(intervalId); // cukup sekali kirim
           }
         } catch (err) {
-          // jangan hard fail; cukup log
           console.warn('Baidu AGL tracking error:', err);
         } finally {
           tries += 1;
