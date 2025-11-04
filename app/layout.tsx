@@ -76,6 +76,21 @@ export default function RootLayout({
             })();
           `}
         </Script>
+
+        {/* Baidu Tongji Tracking Code */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              var _hmt = _hmt || [];
+              (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?2c4fddebd05fedfb3cd6366fdb39bec6";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+              })();`,
+          }}
+        </script>
+        
       </head>
       <body className={inter.className}>
         <ThemeProvider
