@@ -5,7 +5,7 @@ import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
 import ClientRoot from '@/components/ClientRoot';
 import { Analytics } from '@vercel/analytics/next';
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -87,10 +87,10 @@ export default function RootLayout({
                 hm.src = "https://hm.baidu.com/hm.js?2c4fddebd05fedfb3cd6366fdb39bec6";
                 var s = document.getElementsByTagName("script")[0];
                 s.parentNode.insertBefore(hm, s);
-              })();`,
+              })();
+            `,
           }}
-        </script>
-        
+        />
       </head>
       <body className={inter.className}>
         <ThemeProvider
