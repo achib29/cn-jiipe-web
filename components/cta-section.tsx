@@ -82,7 +82,7 @@ export default function CTASection() {
               </Button>
             </a>
             <a
-              href="https://ik.imagekit.io/z3fiyhjnl/(comp)%2001.16.25%20-%20eBrochure%20CN%202025.pdf?updatedAt=1753416879698"
+              href="https://ik.imagekit.io/z3fiyhjnl/01.16.25%20-%20eBrochure%20CN%202025-11.pdf?updatedAt=1763015741198"
               target="_blank"
               rel="noopener noreferrer"
               data-agl-cvt="6" // ✅ Tracking attribute Baidu AGL
