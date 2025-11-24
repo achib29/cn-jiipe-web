@@ -1,47 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
+import { useParams } from "next/navigation";
+import {
+  Facebook,
+  MessageCircle,
+  Link as LinkIcon,
+  Check,
+  ArrowLeft,
+  Calendar,
+  Share2,
+} from "lucide-react";
 
 interface Article {
   id: number;
   title: string;
   slug: string;
   category: string;
+  summary: string;
+  coverImage: string;
+  content: string;
   date: string;
-  content?: string;
-  status?: string;
-  is_hot?: boolean;
-  created_at: string;
 }
 
-export default function NewsDetailPage() {
+export default function ArticlePage() {
   const params = useParams();
 
-  // 👇 Aman: handle kemungkinan params / slug bisa null / array
-  const rawSlug = params?.slug;
+  // 🔐 Normalisasi slug biar TypeScript nggak protes (string | string[])
+  const rawSlug = params?.slug as string | string[] | undefined;
   const slug =
     typeof rawSlug === "string"
       ? rawSlug
       : Array.isArray(rawSlug)
       ? rawSlug[0]
-      : undefined;
+      : "";
 
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!slug) {
-      setLoading(false);
-      setNotFound(true);
-      return;
+    // Simpan URL browser saat ini untuk fitur share
+    if (typeof window !== "undefined") {
+      setCurrentUrl(window.location.href);
     }
 
     const fetchArticle = async () => {
-      setLoading(true);
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("articles")
@@ -49,13 +60,11 @@ export default function NewsDetailPage() {
         .eq("slug", slug)
         .single();
 
-      if (error || !data) {
+      if (error) {
         console.error("Error fetching article:", error);
-        setNotFound(true);
         setArticle(null);
       } else {
         setArticle(data as Article);
-        setNotFound(false);
       }
 
       setLoading(false);
@@ -64,71 +73,158 @@ export default function NewsDetailPage() {
     fetchArticle();
   }, [slug]);
 
+  // --- FUNGSI SHARE ---
+  const handleShare = (platform: "facebook" | "whatsapp" | "wechat") => {
+    if (!currentUrl || !article) return;
+
+    const text = encodeURIComponent(article.title);
+    const url = encodeURIComponent(currentUrl);
+    let shareUrl = "";
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case "whatsapp":
+        shareUrl = `https://api.whatsapp.com/send?text=${text}%0A${url}`;
+        break;
+      case "wechat":
+        // Copy link (dipakai untuk WeChat)
+        if (typeof navigator !== "undefined" && navigator.clipboard) {
+          navigator.clipboard.writeText(currentUrl);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }
+        return;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, "_blank", "width=600,height=400");
+    }
+  };
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-gray-500">Loading article...</p>
-        </div>
-      </main>
+      <div className="min-h-screen flex justify-center items-center pt-20 bg-white">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600" />
+      </div>
     );
   }
 
-  if (notFound || !article) {
+  if (!article) {
     return (
-      <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
-        <div className="max-w-3xl mx-auto space-y-4">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Artikel tidak ditemukan
-          </h1>
-          <p className="text-gray-600">
-            Artikel yang Anda cari mungkin sudah dihapus atau URL-nya tidak
-            valid.
-          </p>
-          <Link
-            href="/news"
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition"
-          >
-            Kembali ke daftar berita
-          </Link>
-        </div>
-      </main>
+      <div className="min-h-screen flex flex-col justify-center items-center pt-20 bg-white">
+        <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          Article Not Found
+        </h1>
+        <Link
+          href="/news"
+          className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition flex items-center gap-2"
+        >
+          <ArrowLeft size={18} /> Back to Newsroom
+        </Link>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
-      <div className="max-w-3xl mx-auto space-y-4">
+    <main className="w-full bg-white min-h-screen flex flex-col pt-20">
+      {/* --- HERO SECTION (GAMBAR BESAR) --- */}
+      <div className="relative w-full h-[60vh] md:h-[700px] bg-gray-900 overflow-hidden group">
+        {/* Gambar Full */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={article.coverImage}
+          alt={article.title}
+          className="w-full h-full object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+        />
+
+        {/* Gradient Hitam di Bawah */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-90" />
+
+        {/* Konten Judul */}
+        <div className="absolute inset-0 flex flex-col justify-end items-center text-center px-4 md:px-20 z-10 pb-16 md:pb-24">
+          <span className="bg-red-600 text-white px-4 py-1.5 text-xs md:text-sm font-bold rounded-full mb-6 uppercase tracking-wider shadow-lg border border-red-500/50 backdrop-blur-sm">
+            {article.category}
+          </span>
+
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight max-w-5xl drop-shadow-2xl mb-6">
+            {article.title}
+          </h1>
+
+          <div className="flex items-center gap-2 text-gray-300 text-sm md:text-base font-medium bg-black/30 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+            <Calendar size={16} />
+            <span>{article.date}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* --- KONTEN ARTIKEL --- */}
+      <div className="container mx-auto px-4 md:px-0 py-12 md:py-16 max-w-4xl">
+        {/* Breadcrumb / Back */}
         <Link
           href="/news"
-          className="inline-flex items-center text-sm text-red-600 hover:text-red-700 font-semibold"
+          className="group text-gray-500 hover:text-red-600 mb-10 inline-flex items-center text-sm font-bold transition-colors"
         >
-          ← Kembali ke daftar berita
+          <span className="group-hover:-translate-x-1 transition-transform mr-2 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 group-hover:bg-red-50">
+            <ArrowLeft size={16} />
+          </span>
+          Back to Newsroom
         </Link>
 
-        <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 text-xs font-semibold text-gray-600">
-          {article.category}
-        </span>
+        {/* Isi Berita (HTML Render) */}
+        <article
+          className="prose prose-lg max-w-none text-gray-700 leading-loose
+            prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mt-8 prose-headings:mb-4
+            prose-p:text-gray-600 prose-p:mb-6
+            prose-a:text-red-600 prose-a:no-underline hover:prose-a:underline
+            prose-img:rounded-2xl prose-img:shadow-xl prose-img:my-10 prose-img:w-full
+            prose-blockquote:border-l-red-600 prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:rounded-r-lg prose-blockquote:italic"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
 
-        <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-          {article.title}
-        </h1>
+        <hr className="my-12 border-gray-200" />
 
-        <p className="text-sm text-gray-500">
-          {article.date} {/* kalau mau, format tanggal di sini */}
-        </p>
+        {/* SHARE BUTTONS */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+          <div className="flex items-center gap-3 text-gray-700 font-bold">
+            <div className="p-2 bg-white rounded-full shadow-sm text-red-600">
+              <Share2 size={20} />
+            </div>
+            <span>Share this article</span>
+          </div>
 
-        <hr className="my-4 border-gray-200" />
+          <div className="flex gap-3 w-full md:w-auto">
+            {/* WhatsApp */}
+            <button
+              onClick={() => handleShare("whatsapp")}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl text-sm font-bold transition shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            >
+              <MessageCircle size={18} /> WhatsApp
+            </button>
 
-        <article className="prose prose-gray max-w-none">
-          {article.content ? (
-            <p>{article.content}</p>
-          ) : (
-            <p className="text-gray-500">
-              Konten artikel belum diisi di CMS.
-            </p>
-          )}
-        </article>
+            {/* Facebook */}
+            <button
+              onClick={() => handleShare("facebook")}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl text-sm font-bold transition shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            >
+              <Facebook size={18} /> Facebook
+            </button>
+
+            {/* WeChat / Copy */}
+            <button
+              onClick={() => handleShare("wechat")}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-sm hover:shadow-md hover:-translate-y-0.5 ${
+                copied
+                  ? "bg-gray-800 text-white"
+                  : "bg-[#07C160] hover:bg-[#06ad56] text-white"
+              }`}
+            >
+              {copied ? <Check size={18} /> : <LinkIcon size={18} />}
+              {copied ? "Copied!" : "WeChat / Copy"}
+            </button>
+          </div>
+        </div>
       </div>
     </main>
   );

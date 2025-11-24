@@ -1,7 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-// GANTI DENGAN DATA DARI DASHBOARD SUPABASE ANDA
-const supabaseUrl = 'https://isjpqgefvomitlovfldb.supabase.co' // Project URL
-const supabaseKey = 'sb_publishable_12xC2RbNgC4LkXOpmrgpDw_w-dItBzM' // API Key (anon/public)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(supabaseUrl, supabaseKey);

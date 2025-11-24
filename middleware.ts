@@ -3,10 +3,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
-  // Response dasar yang akan diteruskan
   const res = NextResponse.next()
 
-  // Client Supabase berbasis request + response (untuk refresh cookie, dll.)
   const supabase = createMiddlewareClient({ req, res })
 
   const {
@@ -18,35 +16,32 @@ export async function middleware(req: NextRequest) {
 
   console.log('[MIDDLEWARE]', { path, hasSession: !!session, error })
 
-  // 🔓 IZINKAN LOGOUT
-  // Route /logout akan meng-handle signOut di server (route.ts sendiri)
+  // 🔓 Izinkan /logout (signOut di-handle route /logout sendiri)
   if (path === '/logout') {
     return res
   }
 
-  // 🔓 IZINKAN AUTH CALLBACK (supaya proses login bisa selesai)
+  // 🔓 Izinkan semua /auth/* (callback, dsb)
   if (path.startsWith('/auth')) {
     return res
   }
 
-  // 🔐 PROTEKSI HALAMAN ADMIN
-  // Semua URL yang diawali /admin butuh session aktif
+  // 🔐 Proteksi /admin/*
   if (path.startsWith('/admin')) {
     if (!session) {
       return NextResponse.redirect(new URL('/login', req.url))
     }
   }
 
-  // 🔄 JIKA SUDAH LOGIN, JANGAN BOLEHKAN BUKA /login LAGI
+  // 🔄 Kalau sudah login, jangan boleh buka /login
   if (path === '/login' && session) {
     return NextResponse.redirect(new URL('/admin', req.url))
   }
 
-  // Default: teruskan request
   return res
 }
 
-// Middleware hanya aktif di route-route ini
+// Middleware aktif hanya di route berikut
 export const config = {
   matcher: ['/admin/:path*', '/login', '/auth/:path*', '/logout'],
 }

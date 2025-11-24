@@ -17,24 +17,36 @@ export async function GET(request: Request) {
   const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
 
   try {
-    // 1. SELESAIKAN LOGIN DULU
+    console.log('[AUTH CALLBACK] hit', {
+      hasCode: !!code,
+      hasTokenHash: !!token_hash,
+      next,
+    })
+
+    // 1) Tukar "code" / "token_hash" menjadi session Supabase
     if (code) {
       const { error } = await supabase.auth.exchangeCodeForSession(code)
-      if (error) throw error
+      if (error) {
+        console.error('[AUTH CALLBACK] exchangeCodeForSession error:', error)
+        throw error
+      }
     } else if (token_hash) {
       const { error } = await supabase.auth.verifyOtp({ token_hash, type })
-      if (error) throw error
+      if (error) {
+        console.error('[AUTH CALLBACK] verifyOtp error:', error)
+        throw error
+      }
     } else {
-      console.warn('Auth callback tanpa code atau token_hash')
+      console.warn('[AUTH CALLBACK] tanpa code & token_hash')
     }
 
-    // 2. AMBIL USER YANG BARU LOGIN
+    // 2) Ambil user yang baru login
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
     if (user) {
-      // 3. KUMPULKAN INFO TAMBAHAN (IP & USER AGENT)
+      // 3) Catat login ke tabel login_events (opsional analytics)
       const ip =
         request.headers.get('x-forwarded-for') ??
         request.headers.get('x-real-ip') ??
@@ -42,20 +54,20 @@ export async function GET(request: Request) {
 
       const userAgent = request.headers.get('user-agent') ?? null
 
-      // 4. SIMPAN KE TABEL login_events
       await supabase.from('login_events').insert({
         user_id: user.id,
         email: user.email,
         ip_address: ip,
         user_agent: userAgent,
-        // login_at otomatis pakai default now()
+        // login_at pakai default now() di database
       })
     }
-  } catch (e) {
-    console.error('Auth callback error:', e)
+  } catch (error) {
+    console.error('[AUTH CALLBACK] unexpected error:', error)
     return NextResponse.redirect(`${url.origin}/login?error=AuthCallbackFailed`)
   }
 
-  // 5. LANJUTKAN KE DASHBOARD
-  return NextResponse.redirect(`${url.origin}${next}`)
+  // 4) Redirect ke halaman tujuan (default: /admin)
+  const safeNext = next.startsWith('/') ? next : '/admin'
+  return NextResponse.redirect(`${url.origin}${safeNext}`)
 }
