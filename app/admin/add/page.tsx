@@ -13,7 +13,7 @@ import {
 export default function AddNewsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editId = searchParams.get("edit");
+  const editId = searchParams?.get("edit") ?? null;
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false); 
