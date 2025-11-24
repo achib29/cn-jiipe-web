@@ -20,7 +20,7 @@ export default function LoginPage() {
         options: {
           // Pastikan URL ini mengarah ke route callback yang sudah kita perbaiki
           // location.origin otomatis mendeteksi apakah localhost:3000 atau domain asli
-          emailRedirectTo: `${window.location.origin}/auth/callback`, 
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/admin`,
         },
       });
 

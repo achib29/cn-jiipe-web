@@ -1,59 +1,65 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+// app/auth/callback/route.ts
+import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { NextResponse } from 'next/server'
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import type { EmailOtpType } from '@supabase/supabase-js'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const url = new URL(request.url)
 
+  // Parameter yang mungkin dikirim Supabase
   const code = url.searchParams.get('code')
-  const token_hash = url.searchParams.get('token_hash')
+  const tokenHash =
+    url.searchParams.get('token_hash') ?? url.searchParams.get('token')
+  const type = (url.searchParams.get('type') as EmailOtpType) ?? 'magiclink'
   const next = url.searchParams.get('next') || '/admin'
 
-  const cookieStore = cookies()
-  const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
-
-  console.log('[AUTH CALLBACK] hit', {
-    hasCode: !!code,
-    hasTokenHash: !!token_hash,
-    next,
-  })
+  // ⛔ JANGAN pakai cookies() manual
+  // ✅ Langsung pass fungsi cookies dari next/headers
+  const supabase = createRouteHandlerClient({ cookies })
 
   try {
-    // 1) Tukar "code" / "token_hash" menjadi session Supabase
+    console.log('[AUTH CALLBACK] hit', {
+      hasCode: !!code,
+      hasTokenHash: !!tokenHash,
+      type,
+      next,
+    })
+
+    // 1) Flow utama: magic link dengan `code`
     if (code) {
-      // Flow baru ({{ .ConfirmationURL }}) → pakai code
       const { error } = await supabase.auth.exchangeCodeForSession(code)
       if (error) {
-        console.error('[AUTH CALLBACK] exchangeCodeForSession error:', error)
+        console.error(
+          '[AUTH CALLBACK] exchangeCodeForSession error:',
+          error
+        )
         throw error
       }
-    } else if (token_hash) {
-      // Flow lama (token_hash di URL). Paksa type = 'magiclink'
-      const type: EmailOtpType = 'magiclink'
-      const { error } = await supabase.auth.verifyOtp({ token_hash, type })
+    }
+    // 2) Fallback: kalau yang dikirim token_hash / token
+    else if (tokenHash) {
+      const { error } = await supabase.auth.verifyOtp({
+        token_hash: tokenHash,
+        type,
+      })
       if (error) {
         console.error('[AUTH CALLBACK] verifyOtp error:', error)
         throw error
       }
     } else {
-      console.warn('[AUTH CALLBACK] tanpa code & token_hash')
+      console.warn('[AUTH CALLBACK] tanpa code & token_hash/token')
     }
 
-    // 2) Ambil user yang baru login
+    // 3) Ambil user yang baru login
     const {
       data: { user },
-      error: userError,
     } = await supabase.auth.getUser()
 
-    if (userError) {
-      console.error('[AUTH CALLBACK] getUser error:', userError)
-    }
-
-    // 3) Analytics login → JANGAN sampai menggagalkan login
     if (user) {
+      // 4) Catat ke login_events (analytics)
       const ip =
         request.headers.get('x-forwarded-for') ??
         request.headers.get('x-real-ip') ??
@@ -61,26 +67,20 @@ export async function GET(request: Request) {
 
       const userAgent = request.headers.get('user-agent') ?? null
 
-      const { error: logError } = await supabase.from('login_events').insert({
+      await supabase.from('login_events').insert({
         user_id: user.id,
         email: user.email,
         ip_address: ip,
         user_agent: userAgent,
+        // login_at pakai default now() di DB
       })
-
-      if (logError) {
-        console.error('[AUTH CALLBACK] insert login_events error:', logError)
-      }
     }
   } catch (error) {
     console.error('[AUTH CALLBACK] unexpected error:', error)
-    const redirect = new URL('/login', url.origin)
-    redirect.searchParams.set('error', 'AuthCallbackFailed')
-    return NextResponse.redirect(redirect)
+    return NextResponse.redirect(`${url.origin}/login?error=AuthCallbackFailed`)
   }
 
-  // 4) Redirect ke halaman tujuan (default: /admin)
+  // 5) Redirect ke halaman tujuan (default /admin)
   const safeNext = next.startsWith('/') ? next : '/admin'
-  const redirect = new URL(safeNext, url.origin)
-  return NextResponse.redirect(redirect)
+  return NextResponse.redirect(`${url.origin}${safeNext}`)
 }
