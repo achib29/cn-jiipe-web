@@ -2,6 +2,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import ClientScripts from "@/components/ClientScripts";
 
 export default function ClientRoot({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -9,6 +10,7 @@ export default function ClientRoot({ children }: { children: React.ReactNode }) 
 
   return (
     <>
+      <ClientScripts />
       {!isThankYouPage && <Navbar />}
       <main>{children}</main>
       {!isThankYouPage && <Footer />}

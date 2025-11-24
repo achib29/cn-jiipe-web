@@ -6,3 +6,5 @@ bfg-report/
 *.rev
 cn-jiipe-web.git/
 node_modules
+.next
+.env
