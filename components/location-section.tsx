@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import Image from "next/image";
 import { MapPin, Globe, Plane, Ship, Truck } from "lucide-react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
@@ -45,7 +46,7 @@ export default function LocationSection() {
   ];
 
   return (
-    <section id="location" ref={ref} className="py-20 bg-white dark:bg-gray-950">
+    <section id="location" className="py-20 bg-white dark:bg-gray-950">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -54,7 +55,10 @@ export default function LocationSection() {
               "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "200ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             战略区位优势
           </h2>
@@ -63,7 +67,10 @@ export default function LocationSection() {
               "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "400ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             得天独厚，铸就成功
           </h3>
@@ -72,40 +79,75 @@ export default function LocationSection() {
               "text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "600ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             JIIPE坐落于印度尼西亚东爪哇省，通过多元交通网络高效连接国内外市场。
           </p>
         </div>
 
-        {/* Map & Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-12">
-          <div className="lg:col-span-3">
-            <div
-              className={cn(
-                "aspect-video rounded-lg overflow-hidden shadow-xl opacity-0 transition-all duration-1000 ease-out",
-                isInView && "opacity-100 translate-x-0"
-              )}
-              style={{ transitionDelay: "800ms", transform: isInView ? "translateX(0)" : "translateX(-30px)" }}
-            >
-              <div className="aspect-video overflow-hidden rounded-lg shadow-xl">
-                <iframe
-                  src="https://api.map.baidu.com/marker?location=-7.0865,112.60311&title=JIIPE&content=Java%20Integrated%20Industrial%20and%20Port%20Estate&output=html&coord_type=bd09ll"
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
+        {/* Map & Info – layout disamakan dengan AboutSection */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-12">
+          {/* Map Image Side (mirip About video embed) */}
+          <div
+            ref={ref}
+            className={cn(
+              "relative overflow-hidden rounded-lg opacity-0 transition-all duration-1000 ease-out",
+              isInView && "opacity-100 translate-x-0"
+            )}
+            style={{
+              transform: isInView ? "translateX(0)" : "translateX(-50px)",
+            }}
+          >
+            <div className="relative aspect-video overflow-hidden rounded-lg shadow-xl">
+              {/* Static Map Image */}
+              <Image
+                src="/images/jiipe-location-map-cn.jpg" // ganti dengan path gambar map-mu
+                alt="JIIPE location in East Java"
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                priority={false}
+              />
+
+              {/* Button ke Baidu Maps */}
+              <a
+                href="https://api.map.baidu.com/marker?location=-7.0865,112.60311&title=JIIPE&content=Java%20Integrated%20Industrial%20and%20Port%20Estate&output=html&coord_type=bd09ll"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                  absolute bottom-4 left-4
+                  inline-flex items-center gap-2
+                  rounded-full border border-gray-200
+                  bg-white px-4 py-2
+                  text-sm font-semibold text-gray-900
+                  shadow-md
+                  hover:bg-red-600 hover:text-white hover:border-red-600
+                  transition-all duration-200
+                "
+              >
+                <MapPin className="h-4 w-4" />
+                <span>在百度地图中查看</span>
+              </a>
             </div>
+
+            {/* Overlay gradient tipis (optional, mirip About) */}
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/20 to-transparent pointer-events-none" />
           </div>
 
-          <div className="lg:col-span-2 flex flex-col justify-center">
+          {/* Content Side (teks, jarak & keterangan) */}
+          <div>
             <div
               className={cn(
                 "space-y-4 opacity-0 transition-all duration-1000 ease-out",
-                isInView && "opacity-100 translate-x-0"
+                isInView && "opacity-100 translate-y-0"
               )}
-              style={{ transitionDelay: "1000ms", transform: isInView ? "translateX(0)" : "translateX(30px)" }}
+              style={{
+                transitionDelay: "800ms",
+                transform: isInView ? "translateY(0)" : "translateY(30px)",
+              }}
             >
               <div className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-1" />
@@ -137,7 +179,10 @@ export default function LocationSection() {
               "text-sm uppercase font-semibold tracking-wider text-primary mb-2 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "200ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "200ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             虚拟实景导览
           </h2>
@@ -146,7 +191,10 @@ export default function LocationSection() {
               "text-3xl md:text-4xl font-bold mb-6 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "400ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "400ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             360° 虚拟全景参观 JIIPE
           </h3>
@@ -155,13 +203,19 @@ export default function LocationSection() {
               "text-gray-600 dark:text-gray-400 opacity-0 transition-all duration-700 ease-out",
               isInView && "opacity-100 translate-y-0"
             )}
-            style={{ transitionDelay: "600ms", transform: isInView ? "translateY(0)" : "translateY(20px)" }}
+            style={{
+              transitionDelay: "600ms",
+              transform: isInView ? "translateY(0)" : "translateY(20px)",
+            }}
           >
             通过以下虚拟导览，探索JIIPE园区的战略地理位置与关键设施。您可以沉浸式体验港口、工业区与办公区域，了解JIIPE为何是印尼及东南亚理想的投资目的地。
           </p>
         </div>
 
-        <div id="tour-container" className="w-full h-[500px] rounded-lg overflow-hidden shadow-xl bg-gray-100" />
+        <div
+          id="tour-container"
+          className="w-full h-[500px] rounded-lg overflow-hidden shadow-xl bg-gray-100"
+        />
 
         {/* Connectivity Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
@@ -179,9 +233,15 @@ export default function LocationSection() {
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center text-center">
-                  <div className="p-3 bg-primary/10 rounded-full mb-4">{item.icon}</div>
-                  <h4 className="font-semibold text-lg mb-2">{item.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">{item.description}</p>
+                  <div className="p-3 bg-primary/10 rounded-full mb-4">
+                    {item.icon}
+                  </div>
+                  <h4 className="font-semibold text-lg mb-2">
+                    {item.title}
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {item.description}
+                  </p>
                 </div>
               </CardContent>
             </Card>
