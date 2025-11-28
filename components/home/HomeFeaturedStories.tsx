@@ -181,33 +181,16 @@ export default function HomeFeaturedStories() {
 
       {/* ===== MOBILE LAYOUT (<= lg) ===== */}
       <div className="lg:hidden space-y-6">
-        {/* Item #1 – Main Featured (besar) */}
-        <div className="h-[260px]">
-          <MainFeaturedCard article={featuredNews[0]} />
-        </div>
 
-        {/* Item #2 & #3 – Kartu kecil tanpa gambar */}
-        {featuredNews.slice(1).map((article) => (
-          <Link
-            key={article.id}
-            href={`/news/${article.slug}`}
-            className="block p-4 rounded-2xl bg-white shadow-sm border border-gray-200 hover:shadow-md transition"
-          >
-            <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-1 rounded">
-              {article.category}
-            </span>
-
-            <h3 className="mt-2 text-base font-semibold text-gray-900 leading-snug line-clamp-2">
-              {article.title}
-            </h3>
-
-            <div className="flex items-center justify-between mt-2 text-gray-500 text-xs">
-              <span>{article.date}</span>
-              <ArrowRight size={16} className="text-red-600" />
-            </div>
-          </Link>
+        {/* Semua featured (1, 2, 3) tampil sebagai main-style card */}
+        {featuredNews.map((article) => (
+          <div key={article.id} className="h-[260px]">
+            <MainFeaturedCard article={article} />
+          </div>
         ))}
+
       </div>
+
 
       {/* ===== DESKTOP LAYOUT (lg+) ===== */}
       <div className="hidden lg:grid grid-cols-12 gap-4 h-auto lg:h-[450px] mt-4">
