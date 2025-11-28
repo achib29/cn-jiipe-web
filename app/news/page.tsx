@@ -213,33 +213,49 @@ export default function NewsIndexPage() {
         {featuredNews.length > 0 && (
           <div className="mb-16 animate-fade-in">
             <div className="flex items-center gap-2 mb-6">
-                <div className="p-1.5 bg-orange-100 rounded-md">
-                    <Flame className="text-orange-600" size={20} fill="currentColor" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">Featured Stories</h2>
+              <div className="p-1.5 bg-orange-100 rounded-md">
+                <Flame className="text-orange-600" size={20} fill="currentColor" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Featured Stories</h2>
             </div>
 
-            {/* LAYOUT LOGIC: 1, 2, or 3 ITEMS */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-auto lg:h-[450px]">
-                
-                {/* SLOT UTAMA (KIRI) */}
-                <div className={`${featuredNews.length === 1 ? 'lg:col-span-12' : 'lg:col-span-7'} h-[350px] lg:h-full`}>
-                    <MainFeaturedCard article={featuredNews[0]} />
+            {/* 👉 MOBILE LAYOUT: 3 CARD VERTIKAL */}
+            <div className="grid grid-cols-1 gap-4 lg:hidden">
+              {featuredNews.map((article) => (
+                <div key={article.id} className="h-[260px]">
+                  <MainFeaturedCard article={article} />
                 </div>
-                
-                {/* SLOT SAMPING (KANAN) */}
-                {featuredNews.length > 1 && (
-                    <div className="lg:col-span-5 flex flex-col gap-4 h-full">
-                        <div className={`flex-1 ${featuredNews.length === 2 ? 'h-[350px] lg:h-full' : ''}`}>
-                             <SubFeaturedCard article={featuredNews[1]} />
-                        </div>
-                        {featuredNews.length > 2 && (
-                            <div className="flex-1">
-                                <SubFeaturedCard article={featuredNews[2]} />
-                            </div>
-                        )}
+              ))}
+            </div>
+
+            {/* 👉 DESKTOP LAYOUT: 1 BESAR + 2 SAMPING (seperti sebelumnya) */}
+            <div className="hidden lg:grid lg:grid-cols-12 gap-4 h-[450px]">
+              {/* SLOT UTAMA (KIRI) */}
+              <div
+                className={`${
+                  featuredNews.length === 1 ? "lg:col-span-12" : "lg:col-span-7"
+                } h-full`}
+              >
+                <MainFeaturedCard article={featuredNews[0]} />
+              </div>
+
+              {/* SLOT SAMPING (KANAN) */}
+              {featuredNews.length > 1 && (
+                <div className="lg:col-span-5 flex flex-col gap-4 h-full">
+                  <div
+                    className={`flex-1 ${
+                      featuredNews.length === 2 ? "lg:h-full" : ""
+                    }`}
+                  >
+                    <SubFeaturedCard article={featuredNews[1]} />
+                  </div>
+                  {featuredNews.length > 2 && (
+                    <div className="flex-1">
+                      <SubFeaturedCard article={featuredNews[2]} />
                     </div>
-                )}
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}

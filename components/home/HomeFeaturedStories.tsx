@@ -86,7 +86,6 @@ export default function HomeFeaturedStories() {
   if (loading) {
     return (
       <section className="container mx-auto px-4 py-16 max-w-7xl">
-        {/* HEADER ala section China, tapi English */}
         <div className="mb-8">
           <p className="text-xs md:text-sm font-bold tracking-[0.2em] text-red-600 uppercase">
             JIIPE NEWSROOM
@@ -167,7 +166,7 @@ export default function HomeFeaturedStories() {
 
   return (
     <section className="container mx-auto px-4 py-16">
-      {/* HEADER: gaya sama seperti section China tapi English */}
+      {/* HEADER */}
       <div className="mb-8 text-center">
         <p className="text-xs md:text-sm font-bold tracking-[0.2em] text-red-600 uppercase">
           JIIPE NEWSROOM
@@ -180,7 +179,38 @@ export default function HomeFeaturedStories() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-auto lg:h-[450px]">
+      {/* ===== MOBILE LAYOUT (<= lg) ===== */}
+      <div className="lg:hidden space-y-6">
+        {/* Item #1 – Main Featured (besar) */}
+        <div className="h-[260px]">
+          <MainFeaturedCard article={featuredNews[0]} />
+        </div>
+
+        {/* Item #2 & #3 – Kartu kecil tanpa gambar */}
+        {featuredNews.slice(1).map((article) => (
+          <Link
+            key={article.id}
+            href={`/news/${article.slug}`}
+            className="block p-4 rounded-2xl bg-white shadow-sm border border-gray-200 hover:shadow-md transition"
+          >
+            <span className="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-1 rounded">
+              {article.category}
+            </span>
+
+            <h3 className="mt-2 text-base font-semibold text-gray-900 leading-snug line-clamp-2">
+              {article.title}
+            </h3>
+
+            <div className="flex items-center justify-between mt-2 text-gray-500 text-xs">
+              <span>{article.date}</span>
+              <ArrowRight size={16} className="text-red-600" />
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* ===== DESKTOP LAYOUT (lg+) ===== */}
+      <div className="hidden lg:grid grid-cols-12 gap-4 h-auto lg:h-[450px] mt-4">
         {/* Kiri – Main Story */}
         <div
           className={`${
@@ -208,6 +238,17 @@ export default function HomeFeaturedStories() {
           </div>
         )}
       </div>
+
+      {/* ===== CTA: VIEW ALL ARTICLES (MOBILE & DESKTOP) ===== */}
+      <div className="mt-8 text-center">
+        <Link
+          href="/news"
+          className="inline-block px-6 py-2 rounded-full border border-red-600 text-red-600 font-semibold text-sm hover:bg-red-600 hover:text-white transition"
+        >
+          View All Articles
+        </Link>
+      </div>
     </section>
   );
+
 }

@@ -6,13 +6,14 @@ import { MapPin, Globe, Plane, Ship, Truck } from "lucide-react";
 import { useInView } from "@/hooks/use-in-view";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import Icon360 from "@/components/icons/Icon360"; 
 
 export default function LocationSection() {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
 
   // Load 360° Tour script once after mount
-  useEffect(() => {
+  {/*useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://tours.jiipe.com/public/shareScript.js";
     script.async = true;
@@ -20,7 +21,7 @@ export default function LocationSection() {
     script.setAttribute("data-path", "tours");
     script.setAttribute("data-is-self-hosted", "undefined");
     document.getElementById("tour-container")?.appendChild(script);
-  }, []);
+  }, []);*/}
 
   const connectivityData = [
     {
@@ -212,10 +213,51 @@ export default function LocationSection() {
           </p>
         </div>
 
+        {/* 360° Cover */}
         <div
-          id="tour-container"
-          className="w-full h-[500px] rounded-lg overflow-hidden shadow-xl bg-gray-100"
-        />
+          className={cn(
+            "relative mt-4 w-full aspect-[16/6] rounded-3xl overflow-hidden shadow-xl bg-gray-100 group",
+            isInView && "opacity-100 translate-y-0"
+          )}
+          style={{
+            transition: "all 700ms ease-out",
+            transform: isInView ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          {/* Gambar 360 */}
+          <Image
+            src="/images/jiipe-360-cover.jpg"
+            alt="360° Virtual Tour JIIPE"
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="100vw"
+          />
+
+          {/* Overlay tipis */}
+          <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+
+          {/* Tombol 360° di tengah */}
+          <a
+            href="https://tours.jiipe.com/tours/5Ss66DNIH"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer group/btn"
+          >
+            <div className="relative flex items-center justify-center w-32 h-32 rounded-full transition-transform duration-300 group-hover/btn:scale-110">
+
+              {/* 1. ANIMASI DIKEMBALIKAN (Ping Effect) */}
+              {/* Ini akan membuat efek gelombang transparan di belakang icon */}
+              <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-20 animate-ping duration-1000" />
+
+              {/* 2. ICON 360 (Putih, Besar, Tanpa Background Solid) */}
+              {/* relative z-10 agar berada di atas animasi */}
+              <Icon360 className="relative z-10 w-24 h-24 text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)]" />
+
+            </div>
+          </a>
+        </div>
+
+
 
         {/* Connectivity Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
