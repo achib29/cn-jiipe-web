@@ -36,51 +36,42 @@ export default function AboutSection() {
                 className="w-full h-full object-cover"
               />
 
-              {/* Lapisan tipis di atas gambar */}
+              {/* Soft overlay */}
               <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
-              {/* ============================= */}
-              {/*  CENTER PLAY BUTTON (GAYA PNG) */}
-              {/* ============================= */}
+              {/* CENTER PLAY BUTTON – dipakai di semua layar */}
               <a
                 href={videoLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute inset-0 flex items-center justify-center z-20 cursor-pointer"
+                className="absolute inset-0 flex items-center justify-center z-20 group/play cursor-pointer"
               >
                 <div className="relative flex items-center justify-center">
-                  {/* lingkaran luar */}
-                  <div className="flex items-center justify-center w-24 h-24 rounded-full border-[6px] border-white bg-black/10 backdrop-blur-[2px] shadow-[0_0_30px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-110">
-                    {/* segitiga outline putih */}
+                  {/* ripple */}
+                  <span className="absolute h-full w-full rounded-full bg-white opacity-30 animate-ping duration-1000" />
+                  {/* circle + play */}
+                  <div className="relative flex items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white bg-white/10 backdrop-blur-sm shadow-xl transition-all duration-300 group-hover/play:scale-110">
                     <svg
-                      viewBox="0 0 100 100"
-                      className="w-12 h-12 text-white"
+                      className="w-9 h-9 md:w-10 md:h-10 text-white fill-white translate-x-0.5"
+                      viewBox="0 0 24 24"
                     >
-                      <polygon
-                        points="40,30 70,50 40,70"
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
+                      <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
                 </div>
               </a>
 
-              {/*  BOTTOM LEFT BUTTON (teks Mandarin)  */}
+              {/* CAPSULE BUTTON – hanya muncul di md ke atas */}
               <a
                 href={videoLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="absolute bottom-5 left-5 z-30 group/capsule"
+                className="hidden md:inline-flex absolute bottom-5 left-5 z-30 group/capsule"
               >
                 <div className="flex items-center gap-3 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-white/50 transition-all duration-300 transform group-hover/capsule:-translate-y-1 group-hover/capsule:shadow-xl">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 shrink-0">
                     <Play className="h-4 w-4 text-red-600 fill-red-600 ml-0.5" />
                   </div>
-
                   <div className="flex flex-col">
                     <span className="text-[10px] font-semibold text-gray-500 tracking-wider leading-none mb-1">
                       点击播放
@@ -89,7 +80,6 @@ export default function AboutSection() {
                       观看视频
                     </span>
                   </div>
-
                   <svg
                     className="w-4 h-4 text-gray-400 ml-1"
                     fill="none"
@@ -107,7 +97,7 @@ export default function AboutSection() {
               </a>
             </div>
 
-            {/* Decorative Glow */}
+            {/* decorative glow */}
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
           </div>
 
@@ -167,29 +157,24 @@ export default function AboutSection() {
 
             {/* Key Features */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                "战略要地",
-                "深水港口",
-                "设施完备",
-                "能源保障",
-                "税收优惠",
-                "人才资源",
-              ].map((feature, index) => (
-                <div
-                  key={feature}
-                  className={cn(
-                    "flex items-center gap-3 opacity-0 transition-all duration-700 ease-out",
-                    isInView && "opacity-100 translate-y-0"
-                  )}
-                  style={{
-                    transitionDelay: `${1000 + index * 100}ms`,
-                    transform: isInView ? "translateY(0)" : "translateY(20px)",
-                  }}
-                >
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
-                  <span>{feature}</span>
-                </div>
-              ))}
+              {["战略要地", "深水港口", "设施完备", "能源保障", "税收优惠", "人才资源"].map(
+                (feature, index) => (
+                  <div
+                    key={feature}
+                    className={cn(
+                      "flex items-center gap-3 opacity-0 transition-all duration-700 ease-out",
+                      isInView && "opacity-100 translate-y-0"
+                    )}
+                    style={{
+                      transitionDelay: `${1000 + index * 100}ms`,
+                      transform: isInView ? "translateY(0)" : "translateY(20px)",
+                    }}
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                    <span>{feature}</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
         </div>
