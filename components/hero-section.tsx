@@ -14,10 +14,10 @@ export default function HeroSection() {
       <picture className="absolute inset-0 z-0 block w-full h-full">
         <source
           media="(min-width: 768px)"
-          srcSet="https://ik.imagekit.io/z3fiyhjnl/jiipe-gresik6.jpg?updatedAt=1753416584960"
+          srcSet="https://ik.imagekit.io/z3fiyhjnl/jiipe-gresik7.jpg?updatedAt=1764314866627"
         />
         <img
-          src="https://ik.imagekit.io/z3fiyhjnl/Mobile-jiipe-gresik6.jpg?updatedAt=1753422652060"
+          src="https://ik.imagekit.io/z3fiyhjnl/Mobile-jiipe-gresik7.jpg"
           alt="Hero Background"
           className="w-full h-full object-cover"
         />

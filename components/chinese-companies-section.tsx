@@ -59,6 +59,19 @@ const companies = [
       />
     ),
   },
+  {
+    name: "金象化工",
+    description: "主要生产三聚氰胺、硝酸铵、合成胺和尿素等产品",
+    icon: () => (
+      <Image
+        src="/images/logos/golden-elephant.png" // <-- sesuaikan path logo-nya
+        alt="Golden Elephant Sincerity"
+        width={220}
+        height={220}
+        objectFit="contain"
+      />
+    ),
+  }
 ];
 
 export default function ChineseCompaniesSection() {
@@ -97,7 +110,7 @@ export default function ChineseCompaniesSection() {
         </div>
 
         {/* Company Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {companies.map((company, index) => (
             <Card
               key={company.name}
