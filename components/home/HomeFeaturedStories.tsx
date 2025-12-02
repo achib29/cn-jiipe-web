@@ -7,6 +7,7 @@ import { ArrowRight, Calendar } from "lucide-react";
 
 interface Article {
   id: number;
+  // English
   title: string;
   slug: string;
   category: string;
@@ -15,6 +16,13 @@ interface Article {
   date: string;
   is_hot?: boolean;
   hot_priority?: number | null;
+
+  // Chinese (opsional)
+  title_cn?: string | null;
+  summary_cn?: string | null;
+  content_cn?: string | null;
+  is_hot_cn?: boolean;
+  hot_priority_cn?: number | null;
 }
 
 export default function HomeFeaturedStories() {
@@ -49,16 +57,28 @@ export default function HomeFeaturedStories() {
           return (dateB || b.id) - (dateA || a.id);
         });
 
-        // pilih berdasarkan hot_priority
-        const mainStory = allArticles.find(
-          (a) => a.is_hot && a.hot_priority === 1
-        );
-        const featured2 = allArticles.find(
-          (a) => a.is_hot && a.hot_priority === 2
-        );
-        const featured3 = allArticles.find(
-          (a) => a.is_hot && a.hot_priority === 3
-        );
+        // helper: baca config HOT khusus CN, fallback ke EN
+        const getHotConfig = (a: Article) => {
+          const isHot = a.is_hot_cn ?? a.is_hot ?? false;
+          const priority = a.hot_priority_cn ?? a.hot_priority ?? null;
+          return { isHot, priority };
+        };
+
+        // pilih berdasarkan hot_priority (CN dulu)
+        const mainStory = allArticles.find((a) => {
+          const { isHot, priority } = getHotConfig(a);
+          return isHot && priority === 1;
+        });
+
+        const featured2 = allArticles.find((a) => {
+          const { isHot, priority } = getHotConfig(a);
+          return isHot && priority === 2;
+        });
+
+        const featured3 = allArticles.find((a) => {
+          const { isHot, priority } = getHotConfig(a);
+          return isHot && priority === 3;
+        });
 
         let topFeatured: Article[] = [
           mainStory,
@@ -66,9 +86,12 @@ export default function HomeFeaturedStories() {
           featured3,
         ].filter(Boolean) as Article[];
 
-        // fallback kalau belum ada priority
+        // fallback kalau belum ada priority: ambil artikel HOT (CN/EN) pertama
         if (topFeatured.length === 0) {
-          const hotArticles = allArticles.filter((a) => a.is_hot);
+          const hotArticles = allArticles.filter((a) => {
+            const { isHot } = getHotConfig(a);
+            return isHot;
+          });
           topFeatured = hotArticles.slice(0, 3);
         }
 
@@ -108,61 +131,69 @@ export default function HomeFeaturedStories() {
 
   if (!featuredNews.length) return null;
 
-  const MainFeaturedCard = ({ article }: { article: Article }) => (
-    <Link
-      href={`/news/${article.slug}`}
-      className="group block h-full w-full relative rounded-[1.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
-    >
-      <img
-        src={article.coverImage}
-        alt={article.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90" />
-      <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full z-20">
-        <span className="inline-block bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded mb-2">
-          {article.category}
-        </span>
-        <h3 className="text-xl md:text-3xl font-bold text-white mb-3 leading-snug drop-shadow-md line-clamp-3 group-hover:text-orange-200 transition-colors">
-          {article.title}
-        </h3>
-        <div className="flex items-center gap-2 text-gray-300 text-xs">
-          <Calendar size={14} /> {article.date}
+  const MainFeaturedCard = ({ article }: { article: Article }) => {
+    const displayTitle = article.title_cn || article.title; // CN dulu, kalau kosong EN
+    return (
+      <Link
+        href={`/news/${article.slug}`}
+        className="group block h-full w-full relative rounded-[1.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-200/50"
+      >
+        <img
+          src={article.coverImage}
+          alt={displayTitle}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-90" />
+        <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full z-20">
+          <span className="inline-block bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded mb-2">
+            {article.category}
+          </span>
+          <h3 className="text-xl md:text-3xl font-bold text-white mb-3 leading-snug drop-shadow-md line-clamp-3 group-hover:text-orange-200 transition-colors">
+            {displayTitle}
+          </h3>
+          <div className="flex items-center gap-2 text-gray-300 text-xs">
+            <Calendar size={14} /> {article.date}
+          </div>
         </div>
-      </div>
-    </Link>
-  );
+      </Link>
+    );
+  };
 
-  const SubFeaturedCard = ({ article }: { article: Article }) => (
-    <Link
-      href={`/news/${article.slug}`}
-      className="group block h-full w-full relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 border border-gray-200/50"
-    >
-      <img
-        src={article.coverImage}
-        alt={article.title}
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-90" />
-      <div className="absolute top-3 left-3 z-20">
-        <span className="bg-white/20 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded border border-white/20">
-          FEATURED
-        </span>
-      </div>
-      <div className="absolute bottom-0 left-0 p-5 w-full z-20">
-        <h4 className="text-base md:text-lg font-bold text-white mb-2 leading-snug drop-shadow-md line-clamp-2 group-hover:text-orange-200 transition-colors">
-          {article.title}
-        </h4>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-400 text-[10px]">{article.date}</span>
-          <ArrowRight
-            size={14}
-            className="text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-5px] group-hover:translate-x-0"
-          />
+  const SubFeaturedCard = ({ article }: { article: Article }) => {
+    const displayTitle = article.title_cn || article.title;
+    return (
+      <Link
+        href={`/news/${article.slug}`}
+        className="group block h-full w-full relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-500 border border-gray-200/50"
+      >
+        <img
+          src={article.coverImage}
+          alt={displayTitle}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-90" />
+        <div className="absolute top-3 left-3 z-20">
+          <span className="bg-white/20 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded border border-white/20">
+            FEATURED
+          </span>
         </div>
-      </div>
-    </Link>
-  );
+        <div className="absolute bottom-0 left-0 p-5 w-full z-20">
+          <h4 className="text-base md:text-lg font-bold text-white mb-2 leading-snug drop-shadow-md line-clamp-2 group-hover:text-orange-200 transition-colors">
+            {displayTitle}
+          </h4>
+          <div className="flex items-center justify-between">
+            <span className="text-gray-400 text-[10px]">
+              {article.date}
+            </span>
+            <ArrowRight
+              size={14}
+              className="text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-5px] group-hover:translate-x-0"
+            />
+          </div>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <section className="container mx-auto px-4 py-16">
@@ -181,24 +212,19 @@ export default function HomeFeaturedStories() {
 
       {/* ===== MOBILE LAYOUT (<= lg) ===== */}
       <div className="lg:hidden space-y-6">
-
-        {/* Semua featured (1, 2, 3) tampil sebagai main-style card */}
         {featuredNews.map((article) => (
           <div key={article.id} className="h-[260px]">
             <MainFeaturedCard article={article} />
           </div>
         ))}
-
       </div>
-
 
       {/* ===== DESKTOP LAYOUT (lg+) ===== */}
       <div className="hidden lg:grid grid-cols-12 gap-4 h-auto lg:h-[450px] mt-4">
         {/* Kiri – Main Story */}
         <div
-          className={`${
-            featuredNews.length === 1 ? "lg:col-span-12" : "lg:col-span-7"
-          } h-[350px] lg:h-full`}
+          className={`${featuredNews.length === 1 ? "lg:col-span-12" : "lg:col-span-7"
+            } h-[350px] lg:h-full`}
         >
           <MainFeaturedCard article={featuredNews[0]} />
         </div>
@@ -207,9 +233,8 @@ export default function HomeFeaturedStories() {
         {featuredNews.length > 1 && (
           <div className="lg:col-span-5 flex flex-col gap-4 h-full">
             <div
-              className={`flex-1 ${
-                featuredNews.length === 2 ? "h-[350px] lg:h-full" : ""
-              }`}
+              className={`flex-1 ${featuredNews.length === 2 ? "h-[350px] lg:h-full" : ""
+                }`}
             >
               <SubFeaturedCard article={featuredNews[1]} />
             </div>
@@ -222,7 +247,7 @@ export default function HomeFeaturedStories() {
         )}
       </div>
 
-      {/* ===== CTA: VIEW ALL ARTICLES (MOBILE & DESKTOP) ===== */}
+      {/* CTA: VIEW ALL ARTICLES */}
       <div className="mt-8 text-center">
         <Link
           href="/news"
@@ -233,5 +258,4 @@ export default function HomeFeaturedStories() {
       </div>
     </section>
   );
-
 }
