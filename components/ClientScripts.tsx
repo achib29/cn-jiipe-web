@@ -5,7 +5,7 @@ export default function ClientScripts() {
   return (
     <>
       {/* Google Analytics */}
-      <Script
+      {/*<Script
         src="https://www.googletagmanager.com/gtag/js?id=G-YR9GTV5FCH"
         strategy="afterInteractive"
       />
@@ -16,7 +16,7 @@ export default function ClientScripts() {
             gtag('js', new Date());
             gtag('config', 'G-YR9GTV5FCH');
           `}
-      </Script>
+      </Script>*/}
 
       {/* Cloudflare Turnstile */}
       <Script
