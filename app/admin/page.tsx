@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import {
   Plus,
   Search,
@@ -89,7 +88,7 @@ interface Article {
   date: string;
   status?: string;
   is_hot?: boolean;
-  hot_priority?: number | null; // urutan manual Main/Featured
+  hot_priority?: number | null;
   created_at: string;
 }
 
@@ -99,7 +98,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("dateDesc");
 
-  // STATE MODAL DELETE
   const [deleteState, setDeleteState] = useState<{
     isOpen: boolean;
     id: number | null;
@@ -110,39 +108,41 @@ export default function AdminDashboard() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleLogout = () => {
-    // Paksa browser benar-benar request ke /logout
     window.location.href = "/logout";
   };
 
   const fetchArticles = async () => {
     setLoading(true);
 
-    const { data, error } = await supabase.from("articles").select("*");
+    try {
+      const res = await fetch("/api/articles");
+      const data = await res.json();
 
-    if (error) {
-      console.error(error);
-    } else if (data) {
-      // Sorting tampilan tabel sesuai pilihan user
-      const sortedData = [...data].sort((a, b) => {
-        const dateA = new Date(a.date).getTime();
-        const dateB = new Date(b.date).getTime();
+      if (Array.isArray(data)) {
+        const sortedData = [...data].sort((a: Article, b: Article) => {
+          const dateA = new Date(a.date).getTime();
+          const dateB = new Date(b.date).getTime();
 
-        switch (sortBy) {
-          case "dateDesc":
-            return (dateB || b.id) - (dateA || a.id);
-          case "dateAsc":
-            return (dateA || a.id) - (dateB || b.id);
-          case "titleAsc":
-            return a.title.localeCompare(b.title);
-          case "titleDesc":
-            return b.title.localeCompare(a.title);
-          default:
-            return 0;
-        }
-      });
+          switch (sortBy) {
+            case "dateDesc":
+              return (dateB || b.id) - (dateA || a.id);
+            case "dateAsc":
+              return (dateA || a.id) - (dateB || b.id);
+            case "titleAsc":
+              return a.title.localeCompare(b.title);
+            case "titleDesc":
+              return b.title.localeCompare(a.title);
+            default:
+              return 0;
+          }
+        });
 
-      setArticles(sortedData as Article[]);
+        setArticles(sortedData);
+      }
+    } catch (error) {
+      console.error("Failed to fetch articles:", error);
     }
+
     setLoading(false);
   };
 
@@ -150,31 +150,31 @@ export default function AdminDashboard() {
     fetchArticles();
   }, [sortBy]);
 
-  // BUKA MODAL KONFIRMASI
   const handleDeleteClick = (id: number) => {
     setDeleteState({ isOpen: true, id });
   };
 
-  // EKSEKUSI DELETE SETELAH USER KONFIRM
   const confirmDelete = async () => {
     if (!deleteState.id) return;
 
     setIsDeleting(true);
-    const { error } = await supabase
-      .from("articles")
-      .delete()
-      .eq("id", deleteState.id);
+    try {
+      const res = await fetch(`/api/articles/${deleteState.id}`, {
+        method: "DELETE",
+      });
 
-    if (!error) {
-      setArticles((prev) => prev.filter((a) => a.id !== deleteState.id));
-      setDeleteState({ isOpen: false, id: null });
-    } else {
+      if (res.ok) {
+        setArticles((prev) => prev.filter((a) => a.id !== deleteState.id));
+        setDeleteState({ isOpen: false, id: null });
+      } else {
+        alert("Failed to delete");
+      }
+    } catch {
       alert("Failed to delete");
     }
     setIsDeleting(false);
   };
 
-  // Helper untuk menentukan label Main / Featured berdasarkan hot_priority (LOGIKA LAMA)
   const getHotStatus = (article: Article) => {
     if (!article.is_hot || !article.hot_priority) return null;
 
@@ -196,7 +196,6 @@ export default function AdminDashboard() {
       };
     }
 
-    // Urutan ke-4 dst (tetap Hot tapi tidak tampil di Featured)
     return {
       label: `QUEUED #${rank}`,
       color: "bg-gray-600 text-white",
@@ -210,7 +209,6 @@ export default function AdminDashboard() {
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
-      {/* MODAL DELETE */}
       <DeleteModal
         isOpen={deleteState.isOpen}
         onClose={() => setDeleteState({ isOpen: false, id: null })}
@@ -219,7 +217,6 @@ export default function AdminDashboard() {
       />
 
       <div className="max-w-6xl mx-auto">
-        {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
@@ -244,7 +241,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* TOOLBAR */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 flex-grow">
             <Search className="text-gray-400 ml-2" size={20} />
@@ -272,7 +268,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* TABLE */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50 border-b border-gray-200">
@@ -320,16 +315,13 @@ export default function AdminDashboard() {
                   return (
                     <tr
                       key={article.id}
-                      className={`border-b border-gray-100 transition-colors ${
-                        article.is_hot
+                      className={`border-b border-gray-100 transition-colors ${article.is_hot
                           ? "bg-orange-50 hover:bg-orange-100 border-l-4 border-l-orange-500"
                           : "hover:bg-gray-50 border-l-4 border-l-transparent"
-                      }`}
+                        }`}
                     >
-                      {/* TITLE COLUMN */}
                       <td className="p-5 font-bold text-gray-800 max-w-md">
                         <div className="flex flex-col gap-1">
-                          {/* LABEL HOT (MAIN / FEATURED / QUEUED) */}
                           {hotStatus && (
                             <div className="flex items-center gap-2 mb-1">
                               <span
@@ -394,7 +386,6 @@ export default function AdminDashboard() {
                             </button>
                           </Link>
 
-                          {/* DELETE pakai MODAL */}
                           <button
                             onClick={() => handleDeleteClick(article.id)}
                             className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 rounded-lg transition shadow-sm"

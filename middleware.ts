@@ -1,52 +1,56 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
+
+async function verifyJWT(token: string): Promise<boolean> {
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+    await jwtVerify(token, secret);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function middleware(req: NextRequest) {
-  // Response dasar yang akan diteruskan
-  const res = NextResponse.next()
+  const path = req.nextUrl.pathname;
 
-  // Client Supabase berbasis request + response (untuk refresh cookie, dll.)
-  const supabase = createMiddlewareClient({ req, res })
-
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession()
-
-  const path = req.nextUrl.pathname
-
-  console.log('[MIDDLEWARE]', { path, hasSession: !!session, error })
-
-  // 🔓 IZINKAN LOGOUT
-  // Route /logout akan meng-handle signOut di server (route.ts sendiri)
+  // Allow logout route
   if (path === '/logout') {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 
-  // 🔓 IZINKAN AUTH CALLBACK (supaya proses login bisa selesai)
-  if (path.startsWith('/auth')) {
-    return res
-  }
-
-  // 🔐 PROTEKSI HALAMAN ADMIN
-  // Semua URL yang diawali /admin butuh session aktif
+  // Protect admin routes
   if (path.startsWith('/admin')) {
-    if (!session) {
-      return NextResponse.redirect(new URL('/login', req.url))
+    const token = req.cookies.get('admin_token')?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+
+    const isValid = await verifyJWT(token);
+    if (!isValid) {
+      // Clear invalid token and redirect
+      const response = NextResponse.redirect(new URL('/login', req.url));
+      response.cookies.delete('admin_token');
+      return response;
     }
   }
 
-  // 🔄 JIKA SUDAH LOGIN, JANGAN BOLEHKAN BUKA /login LAGI
-  if (path === '/login' && session) {
-    return NextResponse.redirect(new URL('/admin', req.url))
+  // If already logged in, redirect /login to /admin
+  if (path === '/login') {
+    const token = req.cookies.get('admin_token')?.value;
+    if (token) {
+      const isValid = await verifyJWT(token);
+      if (isValid) {
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
+    }
   }
 
-  // Default: teruskan request
-  return res
+  return NextResponse.next();
 }
 
-// Middleware hanya aktif di route-route ini
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/auth/:path*', '/logout'],
-}
+  matcher: ['/admin/:path*', '/login', '/logout'],
+};

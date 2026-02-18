@@ -8,3 +8,6 @@ cn-jiipe-web.git/
 node_modules
 .next
 .env
+
+# Uploaded images (stored in MySQL)
+public/uploads/

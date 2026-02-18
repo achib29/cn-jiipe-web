@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Bold,
@@ -68,8 +67,8 @@ const NotificationModal = ({ isOpen, type, title, message, onClose }: any) => {
         <button
           onClick={onClose}
           className={`w-full py-3.5 rounded-xl text-white font-bold shadow-lg transition-transform transform hover:scale-[1.02] active:scale-[0.98] ${isSuccess
-              ? "bg-green-600 hover:bg-green-700 shadow-green-500/30"
-              : "bg-red-600 hover:bg-red-700 shadow-red-500/30"
+            ? "bg-green-600 hover:bg-green-700 shadow-green-500/30"
+            : "bg-red-600 hover:bg-red-700 shadow-red-500/30"
             }`}
         >
           {isSuccess ? "Kembali ke Dashboard" : "Coba Lagi"}
@@ -134,21 +133,11 @@ export default function AddNewsPage() {
     if (editId) {
       const fetchArticle = async () => {
         setFetching(true);
-        const { data, error } = await supabase
-          .from("articles")
-          .select("*")
-          .eq("id", editId)
-          .single();
+        try {
+          const res = await fetch(`/api/articles/${editId}`);
+          if (!res.ok) throw new Error("Failed to fetch article");
+          const data = await res.json();
 
-        if (error) {
-          console.error("Error fetching data:", error);
-          setModal({
-            isOpen: true,
-            type: "error",
-            title: "Gagal Memuat Data",
-            message: "Tidak dapat mengambil data artikel dari server.",
-          });
-        } else if (data) {
           // English
           setTitle(data.title || "");
           setCategory(data.category || "Industry News");
@@ -176,6 +165,14 @@ export default function AddNewsPage() {
               setPublishDate(dateObj.toISOString().split("T")[0]);
             }
           }
+        } catch (error: any) {
+          console.error("Error fetching data:", error);
+          setModal({
+            isOpen: true,
+            type: "error",
+            title: "Gagal Memuat Data",
+            message: "Tidak dapat mengambil data artikel dari server.",
+          });
         }
         setFetching(false);
       };
@@ -208,18 +205,18 @@ export default function AddNewsPage() {
     setUploadingBodyImg(true);
 
     try {
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, "");
-      const fileName = `body-${Date.now()}-${cleanFileName}`;
+      const formData = new FormData();
+      formData.append("file", file);
 
-      const { error: uploadError } = await supabase.storage
-        .from("news-images")
-        .upload(fileName, file);
-      if (uploadError) throw uploadError;
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      const { data: urlData } = supabase.storage
-        .from("news-images")
-        .getPublicUrl(fileName);
-      const imageUrl = urlData.publicUrl;
+      if (!res.ok) throw new Error("Upload failed");
+
+      const data = await res.json();
+      const imageUrl = data.url;
 
       const imgTag = `\n<img src="${imageUrl}" alt="Image" class="w-full rounded-xl my-6 shadow-md border border-gray-200" />\n<p class="text-center text-gray-500 text-sm italic mt-2">Caption Here</p>\n`;
       insertTag(imgTag, "");
@@ -286,17 +283,20 @@ export default function AddNewsPage() {
       let publicImageUrl =
         imagePreview || "https://via.placeholder.com/800x400";
 
+      // Upload cover image if new file selected
       if (imageFile) {
-        const cleanFileName = imageFile.name.replace(/[^a-zA-Z0-9.]/g, "");
-        const fileName = `cover-${Date.now()}-${cleanFileName}`;
-        const { error: uploadError } = await supabase.storage
-          .from("news-images")
-          .upload(fileName, imageFile);
-        if (uploadError) throw uploadError;
-        const { data: urlData } = supabase.storage
-          .from("news-images")
-          .getPublicUrl(fileName);
-        publicImageUrl = urlData.publicUrl;
+        const formData = new FormData();
+        formData.append("file", imageFile);
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) throw new Error("Failed to upload cover image");
+
+        const uploadData = await uploadRes.json();
+        publicImageUrl = uploadData.url;
       }
 
       const slug = title
@@ -330,57 +330,37 @@ export default function AddNewsPage() {
         summary_cn: summaryCn || null,
         content_cn: contentCn ? finalContentCn : null,
 
-        // Hot EN (pakai kolom existing)
+        // Hot EN
         is_hot: isHotEn,
         hot_priority: isHotEn ? hotPriorityEn : null,
 
-        // Hot CN (kolom baru)
+        // Hot CN
         is_hot_cn: isHotCn,
         hot_priority_cn: isHotCn ? hotPriorityCn : null,
       };
 
-      // Pastikan PRIORITAS unik per bahasa
-      if (isHotEn && hotPriorityEn) {
-        if (editId) {
-          await supabase
-            .from("articles")
-            .update({ is_hot: false, hot_priority: null })
-            .eq("hot_priority", hotPriorityEn)
-            .neq("id", editId);
-        } else {
-          await supabase
-            .from("articles")
-            .update({ is_hot: false, hot_priority: null })
-            .eq("hot_priority", hotPriorityEn);
-        }
-      }
-
-      if (isHotCn && hotPriorityCn) {
-        if (editId) {
-          await supabase
-            .from("articles")
-            .update({ is_hot_cn: false, hot_priority_cn: null })
-            .eq("hot_priority_cn", hotPriorityCn)
-            .neq("id", editId);
-        } else {
-          await supabase
-            .from("articles")
-            .update({ is_hot_cn: false, hot_priority_cn: null })
-            .eq("hot_priority_cn", hotPriorityCn);
-        }
-      }
-
       if (editId) {
-        const { error } = await supabase
-          .from("articles")
-          .update(articleData)
-          .eq("id", editId);
-        if (error) throw error;
+        // UPDATE
+        const res = await fetch(`/api/articles/${editId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(articleData),
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to update");
+        }
       } else {
-        const { error } = await supabase
-          .from("articles")
-          .insert([articleData]);
-        if (error) throw error;
+        // CREATE
+        const res = await fetch("/api/articles", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(articleData),
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.error || "Failed to create");
+        }
       }
 
       // SUKSES! TAMPILKAN MODAL
@@ -463,8 +443,8 @@ export default function AddNewsPage() {
               onClick={handleSubmit}
               disabled={loading}
               className={`flex items-center gap-2 px-8 py-2 rounded-lg text-white font-bold shadow-md transition-all ${loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-red-600 hover:bg-red-700"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-700"
                 }`}
             >
               {loading ? (
@@ -512,8 +492,8 @@ export default function AddNewsPage() {
                     type="button"
                     onClick={() => setActiveLang("en")}
                     className={`px-3 py-1.5 rounded text-sm font-bold ${activeLang === "en"
-                        ? "bg-red-50 text-red-600"
-                        : "text-gray-500 hover:bg-gray-50"
+                      ? "bg-red-50 text-red-600"
+                      : "text-gray-500 hover:bg-gray-50"
                       }`}
                   >
                     EN
@@ -522,8 +502,8 @@ export default function AddNewsPage() {
                     type="button"
                     onClick={() => setActiveLang("cn")}
                     className={`px-3 py-1.5 rounded text-sm font-bold ${activeLang === "cn"
-                        ? "bg-red-50 text-red-600"
-                        : "text-gray-500 hover:bg-gray-50"
+                      ? "bg-red-50 text-red-600"
+                      : "text-gray-500 hover:bg-gray-50"
                       }`}
                   >
                     CN
@@ -536,8 +516,8 @@ export default function AddNewsPage() {
                     type="button"
                     onClick={() => setPreviewMode(false)}
                     className={`px-3 py-1.5 rounded text-sm font-bold flex items-center gap-2 transition-colors ${!previewMode
-                        ? "bg-red-50 text-red-600"
-                        : "text-gray-500 hover:bg-gray-50"
+                      ? "bg-red-50 text-red-600"
+                      : "text-gray-500 hover:bg-gray-50"
                       }`}
                   >
                     <Edit3 size={14} /> Write
@@ -546,8 +526,8 @@ export default function AddNewsPage() {
                     type="button"
                     onClick={() => setPreviewMode(true)}
                     className={`px-3 py-1.5 rounded text-sm font-bold flex items-center gap-2 transition-colors ${previewMode
-                        ? "bg-red-50 text-red-600"
-                        : "text-gray-500 hover:bg-gray-50"
+                      ? "bg-red-50 text-red-600"
+                      : "text-gray-500 hover:bg-gray-50"
                       }`}
                   >
                     <Eye size={14} /> Preview
@@ -701,7 +681,6 @@ export default function AddNewsPage() {
 
           {/* KOLOM KANAN: SETTINGS */}
           <div className="space-y-6 h-full overflow-y-auto pb-10">
-            {/* HOT NEWS EN & CN */}
             {/* HOT NEWS EN & CN */}
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
               <div className="flex items-center gap-2 mb-4">

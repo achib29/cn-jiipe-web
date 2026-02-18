@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import {
   ChevronLeft,
   ChevronRight,
@@ -37,7 +36,7 @@ export default function NewsIndexPage() {
   const [loading, setLoading] = useState(true);
 
   // Pagination Latest Updates
-  const ITEMS_TO_SHOW = 3; // Menampilkan 3 item per halaman
+  const ITEMS_TO_SHOW = 3;
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -45,25 +44,18 @@ export default function NewsIndexPage() {
       setLoading(true);
 
       try {
-        const { data, error } = await supabase
-          .from("articles")
-          .select("*")
-          .eq("status", "Published");
+        const res = await fetch("/api/articles?status=Published");
+        if (!res.ok) throw new Error("Failed to fetch");
+        const data = await res.json();
 
-        if (error) {
-          console.error("Error fetching news:", error);
-          setLoading(false);
-          return;
-        }
-
-        if (!data) {
+        if (!Array.isArray(data)) {
           setLoading(false);
           return;
         }
 
         const allArticles = data as Article[];
 
-        // 1. SORTING UTAMA (Latest Updates tetap urut terbaru)
+        // 1. SORTING UTAMA
         allArticles.sort((a, b) => {
           const dateA = new Date(a.date).getTime();
           const dateB = new Date(b.date).getTime();
@@ -77,7 +69,7 @@ export default function NewsIndexPage() {
           return { isHot, priority };
         };
 
-        // 2. FEATURED untuk CN: pakai is_hot_cn/hot_priority_cn (fallback EN jika CN kosong)
+        // 2. FEATURED untuk CN
         const mainStory = allArticles.find((a) => {
           const { isHot, priority } = getHotConfig(a);
           return isHot && priority === 1;
@@ -99,8 +91,7 @@ export default function NewsIndexPage() {
 
         setFeaturedNews(topFeatured);
 
-        // 3. LATEST UPDATES = semua artikel Published
-        //    kecuali yang sudah dipakai sebagai Featured Stories
+        // 3. LATEST UPDATES = semua artikel Published kecuali Featured
         const featuredIds = topFeatured.map((f) => f.id);
         const sliderArticles = allArticles.filter(
           (a) => !featuredIds.includes(a.id)
@@ -132,7 +123,7 @@ export default function NewsIndexPage() {
 
   // Kartu Besar (Featured Utama)
   const MainFeaturedCard = ({ article }: { article: Article }) => {
-    const displayTitle = article.title_cn || article.title; // CN dulu, kalau kosong pakai EN
+    const displayTitle = article.title_cn || article.title;
     return (
       <Link
         href={`/news/${article.slug}`}
@@ -370,8 +361,8 @@ export default function NewsIndexPage() {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-4 py-2 rounded border text-sm ${currentPage === page
-                          ? "bg-red-600 text-white border-red-600"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
                         }`}
                     >
                       {page}

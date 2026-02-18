@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import { ArrowRight, Calendar } from "lucide-react";
 
 interface Article {
@@ -33,17 +32,14 @@ export default function HomeFeaturedStories() {
     const fetchFeatured = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from("articles")
-          .select("*")
-          .eq("status", "Published");
-
-        if (error) {
-          console.error("Error fetching featured news:", error);
+        const res = await fetch("/api/articles?status=Published");
+        if (!res.ok) {
+          console.error("Error fetching featured news");
           setLoading(false);
           return;
         }
-        if (!data) {
+        const data = await res.json();
+        if (!Array.isArray(data)) {
           setLoading(false);
           return;
         }

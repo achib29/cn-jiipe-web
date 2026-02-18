@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import { useParams } from "next/navigation";
 import {
   Facebook,
@@ -15,7 +14,6 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-// Definisi tipe data artikel sesuai database Supabase
 interface Article {
   id: number;
   // English fields
@@ -50,34 +48,31 @@ export default function ArticlePage() {
       const slug = params?.slug as string;
       if (!slug) return;
 
-      // 1. Fetch Artikel Utama
-      const { data: mainArticle, error } = await supabase
-        .from("articles")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
-      if (error) {
-        console.error("Error fetching article:", error);
-        setLoading(false);
-        return;
-      }
-
-      setArticle(mainArticle as Article);
-
-      // 2. Fetch Related Articles
-      if (mainArticle) {
-        const { data: relatedData } = await supabase
-          .from("articles")
-          .select("*")
-          .neq("id", mainArticle.id)
-          .eq("status", "Published")
-          .order("id", { ascending: false })
-          .limit(3);
-
-        if (relatedData) {
-          setRelatedArticles(relatedData as Article[]);
+      try {
+        // 1. Fetch Artikel Utama
+        const res = await fetch(`/api/articles/by-slug/${slug}`);
+        if (!res.ok) {
+          setLoading(false);
+          return;
         }
+
+        const mainArticle = await res.json();
+        setArticle(mainArticle as Article);
+
+        // 2. Fetch Related Articles
+        if (mainArticle) {
+          const relatedRes = await fetch(
+            `/api/articles?status=Published&limit=3&exclude=${mainArticle.id}`
+          );
+          if (relatedRes.ok) {
+            const relatedData = await relatedRes.json();
+            if (Array.isArray(relatedData)) {
+              setRelatedArticles(relatedData as Article[]);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching article:", err);
       }
 
       setLoading(false);
@@ -215,8 +210,8 @@ export default function ArticlePage() {
             <button
               onClick={() => handleShare("wechat")}
               className={`flex-1 min-w-[140px] md:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-sm hover:shadow-md hover:-translate-y-0.5 ${copied
-                  ? "bg-gray-800 text-white"
-                  : "bg-[#07C160] hover:bg-[#06ad56] text-white"
+                ? "bg-gray-800 text-white"
+                : "bg-[#07C160] hover:bg-[#06ad56] text-white"
                 }`}
               title="Salin link untuk dibagikan di WeChat"
             >
