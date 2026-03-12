@@ -45,9 +45,6 @@ export const metadata: Metadata = {
     description: 'Strategic industrial port estate in East Java, Indonesia.',
     images: ['/logo-jiipe-red.png'],
   },
-  alternates: {
-    canonical: '/',
-  },
   verification: {
     google: '86od0FYRxpvcfqBnd-v-COuZGRJSeGHksBNdS_1Zafc',
   },
