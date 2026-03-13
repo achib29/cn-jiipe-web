@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { ResultSetHeader } from 'mysql2';
 
+export const dynamic = 'force-dynamic';
+
 // One-time seed endpoint: GET /api/site-content/seed
 // Seeds all default content values from hardcoded components
 export async function GET() {

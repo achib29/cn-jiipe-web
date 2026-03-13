@@ -13,6 +13,8 @@ import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 
+export const dynamic = 'force-dynamic';
+
 async function getFooterContent() {
   try {
     const [rows] = await pool.query<RowDataPacket[]>('SELECT field_key, value_en, value_cn FROM site_content WHERE section = ?', ['footer']);

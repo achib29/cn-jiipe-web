@@ -12,6 +12,8 @@ import HomeFeaturedStories from "@/components/home/HomeFeaturedStories";
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 
+export const dynamic = 'force-dynamic';
+
 async function getSiteContent() {
   try {
     const [rows] = await pool.query<RowDataPacket[]>('SELECT section, field_key, value_en, value_cn FROM site_content');
