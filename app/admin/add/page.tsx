@@ -128,6 +128,11 @@ export default function AddNewsPage() {
   // Language toggle for editor
   const [activeLang, setActiveLang] = useState<"en" | "cn">("en");
 
+  // Landing Page fields
+  const [articleType, setArticleType] = useState<"news" | "landing">("news");
+  const [ogImage, setOgImage] = useState("");
+
+
   // --- LOAD DATA EDIT ---
   useEffect(() => {
     if (editId) {
@@ -158,6 +163,11 @@ export default function AddNewsPage() {
           // Hot CN
           setIsHotCn(data.is_hot_cn ?? false);
           setHotPriorityCn(data.hot_priority_cn ?? null);
+
+          // Landing page
+          setArticleType(data.type === "landing" ? "landing" : "news");
+          setOgImage(data.og_image || "");
+
 
           if (data.date) {
             const dateObj = new Date(data.date);
@@ -337,7 +347,12 @@ export default function AddNewsPage() {
         // Hot CN
         is_hot_cn: isHotCn,
         hot_priority_cn: isHotCn ? hotPriorityCn : null,
+
+        // Landing page
+        type: articleType,
+        og_image: ogImage || null,
       };
+
 
       if (editId) {
         // UPDATE
@@ -834,6 +849,61 @@ export default function AddNewsPage() {
               </p>
             </div>
 
+            {/* CONTENT TYPE */}
+            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-3">
+                📄 Content Type
+              </label>
+              <div className="flex rounded-lg border border-gray-200 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setArticleType("news")}
+                  className={`flex-1 py-2.5 text-sm font-bold transition-colors ${
+                    articleType === "news"
+                      ? "bg-red-600 text-white"
+                      : "bg-white text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  📰 News Article
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setArticleType("landing")}
+                  className={`flex-1 py-2.5 text-sm font-bold transition-colors ${
+                    articleType === "landing"
+                      ? "bg-red-600 text-white"
+                      : "bg-white text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  📄 Landing Page
+                </button>
+              </div>
+              {articleType === "landing" && (
+                <p className="text-[11px] text-gray-400 mt-2">
+                  Landing pages are accessible at <code>/articles/[slug]</code> — no Navbar/Footer shown.
+                </p>
+              )}
+            </div>
+
+            {/* OG IMAGE (landing pages) */}
+            {articleType === "landing" && (
+              <div className="bg-amber-50 p-5 rounded-xl shadow-sm border border-amber-200">
+                <label className="block text-xs font-bold text-amber-700 uppercase mb-2">
+                  🖼 OG Image URL (WhatsApp Preview)
+                </label>
+                <input
+                  type="url"
+                  value={ogImage}
+                  onChange={(e) => setOgImage(e.target.value)}
+                  placeholder="https://...image.jpg"
+                  className="w-full p-3 bg-white border border-amber-200 rounded-lg outline-none focus:ring-2 focus:ring-amber-400 text-sm"
+                />
+                <p className="text-[11px] text-amber-600 mt-2">
+                  This image appears when the link is shared on WhatsApp, Telegram, and social media. Recommended: 1200×630.
+                </p>
+              </div>
+            )}
+
             {/* STATUS */}
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
               <label className="block text-xs font-bold text-gray-500 uppercase mb-3">
@@ -848,6 +918,7 @@ export default function AddNewsPage() {
                 <option value="Draft">Draft (Hidden)</option>
               </select>
             </div>
+
 
             {/* CATEGORY */}
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">

@@ -5,7 +5,8 @@ import countryList from "react-select-country-list";
 import { useMemo } from "react";
 import { Label } from "@/components/ui/label";
 
-export default function CompanyCountrySelect({ onChange }: { onChange: (value: string) => void }) {
+export default function CompanyCountrySelect({ onChange, value, className }: { onChange: (value: string) => void; value?: string; className?: string }) {
+
   const options = useMemo(() => {
     return countryList().getData().map((c: { label: string; value: string }) => ({
       label: `${getFlagEmoji(c.value)} ${c.label}`,

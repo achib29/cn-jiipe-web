@@ -87,16 +87,20 @@ interface Article {
   category: string;
   date: string;
   status?: string;
+  type?: string;
   is_hot?: boolean;
   hot_priority?: number | null;
   created_at: string;
 }
+
 
 export default function AdminDashboard() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("dateDesc");
+  const [typeFilter, setTypeFilter] = useState<"all" | "news" | "landing">("all");
+
 
   const [deleteState, setDeleteState] = useState<{
     isOpen: boolean;
@@ -204,8 +208,10 @@ export default function AdminDashboard() {
   };
 
   const filteredArticles = articles.filter((article) =>
-    article.title.toLowerCase().includes(search.toLowerCase())
+    article.title.toLowerCase().includes(search.toLowerCase()) &&
+    (typeFilter === "all" || article.type === typeFilter)
   );
+
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
@@ -242,7 +248,25 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-4 mb-6">
+          {/* Type Filter Tabs */}
+          <div className="flex bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+            {(["all", "news", "landing"] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTypeFilter(t)}
+                className={`px-4 py-2.5 text-sm font-bold transition-colors ${
+                  typeFilter === t
+                    ? "bg-red-600 text-white"
+                    : "text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                {t === "all" ? "All" : t === "news" ? "📰 News" : "📄 Landing Pages"}
+              </button>
+            ))}
+          </div>
+
           <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 flex-grow">
+
             <Search className="text-gray-400 ml-2" size={20} />
             <input
               type="text"
@@ -367,9 +391,10 @@ export default function AdminDashboard() {
                       <td className="p-5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link
-                            href={`/news/${article.slug}`}
+                            href={article.type === "landing" ? `/articles/${article.slug}` : `/news/${article.slug}`}
                             target="_blank"
                           >
+
                             <button
                               className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition shadow-sm"
                               title="View"

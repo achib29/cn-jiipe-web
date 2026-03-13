@@ -56,7 +56,9 @@ export async function POST(request: Request) {
             title_cn, summary_cn, content_cn,
             is_hot, hot_priority,
             is_hot_cn, hot_priority_cn,
+            type, og_image,
         } = body;
+
 
         // Clear conflicting hot priorities (EN)
         if (is_hot && hot_priority) {
@@ -76,17 +78,18 @@ export async function POST(request: Request) {
 
         const [result] = await pool.query(
             `INSERT INTO articles 
-        (title, slug, category, status, summary, content, coverImage, date,
+        (title, slug, category, status, type, summary, content, coverImage, og_image, date,
          title_cn, summary_cn, content_cn,
          is_hot, hot_priority, is_hot_cn, hot_priority_cn)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                title, slug, category, status, summary, content, coverImage, date,
+                title, slug, category, status, type || 'news', summary, content, coverImage, og_image || null, date,
                 title_cn || null, summary_cn || null, content_cn || null,
                 is_hot ? 1 : 0, is_hot ? hot_priority : null,
                 is_hot_cn ? 1 : 0, is_hot_cn ? hot_priority_cn : null,
             ]
         );
+
 
         return NextResponse.json({ success: true, id: (result as any).insertId });
     } catch (error: any) {
