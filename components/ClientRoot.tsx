@@ -4,7 +4,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import ClientScripts from "@/components/ClientScripts";
 
-export default function ClientRoot({ children }: { children: React.ReactNode }) {
+export default function ClientRoot({ children, footerData }: { children: React.ReactNode, footerData?: any }) {
   const pathname = usePathname();
   const isThankYouPage = pathname === "/thank-you";
 
@@ -13,7 +13,7 @@ export default function ClientRoot({ children }: { children: React.ReactNode }) 
       <ClientScripts />
       {!isThankYouPage && <Navbar />}
       <main>{children}</main>
-      {!isThankYouPage && <Footer />}
+      {!isThankYouPage && <Footer initialData={footerData} />}
       {/* ChatSimple Widget */}
       {!isThankYouPage && (
         <>

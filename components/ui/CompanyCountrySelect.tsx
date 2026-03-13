@@ -29,7 +29,7 @@ export default function CompanyCountrySelect({ onChange }: { onChange: (value: s
         options={options}
         styles={customStyles}
         onChange={(option: any) => onChange(option?.value)}
-        placeholder="Select a country"
+        placeholder="请选择国家"
       />
     </div>
   );

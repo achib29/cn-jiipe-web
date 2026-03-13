@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -11,10 +11,49 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
 
-export default function ContactSection() {
+// Helper for Turnstile global object
+declare global {
+  interface Window {
+    turnstile: {
+      reset: (widgetId?: string) => void;
+    };
+  }
+}
+
+interface ContactContent {
+  label?: { en: string | null; cn: string | null };
+  heading?: { en: string | null; cn: string | null };
+  description?: { en: string | null; cn: string | null };
+}
+
+const lang = "cn";
+
+const DEFAULT: ContactContent = {
+  label: { en: "Contact Us", cn: "联系我们" },
+  heading: { en: "Connect with Our Investment Experts", cn: "联系我们的投资专家" },
+  description: {
+    en: "Please fill out the form below. Our investment consultants will contact you shortly to discuss your specific industrial needs.",
+    cn: "请填写以下表格。我们的投资顾问将很快与您联系，讨论您的具体工业需求。"
+  }
+};
+
+function get(content: ContactContent, key: keyof ContactContent): string {
+  return (content[key] as any)?.[lang] ?? (DEFAULT[key] as any)?.[lang] ?? "";
+}
+
+export default function ContactSection({ initialData }: { initialData?: ContactContent }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
   const router = useRouter();
+
+  const [content, setContent] = React.useState<ContactContent>(initialData || DEFAULT);
+
+  React.useEffect(() => {
+    fetch("/api/site-content?section=contact")
+      .then(r => r.json())
+      .then(data => { if (data.data) setContent(data.data); })
+      .catch(() => {});
+  }, []);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -36,21 +75,24 @@ export default function ContactSection() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const resetTurnstile = () => {
+    if (typeof window !== "undefined" && window.turnstile) {
+      try {
+        window.turnstile.reset();
+      } catch (e) {
+        console.warn("Turnstile reset failed", e);
+      }
+    }
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     if (formData.reason === "Other" && !formData.reasonOther.trim()) {
-      alert("请填写‘其他’的具体原因。");
+      alert("Please provide details for 'Other'.");
       setIsSubmitting(false);
       return;
-    }
-
-    if (typeof window.gtag !== "undefined") {
-      window.gtag("event", "inquiry_submit", {
-        event_category: "Contact Form",
-        event_label: "Submit Inquiry",
-      });
     }
 
     const isLocal =
@@ -60,14 +102,15 @@ export default function ContactSection() {
     const token = isLocal
       ? "bypass"
       : (
-          document.querySelector(
-            'input[name="cf-turnstile-response"]'
-          ) as HTMLInputElement
-        )?.value;
+        document.querySelector(
+          'input[name="cf-turnstile-response"]'
+        ) as HTMLInputElement
+      )?.value;
 
     if (!isLocal && !token) {
       alert("Turnstile verification failed. Please refresh and try again.");
       setIsSubmitting(false);
+      resetTurnstile(); // Reset on missing token
       return;
     }
 
@@ -86,18 +129,16 @@ export default function ContactSection() {
     })
       .then((res) => {
         if (res.ok) {
-          if (window._agl) {
-            window._agl.push(['track', ['success', { t: 3 }]]);
-            console.log('Baidu tracking triggered');
-          }
           router.push("/thank-you");
         } else {
           alert("Submission failed. Please try again.");
+          resetTurnstile(); // Reset on server error
         }
       })
       .catch((err) => {
         console.error("Background form submit failed:", err);
         alert("Submission error. Please try again.");
+        resetTurnstile(); // Reset on network error
       })
       .finally(() => setIsSubmitting(false));
   };
@@ -123,7 +164,7 @@ export default function ContactSection() {
               isInView && "opacity-100 translate-y-0"
             )}
           >
-            联系我们
+            {get(content, "label")}
           </h2>
           <h3
             className={cn(
@@ -131,15 +172,15 @@ export default function ContactSection() {
               isInView && "opacity-100 translate-y-0"
             )}
           >
-            欢迎咨询园区招商专员
+            {get(content, "heading")}
           </h3>
           <p
             className={cn(
-              "text-gray-500 text-sm md:text-base leading-relaxed opacity-0 transition-all duration-700 ease-out",
+              "text-gray-500 text-sm md:text-base leading-relaxed opacity-0 transition-all duration-700 ease-out whitespace-pre-line",
               isInView && "opacity-100 translate-y-0"
             )}
           >
-            提交下方表单后，我们将根据您的企业所属行业，提供对应的 JIIPE 工业园区招商专员联系方式。
+            {get(content, "description")}
           </p>
         </div>
 
@@ -151,6 +192,8 @@ export default function ContactSection() {
         >
           <CardContent className="p-4 md:p-10">
             <form className="space-y-8" onSubmit={handleSubmit}>
+              {/* ... form fields tetap sama ... */}
+
               {/* Nama */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -212,9 +255,11 @@ export default function ContactSection() {
                 />
               </div>
 
-              {/* Alasan */}
+              {/* Reason */}
               <div className="space-y-2">
-                <Label className="font-medium">考虑JIIPE的原因*</Label>
+                <Label className="font-medium">
+                  考虑JIIPE的原因*
+                </Label>
                 <RadioGroup
                   value={formData.reason}
                   onValueChange={(val) =>
@@ -244,7 +289,7 @@ export default function ContactSection() {
                     name="reasonOther"
                     value={formData.reasonOther}
                     onChange={handleChange}
-                    placeholder="请填写具体原因"
+                    placeholder="请提供详细信息"
                     className="mt-2"
                     required
                   />
@@ -255,48 +300,28 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">所属行业*</Label>
-                  <select
-                    name="industry"
-                    className="w-full border rounded-md p-2"
-                    value={formData.industry}
-                    onChange={handleChange}
-                    required
-                  >
+                  <select name="industry" className="w-full border rounded-md p-2 bg-transparent appearance-none" onChange={handleChange} required>
                     <option value="">请选择行业类别</option>
-                    <option value="Chemical">化工产业</option>
-                    <option value="Energy">能源产业</option>
-                    <option value="Electronic">电子产业</option>
-                    <option value="Metal">金属产业</option>
-                    <option value="Supporting & Logistic">
-                      辅助和物流产业
-                    </option>
-                    <option value="Other">其他行业</option>
+                    <option value="Chemical">化工</option>
+                    <option value="Energy">能源</option>
+                    <option value="Electronic">电子</option>
+                    <option value="Metal">金属</option>
+                    <option value="Supporting & Logistic">配套及物流</option>
+                    <option value="Other">其他</option>
                   </select>
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用地面积（公顷）*</Label>
-                  <Input
-                    name="landPlot"
-                    type="number"
-                    value={formData.landPlot}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input name="landPlot" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计建设需时*</Label>
-                  <select
-                    name="timeline"
-                    className="w-full border rounded-md p-2"
-                    value={formData.timeline}
-                    onChange={handleChange}
-                    required
-                  >
+                  <select name="timeline" className="w-full border rounded-md p-2 bg-transparent appearance-none" onChange={handleChange} required>
                     <option value="">请选择时长</option>
-                    <option value="0-6 months">6个月以内</option>
-                    <option value="6-12 months">6-12个月</option>
-                    <option value="12-24 months">12-24个月</option>
-                    <option value="> 24 months">24个月以上</option>
+                    <option value="0-6 months">0–6 个月</option>
+                    <option value="6-12 months">6–12 个月</option>
+                    <option value="12-24 months">12–24 个月</option>
+                    <option value="> 24 months">超过 24 个月</option>
                   </select>
                 </div>
               </div>
@@ -305,47 +330,22 @@ export default function ContactSection() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className="font-medium">所需电力总量（兆瓦）*</Label>
-                  <Input
-                    name="power"
-                    type="number"
-                    value={formData.power}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input name="power" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需工业用水总量（立方米/天）*</Label>
-                  <Input
-                    name="water"
-                    type="number"
-                    value={formData.water}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input name="water" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">所需天然气总量（百万英热单位/年）*</Label>
-                  <Input
-                    name="gas"
-                    type="number"
-                    value={formData.gas}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input name="gas" type="number" onChange={handleChange} required />
                 </div>
                 <div className="space-y-2">
                   <Label className="font-medium">预计港口吞吐量（吨/年）*</Label>
-                  <Input
-                    name="seaport"
-                    type="number"
-                    value={formData.seaport}
-                    onChange={handleChange}
-                    required
-                  />
+                  <Input name="seaport" type="number" onChange={handleChange} required />
                 </div>
               </div>
 
-              {/* Turnstile hanya muncul di production */}
               {typeof window !== "undefined" &&
                 window.location.hostname !== "localhost" && (
                   <div className="mt-4">
@@ -356,7 +356,6 @@ export default function ContactSection() {
                   </div>
                 )}
 
-              {/* Submit */}
               <Button
                 type="submit"
                 size="lg"

@@ -9,6 +9,24 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 // 1. IMPORT LIBRARY GOOGLE (Penting)
 import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 
+// CMS Fetch for Layout components like Footer
+import pool from '@/lib/db';
+import { RowDataPacket } from 'mysql2';
+
+async function getFooterContent() {
+  try {
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT field_key, value_en, value_cn FROM site_content WHERE section = ?', ['footer']);
+    const result: Record<string, { en: string | null; cn: string | null }> = {};
+    for (const row of rows) {
+      result[row.field_key] = { en: row.value_en, cn: row.value_cn };
+    }
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch footer content SSR:', error);
+    return {};
+  }
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -50,11 +68,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const footerData = await getFooterContent();
+
   return (
     <html lang="zh" suppressHydrationWarning>
       <body className={inter.className}>
@@ -65,7 +85,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* ClientScripts (Baidu) berjalan di dalam ClientRoot ini */}
-          <ClientRoot>{children}</ClientRoot>
+          <ClientRoot footerData={footerData as any}>{children}</ClientRoot>
         </ThemeProvider>
 
         {/* Vercel Analytics */}
