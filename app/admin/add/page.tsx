@@ -3,20 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Bold,
-  Italic,
-  Heading1,
-  List,
-  Link as LinkIcon,
   Image as ImageIcon,
-  Eye,
-  Edit3,
   X as XIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  ImagePlus,
   Loader2,
   ArrowLeft,
   Save,
@@ -25,6 +13,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 
 // --- KOMPONEN MODAL / POPUP NOTIFIKASI ---
 const NotificationModal = ({ isOpen, type, title, message, onClose }: any) => {
@@ -85,8 +74,6 @@ export default function AddNewsPage() {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
-  const [uploadingBodyImg, setUploadingBodyImg] = useState(false);
-  const [previewMode, setPreviewMode] = useState(false);
 
   // STATE UNTUK MODAL POPUP
   const [modal, setModal] = useState({
@@ -95,9 +82,6 @@ export default function AddNewsPage() {
     title: "",
     message: "",
   });
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const bodyImageInputRef = useRef<HTMLInputElement>(null);
 
   // State Form Data (EN)
   const [title, setTitle] = useState("");
@@ -150,13 +134,14 @@ export default function AddNewsPage() {
           setCategory(data.category || "Industry News");
           setStatus(data.status || "Published");
           setSummary(data.summary || "");
-          setContent((data.content || "").replaceAll("<br/>", "\n"));
+          // Tiptap accepts raw HTML — no need to convert <br/> to \n
+          setContent(data.content || "");
           setImagePreview(data.coverImage || null);
 
           // Chinese
           setTitleCn(data.title_cn || "");
           setSummaryCn(data.summary_cn || "");
-          setContentCn((data.content_cn || "").replaceAll("<br/>", "\n"));
+          setContentCn(data.content_cn || "");
 
           // Hot EN
           setIsHotEn(data.is_hot ?? false);
@@ -211,70 +196,14 @@ export default function AddNewsPage() {
     }
   };
 
-  const handleBodyImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (!e.target.files?.[0]) return;
-    const file = e.target.files[0];
-    setUploadingBodyImg(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-
-      const data = await res.json();
-      const imageUrl = data.url;
-
-      const imgTag = `\n<img src="${imageUrl}" alt="Image" class="w-full rounded-xl my-6 shadow-md border border-gray-200" />\n<p class="text-center text-gray-500 text-sm italic mt-2">Caption Here</p>\n`;
-      insertTag(imgTag, "");
-    } catch (error) {
-      console.error("Gagal upload gambar body:", error);
-      setModal({
-        isOpen: true,
-        type: "error",
-        title: "Upload Gagal",
-        message: "Gagal mengupload gambar ke dalam artikel.",
-      });
-    } finally {
-      setUploadingBodyImg(false);
-      if (bodyImageInputRef.current) bodyImageInputRef.current.value = "";
-    }
-  };
-
-  const insertTag = (startTag: string, endTag: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-
-    const text = activeLang === "en" ? content : contentCn;
-
-    const newText =
-      text.substring(0, start) +
-      startTag +
-      text.substring(start, end) +
-      endTag +
-      text.substring(end);
-
-    if (activeLang === "en") {
-      setContent(newText);
-    } else {
-      setContentCn(newText);
-    }
-
-    setTimeout(() => {
-      textarea.focus();
-      const cursorPosition = start + startTag.length;
-      textarea.setSelectionRange(cursorPosition, cursorPosition);
-    }, 0);
+  // Upload image for body content (used by RichTextEditor)
+  const handleBodyImageUpload = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+    return data.url;
   };
 
   // --- SUBMIT DATA ---
@@ -320,8 +249,9 @@ export default function AddNewsPage() {
         .replace(/\s+/g, "-");
       const finalSlug = slug.trim() || slugBase;
 
-      const finalContentEn = content.replace(/\n/g, "<br/>");
-      const finalContentCn = contentCn.replace(/\n/g, "<br/>");
+      // Tiptap outputs clean HTML directly — no need to replace \n
+      const finalContentEn = content;
+      const finalContentCn = contentCn;
 
       const formattedDate = new Date(publishDate).toLocaleDateString("en-US", {
         year: "numeric",
@@ -413,9 +343,7 @@ export default function AddNewsPage() {
     }
   };
 
-  const currentContent = activeLang === "en" ? content : contentCn;
-  const setCurrentContent =
-    activeLang === "en" ? setContent : setContentCn;
+
 
   if (fetching) {
     return (
@@ -503,216 +431,56 @@ export default function AddNewsPage() {
               placeholder="Chinese Title (用于 cn.jiipe.com)..."
             />
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col flex-grow overflow-hidden">
-              {/* TOOLBAR */}
-              <div className="bg-gray-50 border-b border-gray-200 p-2 flex flex-wrap items-center gap-1">
-                {/* Bahasa EN / CN */}
-                <div className="flex bg-white rounded-lg border border-gray-200 p-1 mr-2">
-                  <button
-                    type="button"
-                    onClick={() => setActiveLang("en")}
-                    className={`px-3 py-1.5 rounded text-sm font-bold ${activeLang === "en"
-                      ? "bg-red-50 text-red-600"
-                      : "text-gray-500 hover:bg-gray-50"
-                      }`}
-                  >
-                    EN
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActiveLang("cn")}
-                    className={`px-3 py-1.5 rounded text-sm font-bold ${activeLang === "cn"
-                      ? "bg-red-50 text-red-600"
-                      : "text-gray-500 hover:bg-gray-50"
-                      }`}
-                  >
-                    CN
-                  </button>
-                </div>
+            {/* Language toggle tabs */}
+            <div className="flex bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm w-fit">
+              <button
+                type="button"
+                onClick={() => setActiveLang("en")}
+                className={`px-5 py-2.5 text-sm font-bold transition-colors ${
+                  activeLang === "en" ? "bg-red-600 text-white" : "text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                🇺🇸 English Content
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveLang("cn")}
+                className={`px-5 py-2.5 text-sm font-bold transition-colors ${
+                  activeLang === "cn" ? "bg-red-600 text-white" : "text-gray-500 hover:bg-gray-50"
+                }`}
+              >
+                🇨🇳 Chinese Content
+              </button>
+            </div>
 
-                {/* MODE WRITE / PREVIEW */}
-                <div className="flex bg-white rounded-lg border border-gray-200 p-1 mr-2">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewMode(false)}
-                    className={`px-3 py-1.5 rounded text-sm font-bold flex items-center gap-2 transition-colors ${!previewMode
-                      ? "bg-red-50 text-red-600"
-                      : "text-gray-500 hover:bg-gray-50"
-                      }`}
-                  >
-                    <Edit3 size={14} /> Write
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewMode(true)}
-                    className={`px-3 py-1.5 rounded text-sm font-bold flex items-center gap-2 transition-colors ${previewMode
-                      ? "bg-red-50 text-red-600"
-                      : "text-gray-500 hover:bg-gray-50"
-                      }`}
-                  >
-                    <Eye size={14} /> Preview
-                  </button>
-                </div>
-
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                <button
-                  type="button"
-                  title="Bold"
-                  onClick={() => insertTag("<b>", "</b>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <Bold size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Italic"
-                  onClick={() => insertTag("<i>", "</i>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <Italic size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Heading 2 (ToC main section)"
-                  onClick={() => insertTag("<h2>", "</h2>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700 flex items-center gap-1 text-xs font-bold"
-                >
-                  H2
-                </button>
-                <button
-                  type="button"
-                  title="Heading 3 (ToC sub-section)"
-                  onClick={() => insertTag("<h3>", "</h3>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700 flex items-center gap-1 text-xs font-bold"
-                >
-                  H3
-                </button>
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                <button
-                  type="button"
-                  title="Align Left"
-                  onClick={() => insertTag('<div class="text-left">', "</div>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <AlignLeft size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Align Center"
-                  onClick={() =>
-                    insertTag('<div class="text-center">', "</div>")
-                  }
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <AlignCenter size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Align Right"
-                  onClick={() =>
-                    insertTag('<div class="text-right">', "</div>")
-                  }
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <AlignRight size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Justify"
-                  onClick={() =>
-                    insertTag('<div class="text-justify">', "</div>")
-                  }
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <AlignJustify size={18} />
-                </button>
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                <button
-                  type="button"
-                  title="List"
-                  onClick={() =>
-                    insertTag(
-                      '<ul class="list-disc list-inside space-y-1 ml-4"><li>',
-                      "</li></ul>"
-                    )
-                  }
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <List size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Link"
-                  onClick={() => {
-                    const url = prompt("URL:", "https://");
-                    if (url)
-                      insertTag(
-                        `<a href="${url}" class="text-red-600 hover:underline font-medium">`,
-                        "</a>"
-                      );
-                  }}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700"
-                >
-                  <LinkIcon size={18} />
-                </button>
-                <button
-                  type="button"
-                  title="Add Image Body"
-                  onClick={() => bodyImageInputRef.current?.click()}
-                  className={`p-2 hover:bg-red-50 rounded flex items-center gap-2 ${uploadingBodyImg ? "text-red-400" : "text-red-600"
-                    }`}
-                  disabled={uploadingBodyImg}
-                >
-                  {uploadingBodyImg ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <ImagePlus size={18} />
-                  )}
-                </button>
-                <input
-                  type="file"
-                  ref={bodyImageInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleBodyImageUpload}
-                />
+            {/* ToC Info for Landing Pages */}
+            {articleType === "landing" && (
+              <div className="px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-2 text-xs text-blue-700">
+                <span>📑</span>
+                <span>
+                  <b>Table of Contents</b> akan otomatis dibuat dari heading <code className="bg-blue-100 px-1 rounded">H2</code> dan <code className="bg-blue-100 px-1 rounded">H3</code>.
+                </span>
               </div>
+            )}
 
-              {/* EDITOR / PREVIEW */}
-              {/* ToC Info for Landing Pages */}
-              {articleType === "landing" && (
-                <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-start gap-2 text-xs text-blue-700">
-                  <span>📑</span>
-                  <span>
-                    <b>Daftar Isi (Table of Contents)</b> akan otomatis dibuat dari heading <code className="bg-blue-100 px-1 rounded">H2</code> dan <code className="bg-blue-100 px-1 rounded">H3</code> di dalam konten artikel. Gunakan tombol <b>H</b> di toolbar di atas untuk membuat heading.
-                  </span>
-                </div>
-              )}
-              <div className="flex-grow relative bg-white h-full overflow-hidden">
-                {previewMode ? (
-                  <div
-                    className="prose prose-lg max-w-none p-8 h-full overflow-y-auto whitespace-pre-wrap"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        currentContent ||
-                        "<p class='text-gray-400 italic'>Start writing...</p>",
-                    }}
-                  />
-                ) : (
-                  <textarea
-                    ref={textareaRef}
-                    required
-                    value={currentContent}
-                    onChange={(e) => setCurrentContent(e.target.value)}
-                    className="w-full h-full p-8 outline-none resize-none font-mono text-base text-gray-800 leading-relaxed"
-                    placeholder={
-                      activeLang === "en"
-                        ? "Write your article here (English)..."
-                        : "Write your article here (Chinese)..."
-                    }
-                  />
-                )}
-              </div>
+            {/* WYSIWYG Editor — EN */}
+            <div className={`flex-grow ${activeLang === "en" ? "block" : "hidden"}`}>
+              <RichTextEditor
+                value={content}
+                onChange={setContent}
+                placeholder="Write English content here..."
+                onImageUpload={handleBodyImageUpload}
+              />
+            </div>
+
+            {/* WYSIWYG Editor — CN */}
+            <div className={`flex-grow ${activeLang === "cn" ? "block" : "hidden"}`}>
+              <RichTextEditor
+                value={contentCn}
+                onChange={setContentCn}
+                placeholder="Write Chinese content here (用中文写内容)..."
+                onImageUpload={handleBodyImageUpload}
+              />
             </div>
           </div>
 
