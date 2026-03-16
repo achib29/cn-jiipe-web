@@ -15,6 +15,11 @@ async function verifyJWT(token: string): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
+  // Inject pathname header for use in Server Components (e.g. root layout)
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set('x-pathname', path);
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+
   // Allow logout route
   if (path === '/logout') {
     return NextResponse.next();
@@ -48,9 +53,10 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/logout'],
+  matcher: ['/admin/:path*', '/login', '/logout', '/articles/:path*'],
 };
+

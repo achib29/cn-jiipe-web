@@ -12,6 +12,8 @@ import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 // CMS Fetch for Layout components like Footer
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
+import { headers } from 'next/headers';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -76,6 +78,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const footerData = await getFooterContent();
+  const headersList = headers();
+  const pathname = headersList.get('x-pathname') || '';
+  const isLandingPage = pathname.startsWith('/articles/');
+  const isAdminPage = pathname.startsWith('/admin') || pathname.startsWith('/login') || pathname.startsWith('/logout');
 
   return (
     <html lang="zh" suppressHydrationWarning>
@@ -86,8 +92,13 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* ClientScripts (Baidu) berjalan di dalam ClientRoot ini */}
-          <ClientRoot footerData={footerData as any}>{children}</ClientRoot>
+          {isLandingPage || isAdminPage ? (
+            // Landing & Admin pages: no Navbar, no Footer, no ClientRoot
+            <>{children}</>
+          ) : (
+            // Normal pages: full ClientRoot with Navbar + Footer
+            <ClientRoot footerData={footerData as any}>{children}</ClientRoot>
+          )}
         </ThemeProvider>
 
         {/* Vercel Analytics */}

@@ -16,6 +16,9 @@ import {
   Star,
   LayoutTemplate,
   X,
+  Link2,
+  Copy,
+  Check,
 } from "lucide-react";
 
 // --- MODAL KONFIRMASI DELETE ---
@@ -110,6 +113,15 @@ export default function AdminDashboard() {
     id: null,
   });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
+  const handleCopyUrl = (slug: string, id: number) => {
+    const url = `https://cn.jiipe.com/articles/${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
 
   const handleLogout = () => {
     window.location.href = "/logout";
@@ -254,11 +266,10 @@ export default function AdminDashboard() {
               <button
                 key={t}
                 onClick={() => setTypeFilter(t)}
-                className={`px-4 py-2.5 text-sm font-bold transition-colors ${
-                  typeFilter === t
+                className={`px-4 py-2.5 text-sm font-bold transition-colors ${typeFilter === t
                     ? "bg-red-600 text-white"
                     : "text-gray-500 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 {t === "all" ? "All" : t === "news" ? "📰 News" : "📄 Landing Pages"}
               </button>
@@ -340,8 +351,8 @@ export default function AdminDashboard() {
                     <tr
                       key={article.id}
                       className={`border-b border-gray-100 transition-colors ${article.is_hot
-                          ? "bg-orange-50 hover:bg-orange-100 border-l-4 border-l-orange-500"
-                          : "hover:bg-gray-50 border-l-4 border-l-transparent"
+                        ? "bg-orange-50 hover:bg-orange-100 border-l-4 border-l-orange-500"
+                        : "hover:bg-gray-50 border-l-4 border-l-transparent"
                         }`}
                     >
                       <td className="p-5 font-bold text-gray-800 max-w-md">
@@ -390,11 +401,22 @@ export default function AdminDashboard() {
 
                       <td className="p-5 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {article.type === "landing" && (
+                            <button
+                              onClick={() => handleCopyUrl(article.slug, article.id)}
+                              className={`p-2 bg-white border rounded-lg transition shadow-sm ${copiedId === article.id
+                                  ? "border-green-400 text-green-600"
+                                  : "border-gray-200 text-gray-400 hover:text-purple-600 hover:border-purple-200"
+                                }`}
+                              title="Copy Public URL"
+                            >
+                              {copiedId === article.id ? <Check size={18} /> : <Link2 size={18} />}
+                            </button>
+                          )}
                           <Link
                             href={article.type === "landing" ? `/articles/${article.slug}` : `/news/${article.slug}`}
                             target="_blank"
                           >
-
                             <button
                               className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-blue-600 hover:border-blue-200 rounded-lg transition shadow-sm"
                               title="View"

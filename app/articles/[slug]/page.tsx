@@ -8,6 +8,16 @@ import ArticleLandingClient from '@/components/articles/ArticleLandingClient';
 
 export const dynamic = 'force-dynamic';
 
+/** Inject sequential IDs into H2/H3 tags server-side (avoids hydration mismatch from client-side DOMParser) */
+function injectHeadingIds(html: string): string {
+  let idx = 0;
+  return html.replace(/<(h2|h3)(\s[^>]*)?>([\s\S]*?)<\/\1>/gi, (match, tag, attrs, text) => {
+    const id = `heading-${idx++}`;
+    return `<${tag} id="${id}"${attrs || ''}>${text}</${tag}>`;
+  });
+}
+
+
 interface ArticleRow extends RowDataPacket {
   id: number;
   title: string;
@@ -87,5 +97,17 @@ export default async function ArticleSlugPage({ params }: { params: { slug: stri
   const article = await getArticle(params.slug);
   if (!article) notFound();
 
-  return <ArticleLandingClient article={article} />;
+  // Pre-process heading IDs server-side to avoid hydration mismatch
+  const processedContent = injectHeadingIds(article.content || '');
+  const processedContentCn = article.content_cn ? injectHeadingIds(article.content_cn) : null;
+
+  return (
+    <ArticleLandingClient
+      article={{
+        ...article,
+        content: processedContent,
+        content_cn: processedContentCn,
+      }}
+    />
+  );
 }

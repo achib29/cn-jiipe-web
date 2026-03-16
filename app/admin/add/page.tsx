@@ -131,6 +131,8 @@ export default function AddNewsPage() {
   // Landing Page fields
   const [articleType, setArticleType] = useState<"news" | "landing">("news");
   const [ogImage, setOgImage] = useState("");
+  const [slug, setSlug] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
 
 
   // --- LOAD DATA EDIT ---
@@ -167,6 +169,8 @@ export default function AddNewsPage() {
           // Landing page
           setArticleType(data.type === "landing" ? "landing" : "news");
           setOgImage(data.og_image || "");
+          setSlug(data.slug || "");
+          setCoverImageUrl(data.coverImage || "");
 
 
           if (data.date) {
@@ -309,11 +313,12 @@ export default function AddNewsPage() {
         publicImageUrl = uploadData.url;
       }
 
-      const slug = title
+      const slugBase = title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
         .trim()
         .replace(/\s+/g, "-");
+      const finalSlug = slug.trim() || slugBase;
 
       const finalContentEn = content.replace(/\n/g, "<br/>");
       const finalContentCn = contentCn.replace(/\n/g, "<br/>");
@@ -327,12 +332,12 @@ export default function AddNewsPage() {
       const articleData: any = {
         // English
         title,
-        slug,
+        slug: finalSlug,
         category,
         status,
         summary,
         content: finalContentEn,
-        coverImage: publicImageUrl,
+        coverImage: coverImageUrl || publicImageUrl,
         date: formattedDate,
 
         // Chinese (bisa kosong/null)
@@ -568,11 +573,19 @@ export default function AddNewsPage() {
                 </button>
                 <button
                   type="button"
-                  title="Heading 2"
-                  onClick={() => insertTag("<h3>", "</h3>")}
-                  className="p-2 hover:bg-gray-200 rounded text-gray-700 flex items-center gap-1"
+                  title="Heading 2 (ToC main section)"
+                  onClick={() => insertTag("<h2>", "</h2>")}
+                  className="p-2 hover:bg-gray-200 rounded text-gray-700 flex items-center gap-1 text-xs font-bold"
                 >
-                  <Heading1 size={18} />
+                  H2
+                </button>
+                <button
+                  type="button"
+                  title="Heading 3 (ToC sub-section)"
+                  onClick={() => insertTag("<h3>", "</h3>")}
+                  className="p-2 hover:bg-gray-200 rounded text-gray-700 flex items-center gap-1 text-xs font-bold"
+                >
+                  H3
                 </button>
                 <div className="w-px h-6 bg-gray-300 mx-1"></div>
                 <button
@@ -666,6 +679,15 @@ export default function AddNewsPage() {
               </div>
 
               {/* EDITOR / PREVIEW */}
+              {/* ToC Info for Landing Pages */}
+              {articleType === "landing" && (
+                <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-start gap-2 text-xs text-blue-700">
+                  <span>📑</span>
+                  <span>
+                    <b>Daftar Isi (Table of Contents)</b> akan otomatis dibuat dari heading <code className="bg-blue-100 px-1 rounded">H2</code> dan <code className="bg-blue-100 px-1 rounded">H3</code> di dalam konten artikel. Gunakan tombol <b>H</b> di toolbar di atas untuk membuat heading.
+                  </span>
+                </div>
+              )}
               <div className="flex-grow relative bg-white h-full overflow-hidden">
                 {previewMode ? (
                   <div
@@ -930,11 +952,21 @@ export default function AddNewsPage() {
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-red-500"
               >
-                <option>Industry News</option>
-                <option>Press Release</option>
-                <option>Sustainability</option>
-                <option>Events</option>
-                <option>Awards</option>
+                <optgroup label="--- News ---">
+                  <option>Industry News</option>
+                  <option>Press Release</option>
+                  <option>Sustainability</option>
+                  <option>Events</option>
+                  <option>Awards</option>
+                </optgroup>
+                <optgroup label="--- Landing Pages ---">
+                  <option>Investment Guide</option>
+                  <option>Industrial Park</option>
+                  <option>Regulations & Policy</option>
+                  <option>Market Insight</option>
+                  <option>Company Profile</option>
+                  <option>Success Story</option>
+                </optgroup>
               </select>
             </div>
 
@@ -1002,6 +1034,37 @@ export default function AddNewsPage() {
                   />
                 </div>
               )}
+              {/* Cover Image URL (paste dari ImageKit) */}
+              <div className="mt-4">
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">
+                  🔗 Or Paste Image URL (ImageKit / CDN)
+                </label>
+                <input
+                  type="url"
+                  value={coverImageUrl}
+                  onChange={(e) => setCoverImageUrl(e.target.value)}
+                  placeholder="https://ik.imagekit.io/..."
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                />
+                <p className="text-[11px] text-gray-400 mt-1">URL ini akan dipakai sebagai cover image jika tidak ada file yang diupload.</p>
+              </div>
+            </div>
+
+            {/* SLUG (editable) */}
+            <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+              <label className="block text-xs font-bold text-gray-500 uppercase mb-2">
+                🔗 URL Slug
+              </label>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))}
+                placeholder="auto-generated dari judul EN jika kosong"
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-red-500 text-sm font-mono"
+              />
+              <p className="text-[11px] text-gray-400 mt-1">
+                Landing page URL: <code>/articles/{slug || "[slug]"}</code>. Kosongkan untuk auto-generate dari judul.
+              </p>
             </div>
           </div>
         </div>
