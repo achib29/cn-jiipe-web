@@ -71,6 +71,7 @@ export default function RichTextEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [codeView, setCodeView] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const isUpdatingRef = useRef(false);
 
   const editor = useEditor({
@@ -142,13 +143,15 @@ export default function RichTextEditor({
     async (file: File) => {
       if (!editor || !onImageUpload) return;
       setUploading(true);
+      setUploadError(null);
       try {
         const url = await onImageUpload(file);
-        editor.chain().focus().setImage({ src: url, alt: "Image" }).run();
-        // Add caption paragraph after image
-        editor.chain().focus().insertContent('<p class="text-center text-gray-500 text-sm italic">Caption Here</p>').run();
-      } catch (e) {
+        if (!url) throw new Error("No URL returned from server");
+        editor.chain().focus().setImage({ src: url, alt: file.name }).run();
+      } catch (e: any) {
         console.error("Image upload failed:", e);
+        setUploadError(e?.message || "Upload gagal. Coba lagi.");
+        setTimeout(() => setUploadError(null), 6000);
       } finally {
         setUploading(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -340,6 +343,13 @@ export default function RichTextEditor({
       </div>
 
       {/* EDITOR CONTENT */}
+      {/* UPLOAD ERROR BANNER */}
+      {uploadError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-2 flex items-center gap-2">
+          ⚠️ Upload Gagal: {uploadError}
+        </div>
+      )}
+
       {codeView ? (
         <textarea
           value={value}
