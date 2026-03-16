@@ -58,9 +58,8 @@ function StickyNav({ title, headings, activeId }: { title: string; headings: {id
     <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-4">
         {/* JIIPE Logo */}
-        <a href="https://cn.jiipe.com" className="flex items-center gap-2 text-primary font-black text-sm shrink-0">
-          <Building2 size={18} />
-          <span className="hidden sm:inline">JIIPE</span>
+        <a href="https://cn.jiipe.com" className="flex items-center gap-2 shrink-0">
+          <img src="https://cn.jiipe.com/logo-jiipe-red.png" alt="JIIPE" className="h-7 w-auto" />
         </a>
         <div className="w-px h-5 bg-gray-200" />
         {/* Title truncated */}
@@ -151,7 +150,7 @@ function SidebarToC({ headings, activeId }: { headings: {id: string; text: strin
 
       {/* Contact mini-card */}
       <div className="mt-4 bg-gradient-to-br from-primary to-red-700 rounded-2xl p-4 text-white text-center">
-        <Building2 size={28} className="mx-auto mb-2 opacity-80" />
+        <img src="https://cn.jiipe.com/logo-jiipe-white.png" alt="JIIPE" className="h-8 w-auto mx-auto mb-2 opacity-90" />
         <p className="text-xs font-bold mb-3 leading-relaxed">准备好在 JIIPE 扩展业务了吗？</p>
         <a
           href="#contact"
@@ -607,9 +606,8 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       {/* ── FOOTER STRIP ─────────────────────────────────────────────────────── */}
       <footer className="bg-gray-950 border-t border-white/5 py-8 px-4">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-white">
-            <Building2 size={18} className="text-primary" />
-            JIIPE Industrial Estate
+          <div className="flex items-center gap-2">
+            <img src="https://cn.jiipe.com/logo-jiipe-white.png" alt="JIIPE" className="h-7 w-auto" />
           </div>
           <p className="text-gray-600 text-xs text-center">
             © {new Date().getFullYear()} PT Berkah Kawasan Manyar Sejahtera · Gresik, East Java, Indonesia
