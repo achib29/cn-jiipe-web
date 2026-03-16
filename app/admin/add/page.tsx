@@ -12,8 +12,85 @@ import {
   Calendar,
   CheckCircle,
   AlertCircle,
+  Copy,
+  Check,
+  Images,
 } from "lucide-react";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+
+// --- IMAGE LIBRARY PANEL ---
+function ImageLibraryPanel() {
+  const [images, setImages] = useState<{id: number; filename: string; url: string}[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/images?list=1");
+      const data = await res.json();
+      setImages(data.images || []);
+    } catch { /* ignore */ } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyUrl = (id: number, url: string) => {
+    const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  return (
+    <div className="bg-blue-50 p-5 rounded-xl shadow-sm border border-blue-200">
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); if (!open) load(); }}
+        className="flex items-center justify-between w-full"
+      >
+        <div className="flex items-center gap-2">
+          <Images size={16} className="text-blue-600" />
+          <span className="text-xs font-bold text-blue-700 uppercase">📷 Image Library</span>
+        </div>
+        <span className="text-xs text-blue-500">{open ? '▲ Tutup' : '▼ Buka'}</span>
+      </button>
+      <p className="text-[11px] text-blue-600 mt-1">Upload gambar lalu copy URL-nya untuk di-paste ke OG Image atau tempat lain.</p>
+
+      {open && (
+        <div className="mt-3">
+          {loading ? (
+            <div className="flex justify-center py-4"><Loader2 size={20} className="animate-spin text-blue-500" /></div>
+          ) : images.length === 0 ? (
+            <p className="text-xs text-gray-400 text-center py-4">Belum ada gambar. Upload gambar di body editor terlebih dahulu.</p>
+          ) : (
+            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+              {images.map((img) => (
+                <div key={img.id} className="relative group rounded-lg overflow-hidden border border-blue-200 bg-white">
+                  <img
+                    src={img.url}
+                    alt={img.filename}
+                    className="w-full h-20 object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png'; }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => copyUrl(img.id, img.url)}
+                    className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 text-white text-[10px] font-bold"
+                  >
+                    {copiedId === img.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy URL</>}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button type="button" onClick={load} className="mt-2 text-xs text-blue-600 hover:underline">↻ Refresh</button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // --- KOMPONEN MODAL / POPUP NOTIFIKASI ---
 const NotificationModal = ({ isOpen, type, title, message, onClose }: any) => {
@@ -677,21 +754,26 @@ export default function AddNewsPage() {
 
             {/* OG IMAGE (landing pages) */}
             {articleType === "landing" && (
-              <div className="bg-amber-50 p-5 rounded-xl shadow-sm border border-amber-200">
-                <label className="block text-xs font-bold text-amber-700 uppercase mb-2">
-                  🖼 OG Image URL (WhatsApp Preview)
-                </label>
-                <input
-                  type="url"
-                  value={ogImage}
-                  onChange={(e) => setOgImage(e.target.value)}
-                  placeholder="https://...image.jpg"
-                  className="w-full p-3 bg-white border border-amber-200 rounded-lg outline-none focus:ring-2 focus:ring-amber-400 text-sm"
-                />
-                <p className="text-[11px] text-amber-600 mt-2">
-                  This image appears when the link is shared on WhatsApp, Telegram, and social media. Recommended: 1200×630.
-                </p>
-              </div>
+              <>
+                <div className="bg-amber-50 p-5 rounded-xl shadow-sm border border-amber-200">
+                  <label className="block text-xs font-bold text-amber-700 uppercase mb-2">
+                    🖼 OG Image URL (WhatsApp Preview)
+                  </label>
+                  <input
+                    type="url"
+                    value={ogImage}
+                    onChange={(e) => setOgImage(e.target.value)}
+                    placeholder="https://...image.jpg"
+                    className="w-full p-3 bg-white border border-amber-200 rounded-lg outline-none focus:ring-2 focus:ring-amber-400 text-sm"
+                  />
+                  <p className="text-[11px] text-amber-600 mt-2">
+                    This image appears when the link is shared on WhatsApp, Telegram, and social media. Recommended: 1200×630.
+                  </p>
+                </div>
+
+                {/* IMAGE LIBRARY */}
+                <ImageLibraryPanel />
+              </>
             )}
 
             {/* STATUS */}

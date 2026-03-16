@@ -227,31 +227,6 @@ function RichContent({ html }: { html: string }) {
 }
 
 
-// ─── Key Stats Banner ─────────────────────────────────────────────────────────
-
-const STATS = [
-  { value: "3,000", label: "公顷", sublabel: "总面积" },
-  { value: "150+", label: "家企业", sublabel: "已入驻" },
-  { value: "-16m", label: "水深", sublabel: "深水港" },
-  { value: "SEZ", label: "经济特区", sublabel: "国家战略项目" },
-];
-
-function StatsStrip() {
-  return (
-    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-6 px-4">
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-        {STATS.map((s) => (
-          <div key={s.value} className="text-center">
-            <div className="text-2xl font-black text-primary">{s.value}</div>
-            <div className="text-xs font-bold text-white">{s.label}</div>
-            <div className="text-[11px] text-gray-400">{s.sublabel}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── Inline RFI Form ─────────────────────────────────────────────────────────
 declare global {
   interface Window { turnstile: { reset: (id?: string) => void }; }
@@ -573,17 +548,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
             </div>
           </div>
         </div>
-
-        {/* Bottom wave */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,60 L0,30 Q360,0 720,30 Q1080,60 1440,30 L1440,60 Z" fill="#ffffff" />
-          </svg>
-        </div>
       </header>
-
-      {/* ── STATS STRIP ─────────────────────────────────────────────────────── */}
-      <StatsStrip />
 
       {/* ── ARTICLE BODY ────────────────────────────────────────────────────── */}
       <div className="bg-white">

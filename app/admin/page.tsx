@@ -8,6 +8,7 @@ import {
   Edit,
   Trash2,
   Eye,
+  EyeOff,
   FileText,
   CheckCircle,
   ArrowUpDown,
@@ -189,6 +190,20 @@ export default function AdminDashboard() {
       alert("Failed to delete");
     }
     setIsDeleting(false);
+  };
+
+  const toggleStatus = async (article: Article) => {
+    const newStatus = article.status === 'Published' ? 'Draft' : 'Published';
+    try {
+      const res = await fetch(`/api/articles/${article.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (res.ok) {
+        setArticles((prev) => prev.map((a) => a.id === article.id ? { ...a, status: newStatus } : a));
+      }
+    } catch { /* ignore */ }
   };
 
   const getHotStatus = (article: Article) => {
@@ -413,6 +428,19 @@ export default function AdminDashboard() {
                               {copiedId === article.id ? <Check size={18} /> : <Link2 size={18} />}
                             </button>
                           )}
+                          {/* QUICK PUBLISH TOGGLE */}
+                          <button
+                            onClick={() => toggleStatus(article)}
+                            className={`p-2 border rounded-lg transition shadow-sm ${
+                              article.status === 'Published'
+                                ? 'bg-green-50 border-green-200 text-green-600 hover:bg-red-50 hover:text-red-500 hover:border-red-200'
+                                : 'bg-gray-100 border-gray-200 text-gray-400 hover:bg-green-50 hover:text-green-600 hover:border-green-200'
+                            }`}
+                            title={article.status === 'Published' ? 'Published – click to Unpublish' : 'Draft – click to Publish'}
+                          >
+                            {article.status === 'Published' ? <Eye size={18} /> : <EyeOff size={18} />}
+                          </button>
+
                           <Link
                             href={article.type === "landing" ? `/articles/${article.slug}` : `/news/${article.slug}`}
                             target="_blank"

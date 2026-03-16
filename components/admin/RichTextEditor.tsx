@@ -12,8 +12,6 @@ import {
   Bold,
   Italic,
   Underline,
-  Heading2,
-  Heading3,
   List,
   ListOrdered,
   Link as LinkIcon,
@@ -26,6 +24,7 @@ import {
   Undo,
   Redo,
   Minus,
+  Code2,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -71,6 +70,7 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [codeView, setCodeView] = useState(false);
   const isUpdatingRef = useRef(false);
 
   const editor = useEditor({
@@ -318,12 +318,41 @@ export default function RichTextEditor({
             />
           </>
         )}
+
+        <Divider />
+
+        {/* Code View toggle */}
+        <ToolbarButton
+          title={codeView ? "Switch to Visual Editor" : "Code View (HTML)"}
+          onClick={() => {
+            if (codeView) {
+              // switching back to visual — sync textarea back to editor
+              isUpdatingRef.current = true;
+              editor.commands.setContent(value || "");
+              isUpdatingRef.current = false;
+            }
+            setCodeView(!codeView);
+          }}
+          active={codeView}
+        >
+          <Code2 size={16} />
+        </ToolbarButton>
       </div>
 
       {/* EDITOR CONTENT */}
-      <div className="flex-grow overflow-y-auto">
-        <EditorContent editor={editor} className="h-full" />
-      </div>
+      {codeView ? (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-grow p-6 font-mono text-sm text-gray-700 bg-gray-50 resize-none outline-none leading-relaxed"
+          placeholder="Paste or edit raw HTML here..."
+          spellCheck={false}
+        />
+      ) : (
+        <div className="flex-grow overflow-y-auto">
+          <EditorContent editor={editor} className="h-full" />
+        </div>
+      )}
     </div>
   );
 }
