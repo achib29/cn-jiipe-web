@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
@@ -637,6 +638,9 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
 
   return (
     <>
+      {typeof window !== "undefined" && window.location.hostname !== "localhost" && (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="lazyOnload" />
+      )}
       <style>{`
         @keyframes fade-in { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
