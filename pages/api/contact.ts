@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Resend } from "resend";
 import OpenAI from "openai";
+import pool from "../../lib/db";
+import { RowDataPacket } from "mysql2";
 
 // === Validasi Env ===
 const resendKey = process.env.RESEND_API_KEY;
@@ -137,12 +139,26 @@ Reason: ${reasonDisplay}
   `;
 
   try {
+    // === Dynamic Target Emails dari DB ===
+    let targetEmails = ["abdul.khasib@bkms.jiipe.co.id", "donny.muchelly@bkms.jiipe.co.id"]; // Fallback
+    try {
+      const [rows] = await pool.query<RowDataPacket[]>(
+        "SELECT value_cn, value_en FROM site_content WHERE section = 'contact' AND field_key = 'rfi_emails' LIMIT 1"
+      );
+      if (rows && rows.length > 0) {
+        const emailStr = rows[0].value_cn || rows[0].value_en || "";
+        if (emailStr.trim()) {
+          // Pisahkan dengan koma dan bersihkan spasi
+          targetEmails = emailStr.split(",").map((e: string) => e.trim()).filter(Boolean);
+        }
+      }
+    } catch (dbErr) {
+      console.error("⚠️ Failed to fetch RFI emails from DB, using fallback:", dbErr);
+    }
+
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
-      to: [
-        "abdul.khasib@bkms.jiipe.co.id",
-        "donny.muchelly@bkms.jiipe.co.id",
-      ],
+      to: targetEmails,
       subject: `New Contact Inquiry Baidu Ads from "${company}"`,
       html,
     });
