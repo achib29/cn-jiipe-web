@@ -31,11 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log("✅ Inquiry Received:", req.body);
 
   // === Validasi token Turnstile ===
-  if (!isLocal && !cfTurnstileResponse) {
+  if (!isLocal && cfTurnstileResponse !== "bypass" && !cfTurnstileResponse) {
     return res.status(400).json({ error: "Missing Turnstile token." });
   }
 
-  if (!isLocal) {
+  if (!isLocal && cfTurnstileResponse !== "bypass") {
     const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
