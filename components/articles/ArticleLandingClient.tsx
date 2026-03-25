@@ -369,9 +369,6 @@ function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void 
 }
 
 // ─── Inline RFI Form ─────────────────────────────────────────────────────────
-declare global {
-  interface Window { turnstile: { reset: (id?: string) => void; render: (el: any, options: any) => void; }; }
-}
 
 function ArticleRFIForm() {
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -379,7 +376,6 @@ function ArticleRFIForm() {
   const [step, setStep] = useState(1);
   const [showThankYou, setShowThankYou] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
-  const turnstileRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", phone: "", email: "", company: "",
@@ -387,34 +383,16 @@ function ArticleRFIForm() {
     landPlot: "", timeline: "", power: "", water: "", gas: "", seaport: "",
   });
 
-  useEffect(() => {
-    // Explicitly render Turnstile when step 3 is shown, as auto-render misses it
-    if (step === 3 && typeof window !== "undefined" && window.location.hostname !== "localhost" && window.turnstile && turnstileRef.current) {
-      if (!turnstileRef.current.hasChildNodes()) {
-        try {
-          window.turnstile.render(turnstileRef.current, {
-            sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
-          });
-        } catch (e) {
-          console.error("Failed to render turnstile", e);
-        }
-      }
-    }
-  }, [step]);
-
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFormData((p) => ({ ...p, [k]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const isLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
-    const token = isLocal ? "bypass" : (document.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement)?.value;
-    if (!isLocal && !token) {
-      setToast({ type: "error", message: "验证失败，请刷新后重试。" });
-      setIsSubmitting(false);
-      return;
-    }
+    
+    // Turnstile disabled per user request
+    const token = "bypass";
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -568,10 +546,7 @@ function ArticleRFIForm() {
                   {formData.reason === "Other" && (
                     <div><label className={lbl}>请说明</label><input className={inp} placeholder="请详细说明..." value={formData.reasonOther} onChange={set("reasonOther")} /></div>
                   )}
-                  {typeof window !== "undefined" && window.location.hostname !== "localhost" && (
-                    <div ref={turnstileRef} className="cf-turnstile-explicit" />
-                  )}
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 mt-4">
                     <button type="button" onClick={() => setStep(2)} className="flex-none py-4 px-6 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all">← 上一步</button>
                     <Button type="submit" disabled={isSubmitting} className="flex-1 py-4 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/40 text-base">
                       {isSubmitting ? <><Loader2 className="animate-spin mr-2 h-4 w-4" />提交中…</> : <><Send className="mr-2 h-4 w-4" />提交咨询</>}
@@ -655,9 +630,6 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
 
   return (
     <>
-      {typeof window !== "undefined" && window.location.hostname !== "localhost" && (
-        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" />
-      )}
       <style>{`
         @keyframes fade-in { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
