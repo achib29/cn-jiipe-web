@@ -25,6 +25,7 @@ import {
   Redo,
   Minus,
   Code2,
+  MousePointerClick,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -52,11 +53,10 @@ const ToolbarButton = ({
     title={title}
     onClick={onClick}
     disabled={disabled}
-    className={`p-2 rounded-lg transition-all text-sm font-bold leading-none flex items-center justify-center ${
-      active
-        ? "bg-red-100 text-red-600"
-        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-    } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
+    className={`p-2 rounded-lg transition-all text-sm font-bold leading-none flex items-center justify-center ${active
+      ? "bg-red-100 text-red-600"
+      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+      } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
   >
     {children}
   </button>
@@ -162,174 +162,116 @@ export default function RichTextEditor({
 
   if (!editor) return null;
 
-  const Divider = () => <div className="w-px h-6 bg-gray-200 mx-1 self-center" />;
+  // --- Insert styled button into editor ---
+  const insertButton = (variant: "solid" | "outline") => {
+    const text = window.prompt("Button text:", "立即咨询 →");
+    if (!text) return;
+    const url = window.prompt("URL:", "#contact");
+    if (url === null) return;
+    const cls = variant === "outline" ? "btn-cta-outline" : "btn-cta";
+    const html = `<a href="${url}" class="${cls}" target="_self" rel="noopener noreferrer">${text}</a>`;
+    editor.chain().focus().insertContent(html).run();
+  };
+
+  const Divider = () => <div className="w-full h-px bg-gray-200 my-1" />;
 
   return (
-    <div className="flex flex-col h-full border border-gray-200 rounded-xl overflow-auto bg-white shadow-sm">
-      {/* TOOLBAR - sticky agar selalu terlihat saat scroll */}
-      <div className="bg-gray-50 border-b border-gray-200 p-2 flex flex-wrap items-center gap-0.5 sticky top-0 z-10 shadow-sm">
+    <div className="flex gap-3 h-full items-start">
+
+      {/* ── LEFT VERTICAL TOOLBAR ───────────────────────────────────────── */}
+      <div className="sticky top-16 z-30 flex flex-col items-center gap-0.5 bg-white border border-gray-200 rounded-xl shadow-sm p-2 w-11 shrink-0">
         {/* Undo / Redo */}
-        <ToolbarButton
-          title="Undo"
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editor.can().undo()}
-        >
-          <Undo size={16} />
+        <ToolbarButton title="Undo" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>
+          <Undo size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Redo"
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editor.can().redo()}
-        >
-          <Redo size={16} />
+        <ToolbarButton title="Redo" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>
+          <Redo size={15} />
         </ToolbarButton>
 
         <Divider />
 
         {/* Text formatting */}
-        <ToolbarButton
-          title="Bold (Ctrl+B)"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          active={editor.isActive("bold")}
-        >
-          <Bold size={16} />
+        <ToolbarButton title="Bold (Ctrl+B)" onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")}>
+          <Bold size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Italic (Ctrl+I)"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          active={editor.isActive("italic")}
-        >
-          <Italic size={16} />
+        <ToolbarButton title="Italic (Ctrl+I)" onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")}>
+          <Italic size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Underline (Ctrl+U)"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
-          active={editor.isActive("underline")}
-        >
-          <Underline size={16} />
+        <ToolbarButton title="Underline (Ctrl+U)" onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")}>
+          <Underline size={15} />
         </ToolbarButton>
 
         <Divider />
 
         {/* Headings */}
-        <ToolbarButton
-          title="Heading 2"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-          active={editor.isActive("heading", { level: 2 })}
-        >
-          <span className="text-xs font-black">H2</span>
+        <ToolbarButton title="Heading 2" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} active={editor.isActive("heading", { level: 2 })}>
+          <span className="text-[11px] font-black">H2</span>
         </ToolbarButton>
-        <ToolbarButton
-          title="Heading 3"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          active={editor.isActive("heading", { level: 3 })}
-        >
-          <span className="text-xs font-black">H3</span>
+        <ToolbarButton title="Heading 3" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} active={editor.isActive("heading", { level: 3 })}>
+          <span className="text-[11px] font-black">H3</span>
         </ToolbarButton>
 
         <Divider />
 
         {/* Lists */}
-        <ToolbarButton
-          title="Bullet List"
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
-          active={editor.isActive("bulletList")}
-        >
-          <List size={16} />
+        <ToolbarButton title="Bullet List" onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")}>
+          <List size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Numbered List"
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          active={editor.isActive("orderedList")}
-        >
-          <ListOrdered size={16} />
+        <ToolbarButton title="Numbered List" onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")}>
+          <ListOrdered size={15} />
         </ToolbarButton>
 
         <Divider />
 
         {/* Alignment */}
-        <ToolbarButton
-          title="Align Left"
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          active={editor.isActive({ textAlign: "left" })}
-        >
-          <AlignLeft size={16} />
+        <ToolbarButton title="Align Left" onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })}>
+          <AlignLeft size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Align Center"
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          active={editor.isActive({ textAlign: "center" })}
-        >
-          <AlignCenter size={16} />
+        <ToolbarButton title="Align Center" onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })}>
+          <AlignCenter size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Align Right"
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          active={editor.isActive({ textAlign: "right" })}
-        >
-          <AlignRight size={16} />
+        <ToolbarButton title="Align Right" onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })}>
+          <AlignRight size={15} />
         </ToolbarButton>
-        <ToolbarButton
-          title="Justify"
-          onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-          active={editor.isActive({ textAlign: "justify" })}
-        >
-          <AlignJustify size={16} />
+        <ToolbarButton title="Justify" onClick={() => editor.chain().focus().setTextAlign("justify").run()} active={editor.isActive({ textAlign: "justify" })}>
+          <AlignJustify size={15} />
         </ToolbarButton>
 
         <Divider />
 
         {/* Link */}
-        <ToolbarButton
-          title="Insert / Edit Link"
-          onClick={setLink}
-          active={editor.isActive("link")}
-        >
-          <LinkIcon size={16} />
+        <ToolbarButton title="Insert / Edit Link" onClick={setLink} active={editor.isActive("link")}>
+          <LinkIcon size={15} />
         </ToolbarButton>
 
         {/* Horizontal Rule */}
-        <ToolbarButton
-          title="Horizontal Rule"
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-        >
-          <Minus size={16} />
+        <ToolbarButton title="Horizontal Rule" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+          <Minus size={15} />
         </ToolbarButton>
 
         {/* Image upload */}
         {onImageUpload && (
           <>
-            <ToolbarButton
-              title="Insert Image"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? (
-                <Loader2 size={16} className="animate-spin text-red-500" />
-              ) : (
-                <ImagePlus size={16} className="text-red-600" />
-              )}
+            <ToolbarButton title="Insert Image" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              {uploading ? <Loader2 size={15} className="animate-spin text-red-500" /> : <ImagePlus size={15} className="text-red-600" />}
             </ToolbarButton>
             <input
               ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => {
-                if (e.target.files?.[0]) handleImageFile(e.target.files[0]);
-              }}
+              onChange={(e) => { if (e.target.files?.[0]) handleImageFile(e.target.files[0]); }}
             />
           </>
         )}
 
         <Divider />
 
-        {/* Code View toggle */}
+        {/* Code View */}
         <ToolbarButton
           title={codeView ? "Switch to Visual Editor" : "Code View (HTML)"}
           onClick={() => {
             if (codeView) {
-              // switching back to visual — sync textarea back to editor
               isUpdatingRef.current = true;
               editor.commands.setContent(value || "");
               isUpdatingRef.current = false;
@@ -338,31 +280,49 @@ export default function RichTextEditor({
           }}
           active={codeView}
         >
-          <Code2 size={16} />
+          <Code2 size={15} />
+        </ToolbarButton>
+
+        <Divider />
+
+        {/* Insert CTA Buttons */}
+        <ToolbarButton title="Insert CTA Button (solid)" onClick={() => insertButton("solid")}>
+          <span className="text-[9px] font-black text-red-600 leading-tight text-center">
+            <MousePointerClick size={12} className="mx-auto mb-0.5" />
+            Btn
+          </span>
+        </ToolbarButton>
+        <ToolbarButton title="Insert CTA Button (outline)" onClick={() => insertButton("outline")}>
+          <span className="text-[9px] font-black text-gray-500 leading-tight text-center">
+            <MousePointerClick size={12} className="mx-auto mb-0.5" />
+            Btn◻
+          </span>
         </ToolbarButton>
       </div>
 
-      {/* EDITOR CONTENT */}
-      {/* UPLOAD ERROR BANNER */}
-      {uploadError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-2 flex items-center gap-2">
-          ⚠️ Upload Gagal: {uploadError}
-        </div>
-      )}
+      {/* ── EDITOR / CODE VIEW ──────────────────────────────────────────── */}
+      <div className="flex flex-col flex-1 min-w-0 h-full border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+        {/* Upload error banner */}
+        {uploadError && (
+          <div className="bg-red-50 border-b border-red-200 text-red-700 text-xs font-semibold px-4 py-2 flex items-center gap-2">
+            ⚠️ Upload Gagal: {uploadError}
+          </div>
+        )}
+        {codeView ? (
+          <textarea
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="flex-grow p-6 font-mono text-sm text-gray-700 bg-gray-50 resize-none outline-none leading-relaxed"
+            placeholder="Paste or edit raw HTML here..."
+            spellCheck={false}
+          />
+        ) : (
+          <div className="flex-grow overflow-y-auto min-h-0">
+            <EditorContent editor={editor} className="h-full" />
+          </div>
+        )}
+      </div>
 
-      {codeView ? (
-        <textarea
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-grow p-6 font-mono text-sm text-gray-700 bg-gray-50 resize-none outline-none leading-relaxed"
-          placeholder="Paste or edit raw HTML here..."
-          spellCheck={false}
-        />
-      ) : (
-        <div className="flex-grow overflow-y-auto">
-          <EditorContent editor={editor} className="h-full" />
-        </div>
-      )}
     </div>
   );
 }

@@ -139,49 +139,57 @@ Reason: ${reasonDisplay}
   try {
     await resend.emails.send({
       from: "cn.jiipe@jiipe.com",
-      to: ["abdul.khasib@bkms.jiipe.co.id",
-        "donny.muchelly@bkms.jiipe.co.id"
+      to: [
+        "abdul.khasib@bkms.jiipe.co.id",
+        "donny.muchelly@bkms.jiipe.co.id",
       ],
       subject: `New Contact Inquiry Baidu Ads from "${company}"`,
       html,
     });
 
-    const autoResponderHtml = `
-      <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; padding: 24px 0;">
-        <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden;">
-          <div style="padding: 32px;">
-            <div style="margin-bottom: 24px; font-size:1.08rem;">
-              Dear <b>${firstName} ${lastName}</b>,<br><br>
-              Thank you for considering JIIPE. We have successfully received your inquiry for <b>${company}</b>.<br>
-              Our investment experts will contact you shortly.
-            </div>
+    // Auto-responder to user — wrapped separately so its failure doesn't break the main flow
+    try {
+      const autoResponderHtml = `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; padding: 24px 0;">
+          <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); overflow: hidden;">
+            <div style="padding: 32px;">
+              <div style="margin-bottom: 24px; font-size:1.08rem;">
+                Dear <b>${firstName} ${lastName}</b>,<br><br>
+                Thank you for considering JIIPE. We have successfully received your inquiry for <b>${company}</b>.<br>
+                Our investment experts will contact you shortly.
+              </div>
 
-            <div style="border-top:1px solid #eee; margin:36px 0 16px 0"></div>
-            <div style="font-size:1rem; color:#222; margin-top:10px;">
-              <b>Warm Regards</b><br/>
-              Investment Team<br><br>
-              <img src="${logoUrl}" alt="JIIPE Logo" style="height:36px;margin-bottom:18px;margin-top:2px;"><br>
-              <div style="margin-bottom: 6px;"><b>PT. Berkah Kawasan Manyar Sejahtera</b></div>
-              Jl. Raya Manyar KM. 11 – Gresik, East Java 61151
-            </div>
-            <div style="font-size:0.89rem; color:#888; margin-top: 24px; margin-bottom:0; font-style:italic;">
-              This is an automated confirmation email. Please do not reply to this email address.
+              <div style="border-top:1px solid #eee; margin:36px 0 16px 0"></div>
+              <div style="font-size:1rem; color:#222; margin-top:10px;">
+                <b>Warm Regards</b><br/>
+                Investment Team<br><br>
+                <img src="https://jiipe.com/logo-jiipe.png" alt="JIIPE Logo" style="height:36px;margin-bottom:18px;margin-top:2px;"><br>
+                <div style="margin-bottom: 6px;"><b>PT. Berkah Kawasan Manyar Sejahtera</b></div>
+                Jl. Raya Manyar KM. 11 – Gresik, East Java 61151
+              </div>
+              <div style="font-size:0.89rem; color:#888; margin-top: 24px; margin-bottom:0; font-style:italic;">
+                This is an automated confirmation email. Please do not reply to this email address.
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
 
-    await resend.emails.send({
-      from: "JIIPE Investment Team <cn.jiipe@jiipe.com>",
-      to: [email],
-      subject: "We Have Received Your Inquiry - JIIPE",
-      html: autoResponderHtml,
-    });
+      await resend.emails.send({
+        from: "JIIPE Investment Team <cn.jiipe@jiipe.com>",
+        to: [email],
+        subject: "We Have Received Your Inquiry - JIIPE",
+        html: autoResponderHtml,
+      });
+    } catch (autoErr) {
+      // Auto-responder failure is non-critical — log and continue
+      console.error("⚠️ Auto-responder failed (non-critical):", autoErr);
+    }
 
+    // ✅ Always return 200 if main notification email succeeded
     res.status(200).json({ success: true });
   } catch (err) {
-    console.error("❌ Submission failed:", err);
+    console.error("❌ Main email send failed:", err);
     res.status(500).json({ success: false, error: "Failed to process inquiry" });
   }
 }

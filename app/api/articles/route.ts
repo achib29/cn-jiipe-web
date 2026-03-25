@@ -56,7 +56,7 @@ export async function POST(request: Request) {
             title_cn, summary_cn, content_cn,
             is_hot, hot_priority,
             is_hot_cn, hot_priority_cn,
-            type, og_image,
+            type, og_image, cta_text,
         } = body;
 
 
@@ -80,13 +80,14 @@ export async function POST(request: Request) {
             `INSERT INTO articles 
         (title, slug, category, status, type, summary, content, coverImage, og_image, date,
          title_cn, summary_cn, content_cn,
-         is_hot, hot_priority, is_hot_cn, hot_priority_cn)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         is_hot, hot_priority, is_hot_cn, hot_priority_cn, cta_text)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 title, slug, category, status, type || 'news', summary, content, coverImage, og_image || null, date,
                 title_cn || null, summary_cn || null, content_cn || null,
                 is_hot ? 1 : 0, is_hot ? hot_priority : null,
                 is_hot_cn ? 1 : 0, is_hot_cn ? hot_priority_cn : null,
+                cta_text || null,
             ]
         );
 

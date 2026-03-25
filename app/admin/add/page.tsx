@@ -93,14 +93,25 @@ function ImageLibraryPanel() {
 }
 
 // --- KOMPONEN MODAL / POPUP NOTIFIKASI ---
-const NotificationModal = ({ isOpen, type, title, message, onClose }: any) => {
+const NotificationModal = ({ isOpen, type, title, message, onClose, onDismiss }: any) => {
   if (!isOpen) return null;
 
   const isSuccess = type === "success";
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center transform transition-all animate-in zoom-in-95 duration-300 border border-gray-100">
+      <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center transform transition-all animate-in zoom-in-95 duration-300 border border-gray-100 relative">
+        {/* X close button — tutup tanpa redirect */}
+        {isSuccess && onDismiss && (
+          <button
+            onClick={onDismiss}
+            className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+            title="Tutup & tetap di halaman ini"
+          >
+            <XIcon size={18} />
+          </button>
+        )}
+
         {/* Icon Animasi */}
         <div className="mb-6 flex justify-center">
           {isSuccess ? (
@@ -127,18 +138,28 @@ const NotificationModal = ({ isOpen, type, title, message, onClose }: any) => {
         >
           {title}
         </h3>
-        <p className="text-gray-500 mb-8 leading-relaxed">{message}</p>
+        <p className="text-gray-500 mb-6 leading-relaxed">{message}</p>
 
-        {/* Button */}
-        <button
-          onClick={onClose}
-          className={`w-full py-3.5 rounded-xl text-white font-bold shadow-lg transition-transform transform hover:scale-[1.02] active:scale-[0.98] ${isSuccess
-            ? "bg-green-600 hover:bg-green-700 shadow-green-500/30"
-            : "bg-red-600 hover:bg-red-700 shadow-red-500/30"
-            }`}
-        >
-          {isSuccess ? "Kembali ke Dashboard" : "Coba Lagi"}
-        </button>
+        {/* Buttons */}
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={onClose}
+            className={`w-full py-3.5 rounded-xl text-white font-bold shadow-lg transition-transform transform hover:scale-[1.02] active:scale-[0.98] ${isSuccess
+              ? "bg-green-600 hover:bg-green-700 shadow-green-500/30"
+              : "bg-red-600 hover:bg-red-700 shadow-red-500/30"
+              }`}
+          >
+            {isSuccess ? "Kembali ke Dashboard" : "Coba Lagi"}
+          </button>
+          {isSuccess && onDismiss && (
+            <button
+              onClick={onDismiss}
+              className="w-full py-3 rounded-xl text-gray-500 font-semibold hover:bg-gray-100 transition-all text-sm"
+            >
+              Tetap di halaman ini
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -194,6 +215,7 @@ export default function AddNewsPage() {
   const [ogImage, setOgImage] = useState("");
   const [slug, setSlug] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [ctaText, setCtaText] = useState("");
 
 
   // --- LOAD DATA EDIT ---
@@ -233,6 +255,7 @@ export default function AddNewsPage() {
           setOgImage(data.og_image || "");
           setSlug(data.slug || "");
           setCoverImageUrl(data.coverImage || "");
+          setCtaText(data.cta_text || "");
 
 
           if (data.date) {
@@ -363,6 +386,7 @@ export default function AddNewsPage() {
         // Landing page
         type: articleType,
         og_image: ogImage || null,
+        cta_text: ctaText || null,
       };
 
 
@@ -412,12 +436,17 @@ export default function AddNewsPage() {
     }
   };
 
-  // Fungsi menutup modal
+  // Fungsi menutup modal — redirect ke dashboard
   const handleCloseModal = () => {
     setModal({ ...modal, isOpen: false });
     if (modal.type === "success") {
       router.push("/admin");
     }
+  };
+
+  // Fungsi dismiss modal — tutup tanpa redirect (tetap di halaman)
+  const handleDismissModal = () => {
+    setModal({ ...modal, isOpen: false });
   };
 
 
@@ -432,7 +461,7 @@ export default function AddNewsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4 relative">
+    <main className="min-h-screen bg-gray-50 pt-24 pb-28 px-4 relative">
       {/* MODAL */}
       <NotificationModal
         isOpen={modal.isOpen}
@@ -440,6 +469,7 @@ export default function AddNewsPage() {
         title={modal.title}
         message={modal.message}
         onClose={handleCloseModal}
+        onDismiss={handleDismissModal}
       />
 
       <div className="max-w-[1600px] mx-auto">
@@ -773,6 +803,23 @@ export default function AddNewsPage() {
 
                 {/* IMAGE LIBRARY */}
                 <ImageLibraryPanel />
+
+                {/* CTA BUTTON TEXT */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">
+                    🎯 CTA Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={ctaText}
+                    onChange={(e) => setCtaText(e.target.value)}
+                    placeholder="1对1投资顾问免费对接"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-red-500 text-sm"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-2">
+                    Teks tombol CTA di hero &amp; floating button. Kosongkan untuk menggunakan default: <code>1对1投资顾问免费对接</code>.
+                  </p>
+                </div>
               </>
             )}
 
@@ -919,6 +966,22 @@ export default function AddNewsPage() {
           </div>
         </div>
       </div>
+      {/* ── Floating Save Button (bottom-right) ─────────────────────── */}
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl text-white font-bold shadow-2xl transition-all text-sm ${
+          loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-red-600 hover:bg-red-700 shadow-red-500/40 hover:-translate-y-0.5"
+        }`}
+      >
+        {loading ? (
+          <><Loader2 size={16} className="animate-spin" /> Saving…</>
+        ) : (
+          <><Save size={16} /> {editId ? "Update Article" : "Publish Article"}</>
+        )}
+      </button>
     </main>
   );
 }

@@ -25,6 +25,7 @@ interface Article {
   coverImage: string | null;
   og_image: string | null;
   date: string;
+  cta_text: string | null;
 }
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -147,19 +148,59 @@ function SidebarToC({ headings, activeId }: { headings: {id: string; text: strin
           ))}
         </ul>
       </div>
+    </nav>
+  );
+}
 
-      {/* Contact mini-card */}
-      <div className="mt-4 bg-gradient-to-br from-primary to-red-700 rounded-2xl p-4 text-white text-center">
-        <img src="https://cn.jiipe.com/logo-jiipe-white.png" alt="JIIPE" className="h-8 w-auto mx-auto mb-2 opacity-90" />
-        <p className="text-xs font-bold mb-3 leading-relaxed">准备好在 JIIPE 扩展业务了吗？</p>
+// ─── Floating CTA ─────────────────────────────────────────────────────────────
+function FloatingCTA({ ctaLabel }: { ctaLabel: string }) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setVisible(window.scrollY > 200);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <>
+      {/* ── Desktop: full-width bottom bar ────────────────────────────── */}
+      <div className="hidden lg:flex fixed bottom-0 left-0 right-0 z-40 items-center justify-between gap-6 px-10 py-4 bg-gray-950/95 backdrop-blur-md border-t border-white/10 shadow-2xl">
+        <div className="flex items-center gap-4">
+          <img
+            src="https://cn.jiipe.com/logo-jiipe-white.png"
+            alt="JIIPE"
+            className="h-7 w-auto opacity-90 shrink-0"
+          />
+          <div className="w-px h-6 bg-white/20 shrink-0" />
+          <p className="text-white text-sm font-bold">
+            准备好在 JIIPE 扩展业务了吗？
+          </p>
+        </div>
         <a
           href="#contact"
-          className="block bg-white text-primary text-xs font-bold py-2 px-3 rounded-xl hover:bg-gray-50 transition-all"
+          className="shrink-0 inline-flex items-center gap-2 bg-primary hover:bg-red-700 text-white text-sm font-black px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-primary/30 whitespace-nowrap"
         >
-          立即咨询 →
+          <Send size={13} /> {ctaLabel}
         </a>
       </div>
-    </nav>
+
+      {/* ── Mobile: slim bottom bar ────────────────────────────────────── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-primary to-red-700 text-white flex items-center justify-between gap-3 px-4 py-3 shadow-2xl shadow-primary/40">
+        <div className="flex items-center gap-2 min-w-0">
+          <Send size={14} className="shrink-0" />
+          <span className="text-xs font-bold truncate">准备好在 JIIPE 扩展业务了吗？</span>
+        </div>
+        <a
+          href="#contact"
+          className="shrink-0 bg-white text-primary text-xs font-black px-4 py-1.5 rounded-full hover:bg-gray-100 transition-all shadow-sm whitespace-nowrap"
+        >
+          {ctaLabel} →
+        </a>
+      </div>
+    </>
   );
 }
 
@@ -216,6 +257,50 @@ function RichContent({ html }: { html: string }) {
         .article-body tr:nth-child(even) td { background: #fafafa; }
         .article-body img { max-width: 100%; border-radius: 12px; margin: 1.5rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         .article-body blockquote { border-left: 4px solid #dc2626; background: #fef2f2; padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; color: #7f1d1d; font-style: italic; }
+        /* ── Button inserted via editor ── */
+        .article-body .btn-cta {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: #dc2626;
+          color: #ffffff !important;
+          font-weight: 700;
+          font-size: 0.9rem;
+          padding: 0.6rem 1.4rem;
+          border-radius: 10px;
+          text-decoration: none !important;
+          margin: 1rem 0;
+          transition: background 0.2s, transform 0.15s;
+          box-shadow: 0 4px 14px rgba(220,38,38,0.35);
+          cursor: pointer;
+        }
+        .article-body .btn-cta:hover {
+          background: #b91c1c;
+          transform: translateY(-1px);
+          text-decoration: none !important;
+        }
+        .article-body .btn-cta-outline {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: transparent;
+          color: #dc2626 !important;
+          font-weight: 700;
+          font-size: 0.9rem;
+          padding: 0.6rem 1.4rem;
+          border-radius: 10px;
+          border: 2px solid #dc2626;
+          text-decoration: none !important;
+          margin: 1rem 0;
+          transition: background 0.2s, color 0.2s, transform 0.15s;
+          cursor: pointer;
+        }
+        .article-body .btn-cta-outline:hover {
+          background: #dc2626;
+          color: #ffffff !important;
+          transform: translateY(-1px);
+          text-decoration: none !important;
+        }
       `}</style>
       <div
         className="article-body"
@@ -226,16 +311,73 @@ function RichContent({ html }: { html: string }) {
 }
 
 
+// ─── Thank You Overlay ────────────────────────────────────────────────────────
+function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void }) {
+  const [countdown, setCountdown] = useState(8);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) { clearInterval(timer); onClose(); return 0; }
+        return c - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [onClose]);
+
+  return (
+    <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-950/95 backdrop-blur-sm rounded-none">
+      <div className="relative max-w-md w-full mx-4 bg-white rounded-3xl shadow-2xl overflow-hidden text-center">
+        {/* Countdown progress bar */}
+        <div className="h-1 bg-gray-200">
+          <div
+            className="h-full bg-primary transition-all ease-linear"
+            style={{ width: `${(countdown / 8) * 100}%`, transitionDuration: "1s" }}
+          />
+        </div>
+
+        <div className="p-8">
+          {/* Animated check icon */}
+          <div className="mb-5 flex justify-center">
+            <div className="relative">
+              <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-60" />
+              <div className="relative w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                <CheckCircle size={42} strokeWidth={2.5} />
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-2xl font-black text-gray-900 mb-2">
+            {name ? `谢谢，${name}！` : "提交成功！"}
+          </h3>
+          <p className="text-gray-500 text-sm leading-relaxed mb-2">
+            我们已收到您的咨询。JIIPE 投资顾问将在 <strong className="text-gray-800">24小时内</strong> 与您取得联系。
+          </p>
+          <p className="text-gray-400 text-xs mb-6">感谢您对 JIIPE 经济特区的关注。</p>
+
+          <button
+            onClick={onClose}
+            className="w-full py-3.5 bg-primary hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/30"
+          >
+            关闭 ({countdown}s)
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Inline RFI Form ─────────────────────────────────────────────────────────
 declare global {
   interface Window { turnstile: { reset: (id?: string) => void }; }
 }
 
 function ArticleRFIForm() {
-  const router = useRouter();
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [submittedName, setSubmittedName] = useState("");
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", phone: "", email: "", company: "",
     country: "", reason: "", reasonOther: "", industry: "",
@@ -255,10 +397,6 @@ function ArticleRFIForm() {
       setIsSubmitting(false);
       return;
     }
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("allowThankYou", "1");
-      sessionStorage.setItem("lastName", formData.lastName);
-    }
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -266,9 +404,22 @@ function ArticleRFIForm() {
         body: JSON.stringify({ ...formData, cfTurnstileResponse: token }),
       });
       if (!res.ok) throw new Error("Server error");
-      router.push("/thank-you");
+
+      // ✅ Show inline thank-you overlay
+      setSubmittedName(formData.firstName || formData.lastName);
+      setShowThankYou(true);
+
+      // Fire GA4 / gtag event for analytics tracking
+      if (typeof window !== "undefined" && (window as any).gtag) {
+        (window as any).gtag("event", "form_submission_success", {
+          event_category: "Contact Form",
+          event_label: "Article RFI Form",
+          value: 1,
+        });
+      }
     } catch {
       setToast({ type: "error", message: "提交失败，请稍后再试。" });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -281,6 +432,11 @@ function ArticleRFIForm() {
   return (
     <section id="contact" className="relative py-24 px-4 bg-gray-950 overflow-hidden">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
+
+      {/* ── Thank You Overlay ─────────────────────────────────────────── */}
+      {showThankYou && (
+        <ThankYouOverlay name={submittedName} onClose={() => setShowThankYou(false)} />
+      )}
 
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">
@@ -383,6 +539,14 @@ function ArticleRFIForm() {
                     <div><label className={lbl}>土地需求 (公顷)</label><input className={inp} placeholder="例：5" value={formData.landPlot} onChange={set("landPlot")} /></div>
                     <div><label className={lbl}>电力需求 (MW)</label><input className={inp} placeholder="例：10" value={formData.power} onChange={set("power")} /></div>
                   </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div><label className={lbl}>用水需求 (m³/天)</label><input className={inp} placeholder="例：500" value={formData.water} onChange={set("water")} /></div>
+                    <div><label className={lbl}>天然气需求 (MMBTU/年)</label><input className={inp} placeholder="例：10000" value={formData.gas} onChange={set("gas")} /></div>
+                  </div>
+                  <div>
+                    <label className={lbl}>港口需求 (吨/年)</label>
+                    <input className={inp} placeholder="例：50000" value={formData.seaport} onChange={set("seaport")} />
+                  </div>
                   {formData.reason === "Other" && (
                     <div><label className={lbl}>请说明</label><input className={inp} placeholder="请详细说明..." value={formData.reasonOther} onChange={set("reasonOther")} /></div>
                   )}
@@ -423,6 +587,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
   const summary = article.summary_cn || article.summary;
   const content = article.content_cn || article.content;
   const cover = article.og_image || article.coverImage;
+  const ctaLabel = article.cta_text || "1对1投资顾问免费对接";
 
   // Extract headings from pre-processed HTML (IDs already injected server-side via regex)
   const headings = React.useMemo(() => {
@@ -479,10 +644,15 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
         .animate-up { animation: up 0.4s ease-out; }
         @keyframes hero-in { from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
         .hero-img { animation: hero-in 1.2s ease-out forwards; }
+        /* Extra bottom padding on mobile to avoid content being hidden behind the floating bottom bar */
+        @media (max-width: 1023px) {
+          .article-mobile-pad { padding-bottom: 80px; }
+        }
       `}</style>
 
       <ReadingProgress />
       <StickyNav title={title} headings={headings} activeId={activeId} />
+      <FloatingCTA ctaLabel={ctaLabel} />
 
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
       <header className="relative w-full overflow-hidden bg-gray-950" style={{ minHeight: "75vh" }}>
@@ -527,7 +697,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
 
             {/* Summary */}
             {summary && (
-              <p className="text-gray-300 text-lg leading-relaxed max-w-3xl mb-8">{summary}</p>
+              <p className="text-gray-300 text-lg leading-relaxed max-w-3xl mb-8 whitespace-pre-line">{summary}</p>
             )}
 
             {/* Action row */}
@@ -536,7 +706,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
                 href="#contact"
                 className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/30 text-sm"
               >
-                <Send size={14} /> 联系投资专家
+                <Send size={14} /> {ctaLabel}
               </a>
               <button
                 onClick={copyLink}
@@ -550,7 +720,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       </header>
 
       {/* ── ARTICLE BODY ────────────────────────────────────────────────────── */}
-      <div className="bg-white">
+      <div className="bg-white article-mobile-pad">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="flex gap-12">
             {/* Sidebar */}
@@ -623,9 +793,9 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-8 right-6 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-xl shadow-primary/40 flex items-center justify-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all"
+          className="fixed bottom-20 right-4 z-50 lg:bottom-20 lg:right-6 w-10 h-10 rounded-full bg-primary text-white shadow-xl shadow-primary/40 flex items-center justify-center hover:bg-primary/90 hover:-translate-y-0.5 transition-all"
         >
-          <ArrowUp size={20} />
+          <ArrowUp size={18} />
         </button>
       )}
     </>
