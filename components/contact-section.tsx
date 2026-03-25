@@ -16,6 +16,7 @@ declare global {
   interface Window {
     turnstile: {
       reset: (widgetId?: string) => void;
+      render: (el: any, options: any) => void;
     };
   }
 }
