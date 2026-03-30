@@ -94,7 +94,8 @@ export default function HeroSection({ initialData }: { initialData?: HeroContent
                 href={get(content, 'brochure_url')}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => sendGAEvent('event', 'download_brochure', { location: 'hero_section', file_name: 'FlyerJIIPE-EN-2025.pdf' })}
+                data-track="download_brochure"
+                data-article="homepage-hero"
               >
                 <Download className="h-4 w-4" />
                 {get(content, 'btn_brochure')}

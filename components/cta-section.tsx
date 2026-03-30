@@ -101,7 +101,8 @@ export default function CTASection({ initialData }: { initialData?: CtaContent }
                 href={get(content, 'brochure_url')}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => sendGAEvent('event', 'download_brochure', { location: 'download_cta', file_name: 'FlyerJIIPE-EN-2025.pdf' })}
+                data-track="download_brochure"
+                data-article="homepage-cta"
               >
                 {get(content, 'btn_brochure')}
               </a>
