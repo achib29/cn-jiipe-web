@@ -23,13 +23,20 @@ export default function BrochureTracker() {
 
       // GTAG tracking
       if (typeof window !== "undefined") {
-        if (typeof (window as any).gtag === "function") {
-          (window as any).gtag("event", "download_brochure", eventParams);
-        } else if (typeof (window as any).dataLayer !== "undefined") {
+        // 1. Explicitly push to dataLayer for Google Tag Manager (GTM)
+        if (typeof (window as any).dataLayer !== "undefined") {
           (window as any).dataLayer.push({
             event: "download_brochure",
-            ...eventParams,
+            article: eventParams.article,
+            page_type: eventParams.page_type,
+            language: eventParams.language,
+            location: eventParams.location
           });
+        }
+
+        // 2. Call gtag directly for Google Analytics (if available)
+        if (typeof (window as any).gtag === "function") {
+          (window as any).gtag("event", "download_brochure", eventParams);
         }
       }
     };
