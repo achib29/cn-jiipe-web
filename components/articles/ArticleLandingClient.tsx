@@ -371,11 +371,10 @@ function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void 
 // ─── Inline RFI Form ─────────────────────────────────────────────────────────
 
 function ArticleRFIForm() {
+  const router = useRouter();
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
-  const [showThankYou, setShowThankYou] = useState(false);
-  const [submittedName, setSubmittedName] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", phone: "", email: "", company: "",
@@ -401,10 +400,6 @@ function ArticleRFIForm() {
       });
       if (!res.ok) throw new Error("Server error");
 
-      // ✅ Show inline thank-you overlay
-      setSubmittedName(formData.firstName || formData.lastName);
-      setShowThankYou(true);
-
       // Fire GA4 / gtag event for analytics tracking
       if (typeof window !== "undefined" && (window as any).gtag) {
         (window as any).gtag("event", "form_submission_success", {
@@ -413,6 +408,9 @@ function ArticleRFIForm() {
           value: 1,
         });
       }
+
+      // ✅ Redirect to shared /thank-you page
+      router.push("/thank-you");
     } catch {
       setToast({ type: "error", message: "提交失败，请稍后再试。" });
     } finally {
@@ -428,11 +426,6 @@ function ArticleRFIForm() {
   return (
     <section id="contact" className="relative py-24 px-4 bg-gray-950 overflow-hidden">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
-
-      {/* ── Thank You Overlay ─────────────────────────────────────────── */}
-      {showThankYou && (
-        <ThankYouOverlay name={submittedName} onClose={() => setShowThankYou(false)} />
-      )}
 
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">

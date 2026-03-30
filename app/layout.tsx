@@ -6,6 +6,10 @@ import ClientRoot from '@/components/ClientRoot';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import Script from 'next/script';
+
+// 1. IMPORT LIBRARY GOOGLE (Penting)
+import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
+
 import BrochureTracker from '@/components/BrochureTracker';
 
 // CMS Fetch for Layout components like Footer
@@ -129,6 +133,14 @@ export default async function RootLayout({
         {/* Vercel Analytics */}
         <Analytics />
         <SpeedInsights />
+
+        {/* === SETUP GOOGLE KHUSUS CN === */}
+
+        {/* 1. GTM Container KHUSUS CN (ID BARU: GTM-PCRK853V) dicantumkan kembali untuk vendor Baidu */}
+        <GoogleTagManager gtmId="GTM-PCRK853V" />
+
+        {/* 2. Google Ads Tag (ID: G-ZFDDK9WTWN) diletakkan berdampingan dengan GA4 murni */}
+        <GoogleAnalytics gaId="G-ZFDDK9WTWN" />
 
       </body>
     </html>
