@@ -103,7 +103,7 @@ export default function RichTextEditor({
     if (type === "button") {
       if (!text || !url) return;
       const cls = variant === "outline" ? "btn-cta-outline" : "btn-cta";
-      const html = `<a href="${url}" class="${cls}" target="_self" rel="noopener noreferrer">${text}</a>`;
+      const html = `<a href="${url}" class="${cls}" target="_blank" rel="noopener noreferrer">${text}</a>`;
       editor.chain().focus().insertContent(html).run();
     } else if (type === "brochure") {
       if (!text) return;
