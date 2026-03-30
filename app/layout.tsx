@@ -9,6 +9,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 // 1. IMPORT LIBRARY GOOGLE (Penting)
 import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 
+import BrochureTracker from '@/components/BrochureTracker';
+
 // CMS Fetch for Layout components like Footer
 import pool from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
@@ -100,6 +102,9 @@ export default async function RootLayout({
             <ClientRoot footerData={footerData as any}>{children}</ClientRoot>
           )}
         </ThemeProvider>
+
+        {/* Global Brochure Event Tracker */}
+        <BrochureTracker />
 
         {/* Vercel Analytics */}
         <Analytics />

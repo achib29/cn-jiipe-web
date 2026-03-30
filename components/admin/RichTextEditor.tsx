@@ -26,6 +26,7 @@ import {
   Minus,
   Code2,
   MousePointerClick,
+  Download,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -162,7 +163,6 @@ export default function RichTextEditor({
 
   if (!editor) return null;
 
-  // --- Insert styled button into editor ---
   const insertButton = (variant: "solid" | "outline") => {
     const text = window.prompt("Button text:", "立即咨询 →");
     if (!text) return;
@@ -170,6 +170,15 @@ export default function RichTextEditor({
     if (url === null) return;
     const cls = variant === "outline" ? "btn-cta-outline" : "btn-cta";
     const html = `<a href="${url}" class="${cls}" target="_self" rel="noopener noreferrer">${text}</a>`;
+    editor.chain().focus().insertContent(html).run();
+  };
+
+  const insertBrochureButton = () => {
+    const text = window.prompt("Brochure Button text:", "Download Brochure / 下载宣传册");
+    if (!text) return;
+    
+    // Inserting the carefully styled button with data-track attribute
+    const html = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">📄 ${text}</a>`;
     editor.chain().focus().insertContent(html).run();
   };
 
@@ -296,6 +305,14 @@ export default function RichTextEditor({
           <span className="text-[9px] font-black text-gray-500 leading-tight text-center">
             <MousePointerClick size={12} className="mx-auto mb-0.5" />
             Btn◻
+          </span>
+        </ToolbarButton>
+
+        {/* Insert Brochure CTA */}
+        <ToolbarButton title="Insert Brochure Download Button" onClick={insertBrochureButton}>
+          <span className="text-[9px] font-black text-blue-600 leading-tight text-center">
+            <Download size={12} className="mx-auto mb-0.5" />
+            PDF
           </span>
         </ToolbarButton>
       </div>

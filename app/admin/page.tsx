@@ -266,6 +266,12 @@ export default function AdminDashboard() {
               <LogOut size={18} /> Logout
             </button>
 
+            <Link href="/admin/brochure">
+              <button className="flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-bold transition-all shadow-sm">
+                <FileText size={18} /> Brochure
+              </button>
+            </Link>
+
             <Link href="/admin/add">
               <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all">
                 <Plus size={20} /> Create New

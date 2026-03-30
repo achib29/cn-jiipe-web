@@ -53,7 +53,7 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
     fetch("/api/site-content?section=contact")
       .then(r => r.json())
       .then(data => { if (data.data) setContent(data.data); })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const [formData, setFormData] = useState({
