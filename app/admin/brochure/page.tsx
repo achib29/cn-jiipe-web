@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, Upload, CheckCircle } from "lucide-react";
+import { ArrowLeft, FileText, Upload, CheckCircle, Copy, Check } from "lucide-react";
 
 export default function BrochureAdminPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -49,6 +49,23 @@ export default function BrochureAdminPage() {
       setUploading(false);
     }
   };
+
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedHtml, setCopiedHtml] = useState(false);
+
+  const copyUrl = (text: string, type: 'link' | 'html') => {
+    navigator.clipboard.writeText(text);
+    if (type === 'link') {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    } else {
+      setCopiedHtml(true);
+      setTimeout(() => setCopiedHtml(false), 2000);
+    }
+  };
+
+  const brochureUrl = "/brochure/cn-jiipe.pdf";
+  const brochureHtml = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">Download Brochure</a>`;
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
@@ -137,6 +154,55 @@ export default function BrochureAdminPage() {
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Copy Link Section */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mt-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">Brochure Links</h3>
+          <p className="text-gray-500 text-sm mb-6">
+            Gunakan Link atau kode HTML di bawah ini untuk menyisipkan tombol Download Brochure yang otomatis tertracking ke Google Analytics pada artikel manapun.
+          </p>
+          
+          <div className="space-y-4">
+            {/* Raw URL */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-gray-700 uppercase">Direct Link URL</label>
+              <div className="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={brochureUrl} 
+                  className="flex-grow p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-600 font-mono text-sm"
+                />
+                <button
+                  onClick={() => copyUrl(brochureUrl, 'link')}
+                  className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-4 py-3 rounded-lg font-bold shadow-md transition-all shrink-0 w-32 justify-center"
+                >
+                  {copiedLink ? <><Check size={16} /> Copied!</> : <><Copy size={16} /> Copy URL</>}
+                </button>
+              </div>
+            </div>
+
+            {/* HTML Snippet */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-bold text-gray-700 uppercase">Raw HTML Button (Untuk paste via Code View)</label>
+              <div className="flex items-center gap-2">
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={brochureHtml} 
+                  className="flex-grow p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-600 font-mono text-sm"
+                />
+                <button
+                  onClick={() => copyUrl(brochureHtml, 'html')}
+                  className="flex items-center gap-2 bg-gray-900 hover:bg-black text-white px-4 py-3 rounded-lg font-bold shadow-md transition-all shrink-0 w-32 justify-center"
+                >
+                  {copiedHtml ? <><Check size={16} /> Copied!</> : <><Copy size={16} /> Copy HTML</>}
+                </button>
+              </div>
+              <p className="text-[11px] text-gray-400">Atribut <code className="bg-gray-100 text-red-500 rounded px-1">data-track="download_brochure"</code> WAJIB disertakan agar jumlah download tercatat secara spesifik untuk masing-masing artikel.</p>
             </div>
           </div>
         </div>
