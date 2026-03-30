@@ -110,6 +110,36 @@ export default async function RootLayout({
             gtag('config', 'G-ZFDDK9WTWN');
           `}
         </Script>
+
+        {/* --- BAIDU ANALYTICS & ADS (Global for ALL domains under cn.jiipe.com) --- */}
+        <Script id="baidu-tongji-base" strategy="afterInteractive">
+          {`
+            var _hmt = _hmt || [];
+            (function() {
+              var hm = document.createElement("script");
+              hm.src = "https://hm.baidu.com/hm.js?2c4fddebd05fedfb3cd6366fdb39bec6";
+              var s = document.getElementsByTagName("script")[0]; 
+              s.parentNode.insertBefore(hm, s);
+            })();
+          `}
+        </Script>
+
+        <Script id="baidu-agl-base" strategy="afterInteractive">
+          {`
+            window._agl = window._agl || [];
+            (function () {
+              _agl.push(['production', '_f7L2XwGXjyszb4d1e2oxPybgD']);
+              (function () {
+                var agl = document.createElement('script');
+                agl.type = 'text/javascript';
+                agl.async = true;
+                agl.src = 'https://fxgate.baidu.com/angelia/fcagl.js?production=_f7L2XwGXjyszb4d1e2oxPybgD';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(agl, s);
+              })();
+            })();
+          `}
+        </Script>
       </head>
       <body className={inter.className}>
         <ThemeProvider

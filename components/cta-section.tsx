@@ -103,6 +103,7 @@ export default function CTASection({ initialData }: { initialData?: CtaContent }
                 rel="noopener noreferrer"
                 data-track="download_brochure"
                 data-article="homepage-cta"
+                data-agl-cvt="6"
               >
                 {get(content, 'btn_brochure')}
               </a>

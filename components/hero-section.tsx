@@ -96,6 +96,7 @@ export default function HeroSection({ initialData }: { initialData?: HeroContent
                 rel="noopener noreferrer"
                 data-track="download_brochure"
                 data-article="homepage-hero"
+                data-agl-cvt="6"
               >
                 <Download className="h-4 w-4" />
                 {get(content, 'btn_brochure')}

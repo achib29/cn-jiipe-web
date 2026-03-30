@@ -65,7 +65,7 @@ export default function BrochureAdminPage() {
   };
 
   const brochureUrl = "/brochure/cn-jiipe.pdf";
-  const brochureHtml = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">Download Brochure</a>`;
+  const brochureHtml = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" data-agl-cvt="6" class="btn-cta" target="_blank" rel="noopener noreferrer">Download Brochure</a>`;
 
   return (
     <main className="min-h-screen bg-gray-50 pt-24 pb-20 px-4">
@@ -202,7 +202,7 @@ export default function BrochureAdminPage() {
                   {copiedHtml ? <><Check size={16} /> Copied!</> : <><Copy size={16} /> Copy HTML</>}
                 </button>
               </div>
-              <p className="text-[11px] text-gray-400">Atribut <code className="bg-gray-100 text-red-500 rounded px-1">data-track="download_brochure"</code> WAJIB disertakan agar jumlah download tercatat secara spesifik untuk masing-masing artikel.</p>
+              <p className="text-[11px] text-gray-400">Atribut <code className="bg-gray-100 text-red-500 rounded px-1">data-track="download_brochure"</code> dan <code className="bg-gray-100 text-red-500 rounded px-1">data-agl-cvt="6"</code> WAJIB disertakan agar GA4 dan Baidu Ads mencatat konversi download.</p>
             </div>
           </div>
         </div>

@@ -136,8 +136,8 @@ function SidebarToC({ headings, activeId }: { headings: { id: string; text: stri
                 href={`#${id}`}
                 onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }}
                 className={`flex items-center gap-2 py-1.5 text-[13px] rounded-lg px-2 transition-all ${level === 3 ? "pl-5 text-gray-400 hover:text-gray-600" : ""} ${activeId === id
-                    ? "bg-primary/10 text-primary font-semibold"
-                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
                   }`}
               >
                 {activeId === id && <span className="w-1 h-1 rounded-full bg-primary" />}
@@ -372,7 +372,7 @@ function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void 
           <p className="text-xs text-gray-400 mb-3 uppercase tracking-widest font-semibold">微信扫码咨询</p>
           <img src="/wechat-barcode.png" alt="WeChat" className="w-28 h-28 mx-auto rounded-lg shadow-sm border border-gray-200 mb-3" />
           <p className="text-sm font-semibold flex items-center justify-center gap-1.5 text-gray-700">
-             电话: <a href="tel:+8613641501595" className="text-primary hover:underline">+86 136 4150 1595</a>
+            电话: <a href="tel:+8613641501595" className="text-primary hover:underline">+86 136 4150 1595</a>
           </p>
         </div>
 

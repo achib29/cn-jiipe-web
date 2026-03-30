@@ -107,7 +107,7 @@ export default function RichTextEditor({
       editor.chain().focus().insertContent(html).run();
     } else if (type === "brochure") {
       if (!text) return;
-      const html = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">📄 ${text}</a>`;
+      const html = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" data-agl-cvt="6" class="btn-cta" target="_blank" rel="noopener noreferrer">📄 ${text}</a>`;
       editor.chain().focus().insertContent(html).run();
     } else if (type === "link") {
       if (url === "") {
