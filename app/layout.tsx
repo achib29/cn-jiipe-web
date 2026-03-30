@@ -5,10 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import ClientRoot from '@/components/ClientRoot';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-
-// 1. IMPORT LIBRARY GOOGLE (Penting)
-import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
-
+import Script from 'next/script';
 import BrochureTracker from '@/components/BrochureTracker';
 
 // CMS Fetch for Layout components like Footer
@@ -87,6 +84,29 @@ export default async function RootLayout({
 
   return (
     <html lang="zh" suppressHydrationWarning>
+      <head>
+        {/* GA4 Primary Tag (G-YR9GTV5FCH) */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-YR9GTV5FCH`}
+        />
+        <Script id="ga4-primary-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            // Primary Analytics
+            gtag('config', 'G-YR9GTV5FCH', {
+              page_path: window.location.pathname,
+              send_page_view: true
+            });
+
+            // Google Ads Tag
+            gtag('config', 'G-ZFDDK9WTWN');
+          `}
+        </Script>
+      </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
@@ -109,16 +129,6 @@ export default async function RootLayout({
         {/* Vercel Analytics */}
         <Analytics />
         <SpeedInsights />
-
-        {/* === SETUP GOOGLE KHUSUS CN === */}
-
-        {/* 1. GTM Container KHUSUS CN (ID BARU: GTM-PCRK853V) */}
-        {/* Ini sesuai request kode script yang baru saja Anda kirim */}
-        <GoogleTagManager gtmId="GTM-PCRK853V" />
-
-        {/* 2. Google Ads Tag (ID: G-ZFDDK9WTWN) */}
-        {/* Tetap dipasang agar alat cek vendor mendeteksi "Tag Ads" dan statusnya hijau */}
-        <GoogleAnalytics gaId="G-ZFDDK9WTWN" />
 
       </body>
     </html>
