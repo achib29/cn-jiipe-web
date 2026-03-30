@@ -312,55 +312,73 @@ function RichContent({ html }: { html: string }) {
 
 // ─── Thank You Overlay ────────────────────────────────────────────────────────
 function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void }) {
-  const [countdown, setCountdown] = useState(8);
+  const [countdown, setCountdown] = useState(25);
+  const sentRef = useRef(false);
 
   useEffect(() => {
+    // 1. Trigger Baidu tracking identical to /thank-you page
+    const pushBaiduSuccess = () => {
+      if (sentRef.current) return;
+      if (window._agl && typeof window._agl.push === 'function') {
+        window._agl.push(['track', ['success', { t: '3' }]]);
+        sentRef.current = true;
+        return true;
+      }
+      return false;
+    };
+
+    let tries = 0;
+    const intervalId = setInterval(() => {
+      if (pushBaiduSuccess() || ++tries >= 5) clearInterval(intervalId);
+    }, 300);
+    const fallbackId = setTimeout(pushBaiduSuccess, 800);
+
+    // 2. Countdown to auto-close
     const timer = setInterval(() => {
       setCountdown((c) => {
         if (c <= 1) { clearInterval(timer); onClose(); return 0; }
         return c - 1;
       });
     }, 1000);
-    return () => clearInterval(timer);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(fallbackId);
+      clearInterval(timer);
+    };
   }, [onClose]);
 
   return (
-    <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-950/95 backdrop-blur-sm rounded-none">
-      <div className="relative max-w-md w-full mx-4 bg-white rounded-3xl shadow-2xl overflow-hidden text-center">
-        {/* Countdown progress bar */}
-        <div className="h-1 bg-gray-200">
-          <div
-            className="h-full bg-primary transition-all ease-linear"
-            style={{ width: `${(countdown / 8) * 100}%`, transitionDuration: "1s" }}
-          />
-        </div>
-
-        <div className="p-8">
-          {/* Animated check icon */}
-          <div className="mb-5 flex justify-center">
-            <div className="relative">
-              <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-60" />
-              <div className="relative w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                <CheckCircle size={42} strokeWidth={2.5} />
-              </div>
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-gray-950/85 backdrop-blur-sm px-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center relative animate-up">
+        {/* Animated check icon */}
+        <div className="mb-5 flex justify-center">
+          <div className="relative">
+            <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-60" />
+            <div className="relative w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+              <CheckCircle size={32} strokeWidth={2.5} />
             </div>
           </div>
-
-          <h3 className="text-2xl font-black text-gray-900 mb-2">
-            {name ? `谢谢，${name}！` : "提交成功！"}
-          </h3>
-          <p className="text-gray-500 text-sm leading-relaxed mb-2">
-            我们已收到您的咨询。JIIPE 投资顾问将在 <strong className="text-gray-800">24小时内</strong> 与您取得联系。
-          </p>
-          <p className="text-gray-400 text-xs mb-6">感谢您对 JIIPE 经济特区的关注。</p>
-
-          <button
-            onClick={onClose}
-            className="w-full py-3.5 bg-primary hover:bg-red-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/30"
-          >
-            关闭 ({countdown}s)
-          </button>
         </div>
+
+        <h2 className="text-2xl font-black mb-2 text-gray-900">感谢您的咨询{name ? `, ${name}` : ''}!</h2>
+        <p className="text-gray-500 mb-6 text-sm leading-relaxed">
+          我们已收到您的问询信息，<br />专属顾问团队会尽快与您联系。
+        </p>
+
+        {/* Chinese Desk Contact */}
+        <div className="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100">
+          <h3 className="text-gray-900 font-bold mb-1">中国区专属服务</h3>
+          <p className="text-xs text-gray-400 mb-3 uppercase tracking-widest font-semibold">微信扫码咨询</p>
+          <img src="/wechat-barcode.png" alt="WeChat" className="w-28 h-28 mx-auto rounded-lg shadow-sm border border-gray-200 mb-3" />
+          <p className="text-sm font-semibold flex items-center justify-center gap-1.5 text-gray-700">
+             电话: <a href="tel:+8613641501595" className="text-primary hover:underline">+86 136 4150 1595</a>
+          </p>
+        </div>
+
+        <button onClick={onClose} className="w-full py-3.5 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 hover:bg-red-700 transition-all">
+          关闭窗口 ({countdown}s)
+        </button>
       </div>
     </div>
   );
@@ -369,10 +387,11 @@ function ThankYouOverlay({ name, onClose }: { name: string; onClose: () => void 
 // ─── Inline RFI Form ─────────────────────────────────────────────────────────
 
 function ArticleRFIForm() {
-  const router = useRouter();
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState(1);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [submittedName, setSubmittedName] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", phone: "", email: "", company: "",
@@ -407,13 +426,9 @@ function ArticleRFIForm() {
         });
       }
 
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("allowThankYou", "1");
-        sessionStorage.setItem("lastName", formData.lastName || formData.firstName);
-      }
-
-      // ✅ Redirect to shared /thank-you page
-      router.push("/thank-you");
+      // ✅ Show inline thank-you overlay without leaving the page
+      setSubmittedName(formData.lastName || formData.firstName);
+      setShowThankYou(true);
     } catch {
       setToast({ type: "error", message: "提交失败，请稍后再试。" });
     } finally {
@@ -429,6 +444,11 @@ function ArticleRFIForm() {
   return (
     <section id="contact" className="relative py-24 px-4 bg-gray-950 overflow-hidden">
       {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
+
+      {/* ── Thank You Overlay ─────────────────────────────────────────── */}
+      {showThankYou && (
+        <ThankYouOverlay name={submittedName} onClose={() => setShowThankYou(false)} />
+      )}
 
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">
