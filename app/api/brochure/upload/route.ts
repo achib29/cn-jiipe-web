@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import pool from "@/lib/db";
+
+async function ensureBrochureTable() {
+  await pool.query(`
+      CREATE TABLE IF NOT EXISTS brochures (
+          id INT PRIMARY KEY,
+          filename VARCHAR(255) NOT NULL,
+          mime_type VARCHAR(100) NOT NULL,
+          data LONGBLOB NOT NULL,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `);
+}
 
 export async function POST(req: NextRequest) {
   try {
+    await ensureBrochureTable();
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -17,18 +30,16 @@ export async function POST(req: NextRequest) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = new Uint8Array(arrayBuffer);
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Create the brochure directory if it doesn't exist
-    const publicDir = path.join(process.cwd(), "public", "brochure");
-    await mkdir(publicDir, { recursive: true });
-
-    // The name we are enforcing from the CMS request
+    // Save/Update strictly at ID 1
     const filename = "cn-jiipe.pdf";
-    const filePath = path.join(publicDir, filename);
-
-    // Write file to public/brochure/cn-jiipe.pdf
-    await writeFile(filePath, buffer);
+    await pool.query(
+      `INSERT INTO brochures (id, filename, mime_type, data) 
+       VALUES (1, ?, ?, ?) 
+       ON DUPLICATE KEY UPDATE filename=VALUES(filename), mime_type=VALUES(mime_type), data=VALUES(data)`,
+      [filename, file.type, buffer]
+    );
 
     return NextResponse.json({
       success: true,
