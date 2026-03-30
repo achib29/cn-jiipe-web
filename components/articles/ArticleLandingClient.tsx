@@ -33,9 +33,8 @@ interface Article {
 function Toast({ type, message, onClose }: { type: "success" | "error"; message: string; onClose: () => void }) {
   useEffect(() => { const t = setTimeout(onClose, 5000); return () => clearTimeout(t); }, [onClose]);
   return (
-    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border text-sm font-semibold max-w-md w-full animate-up ${
-      type === "success" ? "bg-green-50 border-green-200 text-green-800" : "bg-red-50 border-red-200 text-red-800"
-    }`}>
+    <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border text-sm font-semibold max-w-md w-full animate-up ${type === "success" ? "bg-green-50 border-green-200 text-green-800" : "bg-red-50 border-red-200 text-red-800"
+      }`}>
       {type === "success" ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
       <span className="flex-1">{message}</span>
       <button onClick={onClose}><X size={16} className="opacity-50 hover:opacity-100" /></button>
@@ -44,7 +43,7 @@ function Toast({ type, message, onClose }: { type: "success" | "error"; message:
 }
 
 // ─── Floating Sticky Nav ──────────────────────────────────────────────────────
-function StickyNav({ title, headings, activeId }: { title: string; headings: {id: string; text: string; level: number}[]; activeId: string }) {
+function StickyNav({ title, headings, activeId }: { title: string; headings: { id: string; text: string; level: number }[]; activeId: string }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -121,7 +120,7 @@ function ReadingProgress() {
 }
 
 // ─── Sidebar Table of Contents ────────────────────────────────────────────────
-function SidebarToC({ headings, activeId }: { headings: {id: string; text: string; level: number}[]; activeId: string }) {
+function SidebarToC({ headings, activeId }: { headings: { id: string; text: string; level: number }[]; activeId: string }) {
   if (headings.length === 0) return null;
   return (
     <nav className="sticky top-20">
@@ -136,11 +135,10 @@ function SidebarToC({ headings, activeId }: { headings: {id: string; text: strin
               <a
                 href={`#${id}`}
                 onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); }}
-                className={`flex items-center gap-2 py-1.5 text-[13px] rounded-lg px-2 transition-all ${level === 3 ? "pl-5 text-gray-400 hover:text-gray-600" : ""} ${
-                  activeId === id
+                className={`flex items-center gap-2 py-1.5 text-[13px] rounded-lg px-2 transition-all ${level === 3 ? "pl-5 text-gray-400 hover:text-gray-600" : ""} ${activeId === id
                     ? "bg-primary/10 text-primary font-semibold"
                     : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
-                }`}
+                  }`}
               >
                 {activeId === id && <span className="w-1 h-1 rounded-full bg-primary" />}
                 <span className="truncate">{text}</span>
@@ -388,7 +386,7 @@ function ArticleRFIForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Turnstile disabled per user request
     const token = "bypass";
 
@@ -407,6 +405,11 @@ function ArticleRFIForm() {
           event_label: "Article RFI Form",
           value: 1,
         });
+      }
+
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("allowThankYou", "1");
+        sessionStorage.setItem("lastName", formData.lastName || formData.firstName);
       }
 
       // ✅ Redirect to shared /thank-you page
@@ -431,7 +434,7 @@ function ArticleRFIForm() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'white\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'1\' cy=\'1\' r=\'1\'/%3E%3C/g%3E%3C/svg%3E")'}} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'white\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'1\' cy=\'1\' r=\'1\'/%3E%3C/g%3E%3C/svg%3E")' }} />
       </div>
 
       <div className="relative max-w-2xl mx-auto">
@@ -651,7 +654,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-gray-950/95 via-gray-900/80 to-gray-950/70" />
         {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage:'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")'}} />
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
 
         {/* Content */}
         <div className="relative z-10 max-w-5xl mx-auto px-6 flex flex-col justify-end h-full" style={{ minHeight: "75vh", paddingBottom: "5rem", paddingTop: "7rem" }}>
