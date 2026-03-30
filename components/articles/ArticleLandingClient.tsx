@@ -205,6 +205,21 @@ function FloatingCTA({ ctaLabel }: { ctaLabel: string }) {
 
 // ─── Rich Content ─────────────────────────────────────────────────────────────
 function RichContent({ html }: { html: string }) {
+  // Process the HTML to ensure any brochure links have the tracking attributes natively
+  const processedHtml = React.useMemo(() => {
+    if (!html) return "";
+    return html.replace(/<a([^>]+href=["']\/brochure\/cn-jiipe\.pdf["'][^>]*)>/gi, (match, p1) => {
+      let newAttrs = p1;
+      if (!newAttrs.includes('data-agl-cvt="6"')) {
+        newAttrs += ' data-agl-cvt="6"';
+      }
+      if (!newAttrs.includes('data-track="download_brochure"')) {
+        newAttrs += ' data-track="download_brochure"';
+      }
+      return `<a${newAttrs}>`;
+    });
+  }, [html]);
+
   return (
     <>
       <style>{`
@@ -303,7 +318,7 @@ function RichContent({ html }: { html: string }) {
       `}</style>
       <div
         className="article-body"
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: processedHtml }}
       />
     </>
   );
