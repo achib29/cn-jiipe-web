@@ -75,6 +75,51 @@ export default function RichTextEditor({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const isUpdatingRef = useRef(false);
 
+  // --- CUSTOM PROMPT MODAL STATE ---
+  const [promptConfig, setPromptConfig] = useState<{
+    isOpen: boolean;
+    type: "button" | "brochure" | "link";
+    title: string;
+    textLabel?: string;
+    urlLabel?: string;
+    variant?: "solid" | "outline";
+  }>({
+    isOpen: false,
+    type: "button",
+    title: "",
+  });
+  const [promptInputs, setPromptInputs] = useState({ text: "", url: "" });
+
+  const openPrompt = (config: any, defaultText = "", defaultUrl = "") => {
+    setPromptConfig({ ...config, isOpen: true });
+    setPromptInputs({ text: defaultText, url: defaultUrl });
+  };
+
+  const handlePromptSubmit = () => {
+    if (!editor) return;
+    const { type, variant } = promptConfig;
+    const { text, url } = promptInputs;
+
+    if (type === "button") {
+      if (!text || !url) return;
+      const cls = variant === "outline" ? "btn-cta-outline" : "btn-cta";
+      const html = `<a href="${url}" class="${cls}" target="_self" rel="noopener noreferrer">${text}</a>`;
+      editor.chain().focus().insertContent(html).run();
+    } else if (type === "brochure") {
+      if (!text) return;
+      const html = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">📄 ${text}</a>`;
+      editor.chain().focus().insertContent(html).run();
+    } else if (type === "link") {
+      if (url === "") {
+        editor.chain().focus().unsetLink().run();
+      } else {
+        editor.chain().focus().setLink({ href: url }).run();
+      }
+    }
+    setPromptConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+  // ---------------------------------
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -131,13 +176,11 @@ export default function RichTextEditor({
   const setLink = useCallback(() => {
     if (!editor) return;
     const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt("URL:", previousUrl || "https://");
-    if (url === null) return;
-    if (url === "") {
-      editor.chain().focus().unsetLink().run();
-      return;
-    }
-    editor.chain().focus().setLink({ href: url }).run();
+    openPrompt(
+      { type: "link", title: "Insert / Edit Link", urlLabel: "URL:" },
+      "",
+      previousUrl || "https://"
+    );
   }, [editor]);
 
   const handleImageFile = useCallback(
@@ -164,28 +207,89 @@ export default function RichTextEditor({
   if (!editor) return null;
 
   const insertButton = (variant: "solid" | "outline") => {
-    const text = window.prompt("Button text:", "立即咨询 →");
-    if (!text) return;
-    const url = window.prompt("URL:", "#contact");
-    if (url === null) return;
-    const cls = variant === "outline" ? "btn-cta-outline" : "btn-cta";
-    const html = `<a href="${url}" class="${cls}" target="_self" rel="noopener noreferrer">${text}</a>`;
-    editor.chain().focus().insertContent(html).run();
+    openPrompt(
+      {
+        type: "button",
+        title: variant === "solid" ? "Insert CTA Button" : "Insert Outline CTA Button",
+        textLabel: "Button Text:",
+        urlLabel: "Target URL:",
+        variant,
+      },
+      "立即咨询 →",
+      "#contact"
+    );
   };
 
   const insertBrochureButton = () => {
-    const text = window.prompt("Brochure Button text:", "Download Brochure / 下载宣传册");
-    if (!text) return;
-    
-    // Inserting the carefully styled button with data-track attribute
-    const html = `<a href="/brochure/cn-jiipe.pdf" data-track="download_brochure" class="btn-cta" target="_blank" rel="noopener noreferrer">📄 ${text}</a>`;
-    editor.chain().focus().insertContent(html).run();
+    openPrompt(
+      {
+        type: "brochure",
+        title: "Insert Brochure Button",
+        textLabel: "Button Text:",
+      },
+      "Download Brochure / 下载宣传册",
+      ""
+    );
   };
 
   const Divider = () => <div className="w-full h-px bg-gray-200 my-1" />;
 
   return (
     <div className="flex gap-3 h-full items-start">
+      {/* --- CUSTOM PROMPT UI --- */}
+      {promptConfig.isOpen && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 ring-1 ring-gray-200 transform animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-gray-900 mb-5">{promptConfig.title}</h3>
+            
+            {promptConfig.textLabel && (
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">{promptConfig.textLabel}</label>
+                <input 
+                  type="text" 
+                  autoFocus
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 font-medium text-gray-800" 
+                  value={promptInputs.text} 
+                  onChange={e => setPromptInputs({...promptInputs, text: e.target.value})} 
+                  onKeyDown={e => e.key === "Enter" && (!promptConfig.urlLabel || promptInputs.url) && handlePromptSubmit()}
+                />
+              </div>
+            )}
+
+            {promptConfig.urlLabel && (
+              <div className="mb-6">
+                <label className="block text-xs font-bold text-gray-600 uppercase mb-2">{promptConfig.urlLabel}</label>
+                <input 
+                  type="text" 
+                  autoFocus={!promptConfig.textLabel}
+                  className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 font-medium text-gray-800" 
+                  value={promptInputs.url} 
+                  onChange={e => setPromptInputs({...promptInputs, url: e.target.value})} 
+                  onKeyDown={e => e.key === "Enter" && handlePromptSubmit()}
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3 justify-end mt-6">
+              <button 
+                type="button" 
+                onClick={() => setPromptConfig(p => ({...p, isOpen: false}))} 
+                className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition text-sm"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                onClick={handlePromptSubmit} 
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition text-sm shadow-md shadow-red-500/30"
+              >
+                Insert
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ------------------------ */}
 
       {/* ── LEFT VERTICAL TOOLBAR ───────────────────────────────────────── */}
       <div className="sticky top-16 z-30 flex flex-col items-center gap-0.5 bg-white border border-gray-200 rounded-xl shadow-sm p-2 w-11 shrink-0">
