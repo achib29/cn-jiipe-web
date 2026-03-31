@@ -121,15 +121,41 @@ function ReadingProgress() {
 
 // ─── Sidebar Table of Contents ────────────────────────────────────────────────
 function SidebarToC({ headings, activeId }: { headings: { id: string; text: string; level: number }[]; activeId: string }) {
+  const [isOpen, setIsOpen] = useState(true);
+
   if (headings.length === 0) return null;
+
+  if (!isOpen) {
+    return (
+      <nav className="sticky top-20 flex justify-end">
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex items-center justify-center p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 hover:border-gray-300 hover:shadow-md transition-all text-gray-500 group"
+          title="Tampilkan Daftar Isi"
+        >
+          <Menu size={18} className="group-hover:text-primary transition-colors" />
+        </button>
+      </nav>
+    );
+  }
+
   return (
     <nav className="sticky top-20">
-      <div className="bg-gray-50/80 border border-gray-200 rounded-2xl p-5 backdrop-blur-sm">
-        <div className="flex items-center gap-2 mb-4">
-          <BookOpen size={14} className="text-primary" />
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contents</p>
+      <div className="bg-gray-50/80 border border-gray-200 rounded-2xl p-5 backdrop-blur-sm shadow-sm transition-all duration-300">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <BookOpen size={14} className="text-primary" />
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contents</p>
+          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="text-gray-400 hover:text-gray-700 hover:bg-gray-200/50 p-1.5 rounded-md transition-colors"
+            title="Sembunyikan Daftar Isi"
+          >
+            <X size={14} />
+          </button>
         </div>
-        <ul className="space-y-0.5">
+        <ul className="space-y-0.5 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
           {headings.map(({ id, text, level }) => (
             <li key={id}>
               <a
