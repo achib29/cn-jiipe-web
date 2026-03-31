@@ -645,7 +645,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
   const title = article.title_cn || article.title;
   const summary = article.summary_cn || article.summary;
   const content = article.content_cn || article.content;
-  const cover = article.og_image || article.coverImage;
+  const cover = article.coverImage || article.og_image;
   const ctaLabel = article.cta_text || "1对1投资顾问免费对接";
 
   // Extract headings from pre-processed HTML (IDs already injected server-side via regex)
