@@ -895,9 +895,14 @@ export default function AddNewsPage() {
 
             {/* COVER IMAGE */}
             <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-              <label className="block text-xs font-bold text-gray-500 uppercase mb-3">
-                Cover Image
-              </label>
+              <div className="mb-3">
+                <label className="block text-xs font-bold text-gray-500 uppercase">
+                  Cover Image
+                </label>
+                <p className="text-[11px] text-gray-400 mt-1">
+                  Rekomendasi ukuran: <strong>1920 x 1080 px (16:9)</strong> agar tidak terpotong di banner artikel.
+                </p>
+              </div>
               {imagePreview ? (
                 <div className="mb-4 relative rounded-lg overflow-hidden border border-gray-200 group">
                   <img
