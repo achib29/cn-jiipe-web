@@ -120,9 +120,7 @@ function ReadingProgress() {
 }
 
 // ─── Sidebar Table of Contents ────────────────────────────────────────────────
-function SidebarToC({ headings, activeId }: { headings: { id: string; text: string; level: number }[]; activeId: string }) {
-  const [isOpen, setIsOpen] = useState(true);
-
+function SidebarToC({ headings, activeId, isOpen, setIsOpen }: { headings: { id: string; text: string; level: number }[]; activeId: string; isOpen: boolean; setIsOpen: (v: boolean) => void }) {
   if (headings.length === 0) return null;
 
   if (!isOpen) {
@@ -130,10 +128,10 @@ function SidebarToC({ headings, activeId }: { headings: { id: string; text: stri
       <nav className="sticky top-20 flex justify-end">
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center justify-center p-3 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 hover:border-gray-300 hover:shadow-md transition-all text-gray-500 group"
+          className="flex items-center justify-center p-3 w-12 h-12 bg-white border border-gray-200 rounded-xl shadow-sm hover:bg-gray-50 hover:border-gray-300 hover:shadow-md transition-all text-gray-500 group"
           title="Tampilkan Daftar Isi"
         >
-          <Menu size={18} className="group-hover:text-primary transition-colors" />
+          <Menu size={18} className="group-hover:text-primary transition-colors shrink-0" />
         </button>
       </nav>
     );
@@ -642,6 +640,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [copied, setCopied] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const title = article.title_cn || article.title;
   const summary = article.summary_cn || article.summary;
@@ -781,11 +780,11 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
 
       {/* ── ARTICLE BODY ────────────────────────────────────────────────────── */}
       <div className="bg-white article-mobile-pad">
-        <div className="max-w-6xl mx-auto px-4 py-16">
-          <div className="flex gap-12">
+        <div className="max-w-7xl mx-auto px-4 max-sm:px-6 md:px-8 py-16">
+          <div className="flex gap-8 lg:gap-14">
             {/* Sidebar */}
-            <aside className="hidden lg:block w-64 shrink-0">
-              <SidebarToC headings={headings} activeId={activeId} />
+            <aside className={`hidden lg:block shrink-0 transition-all duration-500 ease-in-out relative ${sidebarOpen ? 'w-64' : 'w-12'}`}>
+              <SidebarToC headings={headings} activeId={activeId} isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
             </aside>
 
             {/* Content */}
