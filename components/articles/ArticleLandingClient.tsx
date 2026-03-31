@@ -208,7 +208,7 @@ function RichContent({ html }: { html: string }) {
   // Process the HTML to ensure any brochure links have the tracking attributes natively
   const processedHtml = React.useMemo(() => {
     if (!html) return "";
-    return html.replace(/<a([^>]+href=["']\/brochure\/cn-jiipe\.pdf["'][^>]*)>/gi, (match, p1) => {
+    let str = html.replace(/<a([^>]+href=["']\/brochure\/cn-jiipe\.pdf["'][^>]*)>/gi, (match, p1) => {
       let newAttrs = p1;
       if (!newAttrs.includes('data-agl-cvt="6"')) {
         newAttrs += ' data-agl-cvt="6"';
@@ -218,6 +218,16 @@ function RichContent({ html }: { html: string }) {
       }
       return `<a${newAttrs}>`;
     });
+
+    // Remove target="_blank" and rel from intra-page hash links (e.g. #contact)
+    str = str.replace(/<a([^>]+href=["']#[^"']+["'][^>]*)>/gi, (match, p1) => {
+      let newAttrs = p1
+        .replace(/\s+target=["'][^"']*["']/gi, "")
+        .replace(/\s+rel=["'][^"']*["']/gi, "");
+      return `<a${newAttrs}>`;
+    });
+
+    return str;
   }, [html]);
 
   return (

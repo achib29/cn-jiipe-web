@@ -85,7 +85,7 @@ export default function BrochureAdminPage() {
             <FileText className="text-gray-400 mb-4" size={48} />
             <h3 className="text-lg font-bold text-gray-800 mb-2">Upload New Brochure</h3>
             <p className="text-gray-500 text-sm mb-6 text-center max-w-md">
-              The file must be a PDF format. Uploading a new file will automatically 
+              The file must be a PDF format. Uploading a new file will automatically
               replace the old brochure.
             </p>
 
@@ -125,11 +125,10 @@ export default function BrochureAdminPage() {
           <div className="mt-8 flex flex-col gap-4">
             {message && (
               <div
-                className={`p-4 rounded-xl border flex items-start gap-3 ${
-                  message.type === "success"
-                    ? "bg-green-50 border-green-200 text-green-700"
-                    : "bg-red-50 border-red-200 text-red-700"
-                }`}
+                className={`p-4 rounded-xl border flex items-start gap-3 ${message.type === "success"
+                  ? "bg-green-50 border-green-200 text-green-700"
+                  : "bg-red-50 border-red-200 text-red-700"
+                  }`}
               >
                 {message.type === "success" ? <CheckCircle className="shrink-0 mt-0.5" size={18} /> : <FileText className="shrink-0 mt-0.5" size={18} />}
                 <span className="text-sm font-medium">{message.text}</span>
@@ -140,11 +139,10 @@ export default function BrochureAdminPage() {
               <button
                 onClick={handleUpload}
                 disabled={!file || uploading}
-                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold shadow-md transition-all ${
-                  !file || uploading
-                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                    : "bg-gray-900 hover:bg-black text-white"
-                }`}
+                className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold shadow-md transition-all ${!file || uploading
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-900 hover:bg-black text-white"
+                  }`}
               >
                 {uploading ? (
                   <>Uploading...</>
@@ -164,16 +162,16 @@ export default function BrochureAdminPage() {
           <p className="text-gray-500 text-sm mb-6">
             Gunakan Link atau kode HTML di bawah ini untuk menyisipkan tombol Download Brochure yang otomatis tertracking ke Google Analytics pada artikel manapun.
           </p>
-          
+
           <div className="space-y-4">
             {/* Raw URL */}
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-gray-700 uppercase">Direct Link URL</label>
               <div className="flex items-center gap-2">
-                <input 
-                  type="text" 
-                  readOnly 
-                  value={brochureUrl} 
+                <input
+                  type="text"
+                  readOnly
+                  value={brochureUrl}
                   className="flex-grow p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-600 font-mono text-sm"
                 />
                 <button
@@ -189,10 +187,10 @@ export default function BrochureAdminPage() {
             <div className="flex flex-col gap-2">
               <label className="text-xs font-bold text-gray-700 uppercase">Raw HTML Button (Untuk paste via Code View)</label>
               <div className="flex items-center gap-2">
-                <input 
-                  type="text" 
-                  readOnly 
-                  value={brochureHtml} 
+                <input
+                  type="text"
+                  readOnly
+                  value={brochureHtml}
                   className="flex-grow p-3 bg-gray-50 border border-gray-200 rounded-lg outline-none text-gray-600 font-mono text-sm"
                 />
                 <button
