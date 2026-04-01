@@ -717,8 +717,8 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       <header className="relative w-full overflow-hidden bg-gray-950" style={{ minHeight: "75vh" }}>
         {/* Cover image */}
         {cover && (
-          <div className="absolute inset-0 hero-img bg-black">
-            <img src={cover} alt={title} className="w-full h-full object-cover opacity-60" />
+          <div className="absolute inset-0 hero-img">
+            <img src={cover} alt={title} className="w-full h-full object-cover" />
           </div>
         )}
         
