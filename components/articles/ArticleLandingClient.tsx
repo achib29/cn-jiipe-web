@@ -717,40 +717,39 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       <header className="relative w-full overflow-hidden bg-gray-950" style={{ minHeight: "75vh" }}>
         {/* Cover image */}
         {cover && (
-          <div className="absolute inset-0 hero-img">
-            <img src={cover} alt={title} className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 hero-img bg-black">
+            <img src={cover} alt={title} className="w-full h-full object-cover opacity-60" />
           </div>
         )}
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-950/95 via-gray-900/80 to-gray-950/70" />
+        
         {/* Grid pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
 
         {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-6 flex flex-col justify-end h-full" style={{ minHeight: "75vh", paddingBottom: "5rem", paddingTop: "7rem" }}>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 max-sm:px-6 md:px-8 flex flex-col justify-end h-full" style={{ minHeight: "75vh", paddingBottom: "5rem", paddingTop: "7rem" }}>
           <div className="animate-fade-in">
             {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-              <a href="https://cn.jiipe.com" className="hover:text-gray-300 transition-colors">JIIPE</a>
+            <nav className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+              <a href="https://cn.jiipe.com" className="hover:text-white transition-colors">JIIPE</a>
               <ChevronRight size={14} />
-              <span className="text-primary">{article.category}</span>
+              <span className="text-primary font-medium">{article.category}</span>
             </nav>
 
             {/* Category + meta */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <span className="bg-primary/20 border border-primary/40 text-primary text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-3 mb-5">
+              <span className="bg-primary/90 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded flex items-center gap-1.5 shadow-sm">
                 <Tag size={11} /> {article.category}
               </span>
-              <span className="text-gray-400 text-xs flex items-center gap-1.5">
+              <span className="text-gray-300 text-xs flex items-center gap-1.5 font-medium bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
                 <Calendar size={11} /> {formatDate(article.date)}
               </span>
-              <span className="text-gray-400 text-xs flex items-center gap-1.5">
+              <span className="text-gray-300 text-xs flex items-center gap-1.5 font-medium bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
                 <Clock size={11} /> 约 {readMins} 分钟阅读
               </span>
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-6 max-w-4xl">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md">
               {title}
             </h1>
 
