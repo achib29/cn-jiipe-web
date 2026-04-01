@@ -24,6 +24,7 @@ interface Article {
   content: string;
   content_cn: string | null;
   coverImage: string | null;
+  coverImageMobile?: string | null;
   og_image: string | null;
   date: string;
   cta_text: string | null;
@@ -63,8 +64,10 @@ function StickyNav({ title, headings, activeId }: { title: string; headings: { i
           <img src="https://cn.jiipe.com/logo-jiipe-red.png" alt="JIIPE" className="h-7 w-auto" />
         </a>
         <div className="w-px h-5 bg-gray-200" />
-        {/* Title truncated */}
-        <p className="text-sm font-semibold text-gray-700 truncate flex-1">{title}</p>
+        {/* Title truncated (HTML stripped) */}
+        <p className="text-sm font-semibold text-gray-700 truncate flex-1" title={title.replace(/<[^>]+>/g, "")}>
+          {title.replace(/<[^>]+>/g, "")}
+        </p>
         {/* ToC dropdown */}
         {headings.length > 0 && (
           <div className="relative">
@@ -646,6 +649,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
   const summary = article.summary_cn || article.summary;
   const content = article.content_cn || article.content;
   const cover = article.coverImage || article.og_image;
+  const coverMobile = article.coverImageMobile || cover;
   const ctaLabel = article.cta_text || "1对1投资顾问免费对接";
 
   // Extract headings from pre-processed HTML (IDs already injected server-side via regex)
@@ -714,20 +718,23 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
       <FloatingCTA ctaLabel={ctaLabel} />
 
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
-      <header className="relative w-full overflow-hidden bg-gray-950" style={{ minHeight: "75vh" }}>
-        {/* Cover image */}
-        {cover && (
-          <div className="absolute inset-0 hero-img">
-            <img src={cover} alt={title} className="w-full h-full object-cover" />
-          </div>
-        )}
-        
+      <header className="relative w-full overflow-hidden bg-gray-950 min-h-screen flex items-center justify-center">
+        {/* Cover image via picture tag exactly like hero-section */}
+        <picture className="absolute inset-0 z-0 block w-full h-full hero-img">
+          {cover && <source media="(min-width: 768px)" srcSet={cover} />}
+          <img
+            src={coverMobile || ""}
+            alt={title.replace(/<[^>]+>/g, '')}
+            className="w-full h-full object-cover"
+          />
+        </picture>
+
         {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
+        <div className="absolute inset-0 z-[1] opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 max-sm:px-6 md:px-8 flex flex-col justify-end h-full" style={{ minHeight: "75vh", paddingBottom: "5rem", paddingTop: "7rem" }}>
-          <div className="animate-fade-in">
+        <div className="container mx-auto px-4 z-10 mt-[-250px] sm:mt-16 md:mt-20">
+          <div className="max-w-[95%] sm:max-w-xl md:max-w-5xl animate-fade-in">
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-xs text-gray-400 mb-6">
               <a href="https://cn.jiipe.com" className="hover:text-white transition-colors">JIIPE</a>
@@ -749,9 +756,10 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
             </div>
 
             {/* Title */}
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md">
-              {title}
-            </h1>
+            <h1
+              className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md [&>p]:inline"
+              dangerouslySetInnerHTML={{ __html: title }}
+            />
 
             {/* Summary */}
             {summary && (
@@ -774,6 +782,15 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div
+          onClick={() => window.scrollBy({ top: window.innerHeight - 80, behavior: 'smooth' })}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
+        >
+          <span className="text-[9px] uppercase tracking-[0.3em] font-medium text-white drop-shadow-md">Scroll to Explore</span>
+          <ChevronDown size={28} className="text-white animate-bounce drop-shadow" />
         </div>
       </header>
 

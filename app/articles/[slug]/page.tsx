@@ -17,6 +17,12 @@ function injectHeadingIds(html: string): string {
   });
 }
 
+/** Strip HTML for SEO metadata */
+function stripHtml(html: string): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '').trim();
+}
+
 
 interface ArticleRow extends RowDataPacket {
   id: number;
@@ -31,6 +37,7 @@ interface ArticleRow extends RowDataPacket {
   content: string;
   content_cn: string | null;
   coverImage: string | null;
+  coverImageMobile: string | null;
   og_image: string | null;
   date: string;
   cta_text: string | null;
@@ -55,8 +62,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     return { title: 'JIIPE - Article Not Found' };
   }
 
-  const title = article.title_cn || article.title;
-  const description = article.summary_cn || article.summary;
+  const titleRaw = article.title_cn || article.title;
+  const descriptionRaw = article.summary_cn || article.summary;
+
+  const title = stripHtml(titleRaw);
+  const description = stripHtml(descriptionRaw);
   const ogImage = article.og_image || article.coverImage || 'https://en.jiipe.com/logo-jiipe-red.png';
   const url = `https://cn.jiipe.com/articles/${article.slug}`;
 
