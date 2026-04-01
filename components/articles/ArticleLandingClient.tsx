@@ -733,7 +733,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
         <div className="absolute inset-0 z-[1] opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
 
         {/* Content */}
-        <div className="container mx-auto px-4 z-10 mt-[-250px] sm:mt-16 md:mt-20">
+        <div className="container mx-auto px-4 z-10 mt-[-280px] sm:mt-16 md:mt-20">
           <div className="max-w-[95%] sm:max-w-xl md:max-w-5xl animate-fade-in">
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-xs text-gray-400 mb-6">
