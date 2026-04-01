@@ -28,6 +28,7 @@ interface Article {
   og_image: string | null;
   date: string;
   cta_text: string | null;
+  cta_text_cn: string | null;
 }
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
@@ -650,7 +651,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
   const content = article.content_cn || article.content;
   const cover = article.coverImage || article.og_image;
   const coverMobile = article.coverImageMobile || cover;
-  const ctaLabel = article.cta_text || "1对1投资顾问免费对接";
+  const ctaLabel = article.cta_text_cn || article.cta_text || "1对1投资顾问免费对接";
 
   // Extract headings from pre-processed HTML (IDs already injected server-side via regex)
   const headings = React.useMemo(() => {

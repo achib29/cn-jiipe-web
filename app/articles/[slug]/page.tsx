@@ -41,6 +41,7 @@ interface ArticleRow extends RowDataPacket {
   og_image: string | null;
   date: string;
   cta_text: string | null;
+  cta_text_cn: string | null;
 }
 
 async function getArticle(slug: string): Promise<ArticleRow | null> {
