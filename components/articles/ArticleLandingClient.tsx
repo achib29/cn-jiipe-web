@@ -76,11 +76,11 @@ function StickyNav({ title, headings, activeId }: { title: string; headings: { i
               onClick={() => setOpen(!open)}
               className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-primary bg-gray-100 hover:bg-primary/10 px-3 py-1.5 rounded-full transition-all"
             >
-              <BookOpen size={14} /> Contents <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
+              <BookOpen size={14} /> 目录 <ChevronDown size={12} className={`transition-transform ${open ? "rotate-180" : ""}`} />
             </button>
             {open && (
               <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 max-h-64 overflow-y-auto z-50">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Table of Contents</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">目录</p>
                 {headings.map(({ id, text, level }) => (
                   <a
                     key={id}
@@ -147,7 +147,7 @@ function SidebarToC({ headings, activeId, isOpen, setIsOpen }: { headings: { id:
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <BookOpen size={14} className="text-primary" />
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Contents</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">目录</p>
           </div>
           <button
             onClick={() => setIsOpen(false)}
