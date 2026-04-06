@@ -758,7 +758,7 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
 
             {/* Title */}
             <h1
-              className="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md [&>p]:inline"
+              className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md [&>p]:inline"
               dangerouslySetInnerHTML={{ __html: title }}
             />
 
