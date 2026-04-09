@@ -22,6 +22,12 @@ interface Article {
   content_cn?: string | null;
   is_hot_cn?: boolean;
   hot_priority_cn?: number | null;
+  type?: string;
+}
+
+function stripHtml(html: string | undefined | null): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '').trim();
 }
 
 export default function HomeFeaturedStories() {
@@ -44,7 +50,13 @@ export default function HomeFeaturedStories() {
           return;
         }
 
-        const allArticles = data as Article[];
+        const allArticles = (data as Article[])
+          .map(a => ({
+            ...a,
+            title: stripHtml(a.title),
+            title_cn: stripHtml(a.title_cn)
+          }))
+          .filter(a => a.type !== 'landing');
 
         // urutkan by tanggal terbaru (fallback)
         allArticles.sort((a, b) => {
