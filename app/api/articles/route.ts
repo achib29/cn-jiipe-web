@@ -11,6 +11,7 @@ export async function GET(request: Request) {
         const status = searchParams.get('status');
         const limit = searchParams.get('limit');
         const exclude = searchParams.get('exclude');
+        const type = searchParams.get('type');
 
         let query = 'SELECT * FROM articles';
         const params: any[] = [];
@@ -24,6 +25,11 @@ export async function GET(request: Request) {
         if (exclude) {
             conditions.push('id != ?');
             params.push(Number(exclude));
+        }
+
+        if (type) {
+            conditions.push('type = ?');
+            params.push(type);
         }
 
         if (conditions.length > 0) {

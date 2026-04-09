@@ -31,6 +31,11 @@ interface Props {
   slug: string;
 }
 
+function stripHtml(html: string | undefined | null): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '').trim();
+}
+
 export default function ArticleDetailCN({ slug }: Props) {
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
@@ -58,7 +63,7 @@ export default function ArticleDetailCN({ slug }: Props) {
 
         if (mainArticle) {
           const relatedRes = await fetch(
-            `/api/articles?status=Published&limit=3&exclude=${mainArticle.id}`
+            `/api/articles?status=Published&limit=3&exclude=${mainArticle.id}&type=news`
           );
           if (relatedRes.ok) {
             const relatedData = await relatedRes.json();
@@ -80,7 +85,7 @@ export default function ArticleDetailCN({ slug }: Props) {
   const handleShare = (platform: string) => {
     if (!currentUrl || !article) return;
 
-    const displayTitle = article.title_cn || article.title;
+    const displayTitle = stripHtml(article.title_cn || article.title);
     const text = encodeURIComponent(displayTitle);
     const url = encodeURIComponent(currentUrl);
     let shareUrl = "";
@@ -128,7 +133,7 @@ export default function ArticleDetailCN({ slug }: Props) {
     );
   }
 
-  const displayTitle = article.title_cn || article.title;
+  const displayTitle = stripHtml(article.title_cn || article.title);
   const displayContent = article.content_cn || article.content;
 
   return (
@@ -268,8 +273,8 @@ export default function ArticleDetailCN({ slug }: Props) {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedArticles.map((item) => {
-                const displayTitle = item.title_cn || item.title;
-                const displaySummary = item.summary_cn || item.summary;
+                const displayTitle = stripHtml(item.title_cn || item.title);
+                const displaySummary = stripHtml(item.summary_cn || item.summary);
 
                 return (
                   <Link

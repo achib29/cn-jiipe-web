@@ -28,6 +28,12 @@ interface Article {
   content_cn?: string | null;
   is_hot_cn?: boolean;
   hot_priority_cn?: number | null;
+  type?: string;
+}
+
+function stripHtml(html: string | undefined | null): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '').trim();
 }
 
 export default function NewsIndexPage() {
@@ -53,7 +59,15 @@ export default function NewsIndexPage() {
           return;
         }
 
-        const allArticles = data as Article[];
+        let allArticles = data as Article[];
+
+        allArticles = allArticles.map(a => ({
+          ...a,
+          title: stripHtml(a.title),
+          title_cn: a.title_cn ? stripHtml(a.title_cn) : a.title_cn,
+          summary: stripHtml(a.summary),
+          summary_cn: a.summary_cn ? stripHtml(a.summary_cn) : a.summary_cn
+        })).filter(a => a.type !== 'landing');
 
         // 1. SORTING UTAMA
         allArticles.sort((a, b) => {

@@ -5,6 +5,11 @@ import ArticleDetailCN from "@/components/ArticleDetailCN";
 
 export const revalidate = 60;
 
+function stripHtml(html: string | undefined | null): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>?/gm, '').trim();
+}
+
 // Server Component: Generates SEO metadata including og:image for WhatsApp/Facebook sharing
 export async function generateMetadata({
   params,
@@ -27,8 +32,8 @@ export async function generateMetadata({
   }
 
   // Use Chinese title/summary if available, fallback to English
-  const displayTitle = article.title_cn || article.title;
-  const displaySummary = article.summary_cn || article.summary;
+  const displayTitle = stripHtml(article.title_cn || article.title);
+  const displaySummary = stripHtml(article.summary_cn || article.summary);
 
   // Prioritize first image in body content, fallback to coverImage
   let ogImageUrl = article.coverImage as string;
