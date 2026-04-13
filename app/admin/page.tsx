@@ -392,8 +392,8 @@ export default function AdminDashboard() {
                               )}
                             </div>
                           )}
-                          <span className="truncate text-base">
-                            {article.title}
+                          <span className="truncate text-base" title={article.title.replace(/<[^>]*>?/gm, "").trim()}>
+                            {article.title.replace(/<[^>]*>?/gm, "").trim()}
                           </span>
                         </div>
                       </td>

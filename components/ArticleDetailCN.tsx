@@ -172,6 +172,52 @@ export default function ArticleDetailCN({ slug }: Props) {
           </span>
           Back to Newsroom
         </Link>
+        <style>{`
+          .btn-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            text-decoration: none !important;
+            margin: 1rem 0;
+            transition: background 0.2s, transform 0.15s;
+            box-shadow: 0 4px 14px rgba(220,38,38,0.35);
+            cursor: pointer;
+          }
+          .btn-cta:hover {
+            background: #b91c1c !important;
+            transform: translateY(-1px);
+            text-decoration: none !important;
+          }
+          .btn-cta-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent !important;
+            color: #dc2626 !important;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            border: 2px solid #dc2626 !important;
+            text-decoration: none !important;
+            margin: 1rem 0;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            cursor: pointer;
+          }
+          .btn-cta-outline:hover {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+            transform: translateY(-1px);
+            text-decoration: none !important;
+          }
+        `}</style>
+
 
         <article
           className="prose prose-lg max-w-none text-gray-700 leading-loose 
