@@ -1,5 +1,6 @@
 import HeroSection from "@/components/hero-section";
 import AboutSection from "@/components/about-section";
+import CompanyVideoSection from "@/components/company-video-section";
 import SpecialEconomicZoneSection from "@/components/SpecialEconomicZoneSection";
 import FacilitiesSection from "@/components/facilities-section";
 import LocationSection from "@/components/location-section";
@@ -37,6 +38,7 @@ export default async function Home() {
       <HeroSection initialData={allContent['hero'] as any} />
       <ChineseCompaniesSection initialData={allContent['tenants'] as any} />
       <AboutSection initialData={allContent['about'] as any} />
+      <CompanyVideoSection initialData={allContent['company_video'] as any} />
       <HomeFeaturedStories initialData={allContent['newsroom'] as any} />
       <SpecialEconomicZoneSection initialData={allContent['sez'] as any} />
       <FacilitiesSection initialData={allContent['facilities'] as any} />
