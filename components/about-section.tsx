@@ -44,8 +44,6 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
   // Video Modal State
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
   const milestoneRef = useRef(new Set<number>());
 
   const handleOpenVideo = (e: React.MouseEvent) => {
