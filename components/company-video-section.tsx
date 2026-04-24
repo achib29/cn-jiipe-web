@@ -51,12 +51,31 @@ export default function CompanyVideoSection({ initialData }: { initialData?: Com
     setIsVideoModalOpen(true);
     document.body.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
+
+    // Analytics hook
+    if (typeof window !== 'undefined') {
+      if ((window as any)._hmt) {
+        (window as any)._hmt.push(['_trackEvent', 'Video', 'Play', 'Company Profile Video']);
+      } else if ((window as any).gtag) {
+        (window as any).gtag('event', 'video_open', { video_title: 'Company Profile Video' });
+      }
+    }
   };
 
   const handleCloseVideo = () => {
     setIsClosing(true);
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
+
+    // Analytics hook
+    if (typeof window !== 'undefined') {
+      if ((window as any)._hmt) {
+        (window as any)._hmt.push(['_trackEvent', 'Video', 'Close', 'Company Profile Video']);
+      } else if ((window as any).gtag) {
+        (window as any).gtag('event', 'video_close', { video_title: 'Company Profile Video' });
+      }
+    }
+
     setTimeout(() => {
       setIsVideoModalOpen(false);
       setIsClosing(false);
