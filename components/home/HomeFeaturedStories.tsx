@@ -33,8 +33,7 @@ interface NewsroomContent {
   btn_view_all?: { en: string; cn: string };
 }
 
-const isChineseSite = process.env.NEXT_PUBLIC_SITE_LANG === 'cn';
-const lang = isChineseSite ? 'cn' : 'en';
+const lang = "cn";
 
 const defaults: Record<string, { en: string; cn: string }> = {
   label: { en: 'JIIPE NEWSROOM', cn: 'JIIPE 新闻中心' },
