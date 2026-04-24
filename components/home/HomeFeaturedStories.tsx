@@ -58,11 +58,22 @@ export default function HomeFeaturedStories({ initialData }: { initialData?: New
   const [content, setContent] = useState<NewsroomContent>(initialData || {});
 
   useEffect(() => {
-    fetch('/api/site-content?section=newsroom')
+    // If we already have initialData from SSR, prioritize it
+    if (initialData && Object.keys(initialData).length > 0) {
+      setContent(initialData);
+      return;
+    }
+    
+    // Otherwise fetch from client side (bypass browser cache)
+    fetch('/api/site-content?section=newsroom', { cache: 'no-store' })
       .then(r => r.json())
-      .then(data => setContent(data.data ?? {}))
+      .then(data => {
+        if (data.data && Object.keys(data.data).length > 0) {
+          setContent(data.data);
+        }
+      })
       .catch(() => {});
-  }, []);
+  }, [initialData]);
 
   useEffect(() => {
     const fetchFeatured = async () => {
