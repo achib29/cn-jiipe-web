@@ -13,7 +13,7 @@ interface AboutContent {
   paragraph_1?: { en: string; cn: string };
   paragraph_2?: { en: string; cn: string };
   image_url?: { en: string; cn: string };
-  video_url?: { en: string; cn: string };
+  video_iframe?: { en: string; cn: string };
   features?: { en: string; cn: string };
 }
 
@@ -25,7 +25,10 @@ const defaults: Record<string, { en: string; cn: string }> = {
   paragraph_1: { en: "Designated as a National Strategic Project, JIIPE spans 3,000 hectares in East Java. As the region's premier industrial hub, we integrate world-class infrastructure, comprehensive utilities, and a dedicated deep-water port—providing an ecosystem built for enterprise success across diverse sectors.", cn: 'JIIPE 被列为国家战略项目，占地 3,000 公顷，位于东爪哇。' },
   paragraph_2: { en: "JIIPE is positioned at the core of Indonesia's economic corridor, seamlessly connected to major transportation networks, offering unparalleled advantages for enterprises seeking to establish or expand their operations in Southeast Asia.", cn: 'JIIPE 位于印度尼西亚经济走廊的核心，与主要交通网络无缝连接。' },
   image_url: { en: '/images/jiipe-about-cover.jpg', cn: '/images/jiipe-about-cover.jpg' },
-  video_url: { en: 'https://ik.imagekit.io/z3fiyhjnl/Rev3%20-%20Chinese%20Company%20at%20JIIPE.mp4', cn: 'https://ik.imagekit.io/z3fiyhjnl/Rev3%20-%20Chinese%20Company%20at%20JIIPE.mp4' },
+  video_iframe: { 
+    en: '<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116458273119075&bvid=BV1atoLBBEW5&cid=37775344238&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>', 
+    cn: '<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116458273119075&bvid=BV1atoLBBEW5&cid=37775344238&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>' 
+  },
   features: { en: JSON.stringify(['Strategic Location', 'Deep Water Port', 'Integrated Utilities', 'Energy Security', 'Tax Incentives', 'Skilled Workforce']), cn: JSON.stringify(['战略位置', '深水港口', '综合配套设施', '能源安全', '税收优惠', '技术人才']) },
 };
 
@@ -41,14 +44,13 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
   // Video Modal State
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [isVideoLoading, setIsVideoLoading] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const milestoneRef = useRef(new Set<number>());
 
   const handleOpenVideo = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsVideoModalOpen(true);
-    setIsVideoLoading(true);
     milestoneRef.current.clear();
     
     // Lock body scroll
@@ -73,11 +75,6 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
     // Unlock body scroll
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
-
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
 
     // Analytics hook
     if (typeof window !== 'undefined') {
@@ -104,47 +101,11 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
     };
     if (isVideoModalOpen) {
       window.addEventListener('keydown', handleKeyDown);
-      // Force play for mobile browsers when modal opens
-      if (videoRef.current) {
-        const playPromise = videoRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch((e) => console.log('Mobile autoplay prevented', e));
-        }
-      }
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isVideoModalOpen]);
 
-  const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
-    const { currentTime, duration } = videoRef.current;
-    if (!duration) return;
-
-    const percent = (currentTime / duration) * 100;
-    const milestones = [25, 50, 75, 100];
-
-    milestones.forEach(m => {
-      if (percent >= m && !milestoneRef.current.has(m)) {
-        milestoneRef.current.add(m);
-        if (typeof window !== 'undefined') {
-          if ((window as any)._hmt) {
-            (window as any)._hmt.push(['_trackEvent', 'Video', `Milestone ${m}%`, 'About JIIPE Video']);
-          } else if ((window as any).gtag) {
-            (window as any).gtag('event', `video_milestone_${m}`, { video_title: 'About JIIPE Video' });
-          } else {
-            console.log(`Event: video_milestone_${m}%`);
-          }
-        }
-      }
-    });
-  };
-
-  const handleSeeked = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.currentTime < 1) {
-      milestoneRef.current.clear();
-    }
-  };
+  // Legacy tracking functions removed since iframe doesn't support them
 
   useEffect(() => {
     fetch('/api/site-content?section=about')
@@ -153,7 +114,7 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
       .catch(() => {});
   }, []);
 
-  const videoLink = get(content, 'video_url');
+  const iframeCode = get(content, 'video_iframe');
   const imageUrl = get(content, 'image_url');
 
   let features: string[] = [];
@@ -271,28 +232,11 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
               <X className="w-5 h-5 text-white" />
             </button>
 
-            {isVideoLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 z-10">
-                <Loader2 className="w-10 h-10 text-[#DA291C] animate-spin mb-3" />
-                <span className="text-white text-sm" style={{ fontFamily: '"PingFang SC", "Microsoft YaHei", sans-serif' }}>加载中...</span>
-              </div>
-            )}
-
-            <video
-              ref={videoRef}
-              src={videoLink}
-              className="w-full h-full object-cover"
-              controls
-              controlsList="nodownload"
-              playsInline
-              preload="metadata"
-              autoPlay
-              onLoadedData={() => setIsVideoLoading(false)}
-              onTimeUpdate={handleTimeUpdate}
-              onSeeked={handleSeeked}
-            >
-              Your browser does not support HTML5 video.
-            </video>
+            {/* Bilibili Iframe Container */}
+            <div 
+              className="absolute inset-0 w-full h-full [&>iframe]:w-full [&>iframe]:h-full"
+              dangerouslySetInnerHTML={{ __html: iframeCode }}
+            />
           </div>
         </div>
       )}
