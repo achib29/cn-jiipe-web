@@ -25,7 +25,7 @@ export async function GET() {
         { section: 'about', field_key: 'paragraph_1', value_en: "Designated as a National Strategic Project, JIIPE spans 3,000 hectares in East Java. As the region's premier industrial hub, we integrate world-class infrastructure, comprehensive utilities, and a dedicated deep-water port—providing an ecosystem built for enterprise success across diverse sectors.", value_cn: 'JIIPE 被列为国家战略项目，占地 3,000 公顷，位于东爪哇。作为该地区首席工业中心，我们整合了世界一流的基础设施、综合配套设施和专用深水港口，为不同行业的企业成功打造了一个生态系统。' },
         { section: 'about', field_key: 'paragraph_2', value_en: "JIIPE is positioned at the core of Indonesia's economic corridor, seamlessly connected to major transportation networks, offering unparalleled advantages for enterprises seeking to establish or expand their operations in Southeast Asia.", value_cn: 'JIIPE 位于印度尼西亚经济走廊的核心，与主要交通网络无缝连接，为寻求在东南亚建立或扩展业务的企业提供了无与伦比的优势。' },
         { section: 'about', field_key: 'image_url', value_en: '/images/jiipe-about-cover.jpg', value_cn: '/images/jiipe-about-cover.jpg' },
-        { section: 'about', field_key: 'video_url', value_en: 'https://youtu.be/9fHxvXcmoqY', value_cn: 'https://youtu.be/9fHxvXcmoqY' },
+        { section: 'about', field_key: 'video_url', value_en: 'https://ik.imagekit.io/z3fiyhjnl/Rev3%20-%20Chinese%20Company%20at%20JIIPE.mp4', value_cn: 'https://ik.imagekit.io/z3fiyhjnl/Rev3%20-%20Chinese%20Company%20at%20JIIPE.mp4' },
         { section: 'about', field_key: 'features', value_en: JSON.stringify(['Strategic Location', 'Deep Water Port', 'Integrated Utilities', 'Energy Security', 'Tax Incentives', 'Skilled Workforce']), value_cn: JSON.stringify(['战略位置', '深水港口', '综合配套设施', '能源安全', '税收优惠', '技术人才']) },
 
         // ── FACILITIES ────────────────────────────────────────────────────────
