@@ -36,8 +36,8 @@ export default async function Home() {
     <div>
       <HeroSection initialData={allContent['hero'] as any} />
       <ChineseCompaniesSection initialData={allContent['tenants'] as any} />
-      <HomeFeaturedStories />
       <AboutSection initialData={allContent['about'] as any} />
+      <HomeFeaturedStories initialData={allContent['newsroom'] as any} />
       <SpecialEconomicZoneSection initialData={allContent['sez'] as any} />
       <FacilitiesSection initialData={allContent['facilities'] as any} />
       <LocationSection initialData={allContent['location'] as any} />

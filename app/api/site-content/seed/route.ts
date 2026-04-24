@@ -19,6 +19,12 @@ export async function GET() {
         { section: 'hero', field_key: 'btn_brochure', value_en: 'Download Brochure', value_cn: '下载简介' },
         { section: 'hero', field_key: 'btn_contact', value_en: 'Contact Us', value_cn: '联系我们' },
 
+        // ── NEWSROOM / FEATURED STORIES ───────────────────────────────────────
+        { section: 'newsroom', field_key: 'label', value_en: 'JIIPE NEWSROOM', value_cn: 'JIIPE 新闻中心' },
+        { section: 'newsroom', field_key: 'heading', value_en: 'Featured Stories', value_cn: '精选报道' },
+        { section: 'newsroom', field_key: 'description', value_en: 'Discover the latest milestones, industrial insights, and events.', value_cn: '发现最新的里程碑、行业见解和活动。' },
+        { section: 'newsroom', field_key: 'btn_view_all', value_en: 'View All Articles', value_cn: '查看所有文章' },
+
         // ── ABOUT ─────────────────────────────────────────────────────────────
         { section: 'about', field_key: 'label', value_en: 'About JIIPE', value_cn: '关于 JIIPE' },
         { section: 'about', field_key: 'heading', value_en: "Indonesia's Premier Integrated Industrial Estate", value_cn: '印尼首席综合工业园区' },

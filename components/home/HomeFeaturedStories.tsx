@@ -25,14 +25,44 @@ interface Article {
   type?: string;
 }
 
+interface NewsroomContent {
+  [key: string]: { en: string; cn: string } | undefined;
+  label?: { en: string; cn: string };
+  heading?: { en: string; cn: string };
+  description?: { en: string; cn: string };
+  btn_view_all?: { en: string; cn: string };
+}
+
+const isChineseSite = process.env.NEXT_PUBLIC_SITE_LANG === 'cn';
+const lang = isChineseSite ? 'cn' : 'en';
+
+const defaults: Record<string, { en: string; cn: string }> = {
+  label: { en: 'JIIPE NEWSROOM', cn: 'JIIPE 新闻中心' },
+  heading: { en: 'Featured Stories', cn: '精选报道' },
+  description: { en: 'Discover the latest milestones, industrial insights, and events.', cn: '发现最新的里程碑、行业见解和活动。' },
+  btn_view_all: { en: 'View All Articles', cn: '查看所有文章' },
+};
+
+function get(content: NewsroomContent, key: keyof typeof defaults): string {
+  return (content[key] as any)?.[lang] ?? defaults[key][lang];
+}
+
 function stripHtml(html: string | undefined | null): string {
   if (!html) return '';
   return html.replace(/<[^>]*>?/gm, '').trim();
 }
 
-export default function HomeFeaturedStories() {
+export default function HomeFeaturedStories({ initialData }: { initialData?: NewsroomContent }) {
   const [featuredNews, setFeaturedNews] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState<NewsroomContent>(initialData || {});
+
+  useEffect(() => {
+    fetch('/api/site-content?section=newsroom')
+      .then(r => r.json())
+      .then(data => setContent(data.data ?? {}))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -119,10 +149,10 @@ export default function HomeFeaturedStories() {
       <section className="container mx-auto px-4 py-16 max-w-7xl">
         <div className="mb-8">
           <p className="text-xs md:text-sm font-bold tracking-[0.2em] text-red-600 uppercase">
-            JIIPE NEWSROOM
+            {get(content, 'label')}
           </p>
           <h2 className="mt-2 text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900">
-            Featured Stories
+            {get(content, 'heading')}
           </h2>
         </div>
 
@@ -208,13 +238,13 @@ export default function HomeFeaturedStories() {
       {/* HEADER */}
       <div className="mb-8 text-center">
         <p className="text-xs md:text-sm font-bold tracking-[0.2em] text-red-600 uppercase">
-          JIIPE NEWSROOM
+          {get(content, 'label')}
         </p>
         <h2 className="mt-2 text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900">
-          Featured Stories
+          {get(content, 'heading')}
         </h2>
         <p className="mt-2 text-gray-500 text-sm md:text-base max-w-2xl mx-auto">
-          Discover the latest milestones, industrial insights, and events.
+          {get(content, 'description')}
         </p>
       </div>
 
@@ -261,7 +291,7 @@ export default function HomeFeaturedStories() {
           href="/news"
           className="inline-block px-6 py-2 rounded-full border border-red-600 text-red-600 font-semibold text-sm hover:bg-red-600 hover:text-white transition"
         >
-          View All Articles
+          {get(content, 'btn_view_all')}
         </Link>
       </div>
     </section>
