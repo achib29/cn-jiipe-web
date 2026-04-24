@@ -104,6 +104,13 @@ export default function AboutSection({ initialData }: { initialData?: AboutConte
     };
     if (isVideoModalOpen) {
       window.addEventListener('keydown', handleKeyDown);
+      // Force play for mobile browsers when modal opens
+      if (videoRef.current) {
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((e) => console.log('Mobile autoplay prevented', e));
+        }
+      }
     }
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isVideoModalOpen]);
