@@ -130,6 +130,18 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
     })
       .then((res) => {
         if (res.ok) {
+          // Fire GA4 event before redirect
+          if (typeof window !== 'undefined' && (window as any).gtag) {
+            (window as any).gtag('event', 'form_submission_success', {
+              event_category: 'Contact Form',
+              event_label: 'Homepage Contact Form',
+              value: 1,
+            });
+          }
+          // Fire Baidu Tongji custom event before redirect
+          if (typeof window !== 'undefined' && (window as any)._hmt) {
+            (window as any)._hmt.push(['_trackEvent', 'Contact Form', 'Submit', 'Homepage Contact Form']);
+          }
           router.push("/thank-you");
         } else {
           alert("Submission failed. Please try again.");

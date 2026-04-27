@@ -30,6 +30,20 @@ export default function ThankYouPage() {
           console.log('[Baidu] push success t="3"');
           window._agl.push(['track', ['success', { t: '3' }]]);
           sentRef.current = true;
+
+          // Fire GA4 event (once, tied to the same sentRef guard)
+          if ((window as any).gtag) {
+            (window as any).gtag('event', 'form_submission_success', {
+              event_category: 'Contact Form',
+              event_label: 'Homepage Contact Form',
+              value: 1,
+            });
+          }
+          // Fire Baidu Tongji custom event
+          if ((window as any)._hmt) {
+            (window as any)._hmt.push(['_trackEvent', 'Contact Form', 'Submit', 'Homepage Contact Form']);
+          }
+
           return true;
         }
         return false;
