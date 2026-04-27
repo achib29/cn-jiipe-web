@@ -479,6 +479,11 @@ function ArticleRFIForm() {
         });
       }
 
+      // Fire Baidu Tongji custom event for form submission tracking
+      if (typeof window !== "undefined" && (window as any)._hmt) {
+        (window as any)._hmt.push(['_trackEvent', 'Contact Form', 'Submit', 'Article RFI Form']);
+      }
+
       // ✅ Show inline thank-you overlay without leaving the page
       setSubmittedName(formData.lastName || formData.firstName);
       setShowThankYou(true);
