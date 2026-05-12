@@ -484,6 +484,11 @@ function ArticleRFIForm() {
         (window as any)._hmt.push(['_trackEvent', 'Contact Form', 'Submit', 'Article RFI Form']);
       }
 
+      // Fire Baidu AGL conversion tracking (push at submit moment, ThankYouOverlay has retry fallback)
+      if (typeof window !== "undefined" && typeof window._agl !== "undefined") {
+        window._agl.push(['track', ['success', { t: 3 }]]);
+      }
+
       // ✅ Show inline thank-you overlay without leaving the page
       setSubmittedName(formData.lastName || formData.firstName);
       setShowThankYou(true);
