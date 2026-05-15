@@ -9,6 +9,7 @@ const pool = mysql.createPool({
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    connectTimeout: 5000,   // 5 s — abort if TCP handshake takes too long
 });
 
 export default pool;
