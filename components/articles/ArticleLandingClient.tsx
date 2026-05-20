@@ -455,8 +455,62 @@ function ArticleRFIForm() {
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setFormData((p) => ({ ...p, [k]: e.target.value }));
 
+  // ── Validation Helpers ──────────────────────────────────────────────────
+  const BLOCKED_DISPOSABLE_DOMAINS = [
+    "mailinator.com", "guerrillamail.com", "guerrillamailblock.com",
+    "tempmail.com", "throwaway.email", "10minutemail.com",
+    "trashmail.com", "yopmail.com", "sharklasers.com", "grr.la",
+    "guerrillamail.info", "guerrillamail.net", "guerrillamail.org",
+    "spam4.me", "dispostable.com", "maildrop.cc", "fakeinbox.com",
+    "temp-mail.org", "emailondeck.com", "getnada.com",
+  ];
+
+  const isValidEmail = (email: string): { valid: boolean; reason?: string } => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return { valid: false, reason: "请输入电子邮件" };
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(trimmed)) return { valid: false, reason: "邮箱格式不正确" };
+    const domain = trimmed.split("@")[1];
+    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain)) {
+      return { valid: false, reason: "请使用企业邮箱或常用个人邮箱" };
+    }
+    return { valid: true };
+  };
+
+  const validateStep = (s: number): string | null => {
+    if (s === 1) {
+      if (!formData.firstName.trim()) return "请填写名";
+      if (!formData.lastName.trim()) return "请填写姓";
+      const emailCheck = isValidEmail(formData.email);
+      if (!emailCheck.valid) return emailCheck.reason!;
+      if (!formData.phone.trim()) return "请填写电话号码";
+      if (formData.phone.replace(/\D/g, "").length < 7) return "电话号码格式不正确";
+    }
+    if (s === 2) {
+      if (!formData.company.trim()) return "请填写公司名称";
+      if (!formData.country.trim()) return "请选择国家/地区";
+      if (!formData.industry.trim()) return "请填写行业";
+    }
+    if (s === 3) {
+      if (!formData.reason) return "请选择咨询目的";
+      if (formData.reason === "Other" && !formData.reasonOther.trim()) return "请说明其他原因";
+      if (!formData.timeline) return "请选择计划时间";
+      if (!formData.landPlot.trim()) return "请填写土地需求";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validate all steps before submitting
+    for (let s = 1; s <= 3; s++) {
+      const err = validateStep(s);
+      if (err) {
+        setStep(s);
+        setToast({ type: "error", message: err });
+        return;
+      }
+    }
     setIsSubmitting(true);
 
     // Turnstile disabled per user request
@@ -563,7 +617,7 @@ function ArticleRFIForm() {
                   </div>
                   <div><label className={lbl}>电子邮件 *</label><input required type="email" className={inp} placeholder="your@email.com" value={formData.email} onChange={set("email")} /></div>
                   <div><label className={lbl}>电话号码 *</label><input required className={inp} placeholder="+86 xxx xxxx xxxx" value={formData.phone} onChange={set("phone")} /></div>
-                  <button type="button" onClick={() => setStep(2)} className="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
+                  <button type="button" onClick={() => { const err = validateStep(1); if (err) { setToast({ type: "error", message: err }); return; } setStep(2); }} className="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
                     下一步 <ChevronRight size={18} />
                   </button>
                 </div>
@@ -580,7 +634,7 @@ function ArticleRFIForm() {
                   <div><label className={lbl}>行业 *</label><input required className={inp} placeholder="例如：铜加工、化工、制造业" value={formData.industry} onChange={set("industry")} /></div>
                   <div className="flex gap-3">
                     <button type="button" onClick={() => setStep(1)} className="flex-1 py-4 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all">← 上一步</button>
-                    <button type="button" onClick={() => setStep(3)} className="flex-1 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all">下一步 →</button>
+                    <button type="button" onClick={() => { const err = validateStep(2); if (err) { setToast({ type: "error", message: err }); return; } setStep(3); }} className="flex-1 py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all">下一步 →</button>
                   </div>
                 </div>
               )}
@@ -590,8 +644,8 @@ function ArticleRFIForm() {
                 <div className="space-y-5 animate-fade-in">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className={lbl}>咨询目的</label>
-                      <select className={inp} value={formData.reason} onChange={set("reason")}>
+                      <label className={lbl}>咨询目的 *</label>
+                      <select required className={inp} value={formData.reason} onChange={set("reason")}>
                         <option value="">请选择</option>
                         <option value="New investment">新投资</option>
                         <option value="Relocation">工厂迁移</option>
@@ -600,8 +654,8 @@ function ArticleRFIForm() {
                       </select>
                     </div>
                     <div>
-                      <label className={lbl}>计划时间</label>
-                      <select className={inp} value={formData.timeline} onChange={set("timeline")}>
+                      <label className={lbl}>计划时间 *</label>
+                      <select required className={inp} value={formData.timeline} onChange={set("timeline")}>
                         <option value="">请选择</option>
                         <option value="Within 6 months">6个月内</option>
                         <option value="6–12 months">6–12 个月</option>
@@ -611,7 +665,7 @@ function ArticleRFIForm() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div><label className={lbl}>土地需求 (公顷)</label><input className={inp} placeholder="例：5" value={formData.landPlot} onChange={set("landPlot")} /></div>
+                    <div><label className={lbl}>土地需求 (公顷) *</label><input required className={inp} placeholder="例：5" value={formData.landPlot} onChange={set("landPlot")} /></div>
                     <div><label className={lbl}>电力需求 (MW)</label><input className={inp} placeholder="例：10" value={formData.power} onChange={set("power")} /></div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">

@@ -71,6 +71,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   }
 
+  // ── Server-side validation ──────────────────────────────────────────────
+  const BLOCKED_DISPOSABLE_DOMAINS = [
+    "mailinator.com", "guerrillamail.com", "guerrillamailblock.com",
+    "tempmail.com", "throwaway.email", "10minutemail.com",
+    "trashmail.com", "yopmail.com", "sharklasers.com", "grr.la",
+    "guerrillamail.info", "guerrillamail.net", "guerrillamail.org",
+    "spam4.me", "dispostable.com", "maildrop.cc", "fakeinbox.com",
+    "temp-mail.org", "emailondeck.com", "getnada.com",
+  ];
+
+  if (!(firstName || "").trim() || !(lastName || "").trim() ||
+      !(email || "").trim() || !(phone || "").trim() || !(company || "").trim()) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
+  const emailDomain = (email || "").trim().toLowerCase().split("@")[1] || "";
+  if (BLOCKED_DISPOSABLE_DOMAINS.includes(emailDomain)) {
+    return res.status(400).json({ error: "Please use a business or personal email address." });
+  }
+
   const reasonDisplay = reason === "Other" && reasonOther ? `Other (${reasonOther})` : reason;
 
   // === Logo + shared email HTML builder =====================================

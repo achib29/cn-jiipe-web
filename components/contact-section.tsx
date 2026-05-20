@@ -86,15 +86,46 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
     }
   };
 
+  // ── Validation Helpers ──────────────────────────────────────────────────
+  const BLOCKED_DISPOSABLE_DOMAINS = [
+    "mailinator.com", "guerrillamail.com", "guerrillamailblock.com",
+    "tempmail.com", "throwaway.email", "10minutemail.com",
+    "trashmail.com", "yopmail.com", "sharklasers.com", "grr.la",
+    "guerrillamail.info", "guerrillamail.net", "guerrillamail.org",
+    "spam4.me", "dispostable.com", "maildrop.cc", "fakeinbox.com",
+    "temp-mail.org", "emailondeck.com", "getnada.com",
+  ];
+
+  const isValidEmail = (email: string): { valid: boolean; reason?: string } => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return { valid: false, reason: "请输入电子邮件" };
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!re.test(trimmed)) return { valid: false, reason: "邮箱格式不正确" };
+    const domain = trimmed.split("@")[1];
+    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain)) {
+      return { valid: false, reason: "请使用企业邮箱或常用个人邮箱" };
+    }
+    return { valid: true };
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
+    // Trim validation — block spaces-only submissions
+    if (!formData.firstName.trim()) { alert("请填写名字"); return; }
+    if (!formData.lastName.trim()) { alert("请填写姓氏"); return; }
+    const emailCheck = isValidEmail(formData.email);
+    if (!emailCheck.valid) { alert(emailCheck.reason!); return; }
+    if (!formData.phone.trim()) { alert("请填写手机号码"); return; }
+    if (formData.phone.replace(/\D/g, "").length < 7) { alert("手机号码格式不正确"); return; }
+    if (!formData.company.trim()) { alert("请填写公司名称"); return; }
+    if (!formData.reason) { alert("请选择考虑JIIPE的原因"); return; }
     if (formData.reason === "Other" && !formData.reasonOther.trim()) {
-      alert("Please provide details for 'Other'.");
-      setIsSubmitting(false);
+      alert("请提供详细信息");
       return;
     }
+
+    setIsSubmitting(true);
 
     const isLocal =
       typeof window !== "undefined" &&
