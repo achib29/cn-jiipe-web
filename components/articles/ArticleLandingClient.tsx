@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
 import {
   Copy, Check, Calendar, Tag, ChevronRight, ChevronDown,
@@ -95,6 +96,11 @@ function StickyNav({ title, headings, activeId }: { title: string; headings: { i
             )}
           </div>
         )}
+        {/* Language Switcher */}
+        <div className="hidden sm:flex shrink-0">
+          <LanguageSwitcher variant="stickyNav" />
+        </div>
+
         {/* CTA */}
         <a href="#contact" className="hidden sm:flex items-center gap-1.5 text-xs font-bold bg-primary text-white px-4 py-1.5 rounded-full hover:bg-primary/90 transition-all">
           <Send size={12} /> 联系我们

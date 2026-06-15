@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const navItems = [
   { label: "首页", href: "/#home" },
@@ -126,32 +127,38 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* CTA Button */}
-        <Link href="/#contact" passHref>
-          <Button 
-            variant="default"
-            className={cn(
-                "hidden md:flex font-bold rounded-full px-6 transition-colors",
-                isDarkHeader
-                    ? "bg-red-600 text-white hover:bg-red-700" // Merah JIIPE
-                    : "bg-white text-red-600 hover:bg-gray-100"
-            )} 
-            size="sm"
-          >
-            立即咨询
-          </Button>
-        </Link>
+        {/* Desktop CTA Button & Language Switcher */}
+        <div className="hidden md:flex items-center gap-4">
+          <LanguageSwitcher scrolled={isDarkHeader} />
+          <Link href="/#contact" passHref>
+            <Button 
+              variant="default"
+              className={cn(
+                  "font-bold rounded-full px-6 transition-colors",
+                  isDarkHeader
+                      ? "bg-red-600 text-white hover:bg-red-700" // Merah JIIPE
+                      : "bg-white text-red-600 hover:bg-gray-100"
+              )} 
+              size="sm"
+            >
+              立即咨询
+            </Button>
+          </Link>
+        </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className={cn(
-              "md:hidden p-2", 
-              isDarkHeader ? "text-gray-900" : "text-white"
-          )}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* Mobile Header Language Switcher & Hamburger */}
+        <div className="flex items-center gap-2 md:hidden">
+          <LanguageSwitcher scrolled={isDarkHeader} />
+          <button
+            className={cn(
+                "p-2", 
+                isDarkHeader ? "text-gray-900" : "text-white"
+            )}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -188,6 +195,13 @@ export default function Navbar() {
                 )}
               </div>
             ))}
+
+            {/* Mobile Language Switcher */}
+            <div className="py-3 border-b border-gray-100 flex flex-col gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">选择语言 / Language</span>
+              <LanguageSwitcher variant="mobile" />
+            </div>
+
             <Button 
                 className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-6"
                 onClick={() => handleNavClick('/#contact')}
