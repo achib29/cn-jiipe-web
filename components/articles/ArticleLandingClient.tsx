@@ -778,6 +778,53 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
         .animate-up { animation: up 0.4s ease-out; }
         @keyframes hero-in { from{opacity:0;transform:scale(1.04)} to{opacity:1;transform:scale(1)} }
         .hero-img { animation: hero-in 1.2s ease-out forwards; }
+        /* ── Hero overlay: smooth eased gradient (no banding) ── */
+        .hero-overlay {
+          background: linear-gradient(
+            to top,
+            rgba(3, 7, 18, 0.88) 0%,
+            rgba(3, 7, 18, 0.72) 18%,
+            rgba(3, 7, 18, 0.48) 38%,
+            rgba(3, 7, 18, 0.24) 56%,
+            rgba(3, 7, 18, 0.08) 72%,
+            rgba(3, 7, 18, 0) 86%
+          );
+        }
+        @media (min-width: 640px) {
+          .hero-overlay {
+            background:
+              linear-gradient(
+                78deg,
+                rgba(3, 7, 18, 0.82) 0%,
+                rgba(3, 7, 18, 0.7) 16%,
+                rgba(3, 7, 18, 0.54) 30%,
+                rgba(3, 7, 18, 0.36) 44%,
+                rgba(3, 7, 18, 0.2) 58%,
+                rgba(3, 7, 18, 0.08) 72%,
+                rgba(3, 7, 18, 0) 88%
+              ),
+              linear-gradient(to top, rgba(3, 7, 18, 0.6) 0%, rgba(3, 7, 18, 0) 26%);
+          }
+        }
+        /* Force title children (e.g. <p> from CMS) to inherit hero styling — global CSS overrides them otherwise */
+        .hero-title p, .hero-title span, .hero-title strong, .hero-title em {
+          display: inline !important;
+          font-size: inherit !important;
+          color: inherit !important;
+          font-weight: inherit !important;
+          line-height: inherit !important;
+          letter-spacing: inherit !important;
+          margin: 0 !important;
+        }
+        /* Clamp summary to 3 lines on mobile so CTA never gets pushed off-screen */
+        @media (max-width: 639px) {
+          .hero-summary {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+        }
         /* Extra bottom padding on mobile to avoid content being hidden behind the floating bottom bar */
         @media (max-width: 1023px) {
           .article-mobile-pad { padding-bottom: 80px; }
@@ -803,51 +850,51 @@ export default function ArticleLandingClient({ article }: { article: Article }) 
         {/* Grid pattern */}
         <div className="absolute inset-0 z-[1] opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'%3E%3Cpath d=\'M 60 0 L 0 0 0 60\' fill=\'none\' stroke=\'white\' stroke-width=\'1\'/%3E%3C/svg%3E")' }} />
 
+        {/* Gradient overlay — mobile: bawah → atas | desktop: diagonal kiri → kanan + vignette bawah */}
+        <div className="hero-overlay absolute inset-0 z-[2] pointer-events-none" />
+
         {/* Content */}
-        <div className="container mx-auto px-4 z-10 mt-[-280px] sm:mt-16 md:mt-20">
-          <div className="max-w-[95%] sm:max-w-xl md:max-w-5xl animate-fade-in">
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-2 text-xs text-gray-400 mb-6">
-              <a href="https://cn.jiipe.com" className="hover:text-white transition-colors">JIIPE</a>
-              <ChevronRight size={14} />
-              <span className="text-primary font-medium">{article.category}</span>
-            </nav>
+        <div className="container mx-auto px-5 sm:px-4 z-10 pb-24 self-end sm:self-center sm:pb-0 sm:mt-16 md:mt-20">
+          <div className="max-w-full sm:max-w-xl md:max-w-5xl animate-fade-in">
+            {/* Accent line */}
+            <div className="w-10 h-1 bg-primary rounded-full mb-5" />
 
             {/* Category + meta */}
-            <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className="bg-primary/90 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded flex items-center gap-1.5 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 mb-5 text-[11px]">
+              <span className="bg-primary text-white font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-primary/25">
                 <Tag size={11} /> {article.category}
               </span>
-              <span className="text-gray-300 text-xs flex items-center gap-1.5 font-medium bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
+              <span className="text-white/90 flex items-center gap-1.5 font-medium bg-black/30 border border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
                 <Calendar size={11} /> {formatDate(article.date)}
               </span>
-              <span className="text-gray-300 text-xs flex items-center gap-1.5 font-medium bg-black/30 px-2 py-1 rounded backdrop-blur-sm">
+              <span className="text-white/90 flex items-center gap-1.5 font-medium bg-black/30 border border-white/20 backdrop-blur-md px-3 py-1.5 rounded-full">
                 <Clock size={11} /> 约 {readMins} 分钟阅读
               </span>
             </div>
 
             {/* Title */}
             <h1
-              className="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-5 max-w-4xl tracking-tight drop-shadow-md [&>p]:inline"
+              className="hero-title text-[1.7rem] sm:text-4xl md:text-5xl font-black text-white leading-[1.15] mb-4 sm:mb-5 max-w-4xl tracking-tight drop-shadow-lg [&>p]:inline"
+              style={{ textWrap: 'balance' } as React.CSSProperties}
               dangerouslySetInnerHTML={{ __html: title }}
             />
 
             {/* Summary */}
             {summary && (
-              <p className="text-gray-300 text-lg leading-relaxed max-w-3xl mb-8 whitespace-pre-line">{summary}</p>
+              <p className="hero-summary text-white/75 text-[15px] sm:text-lg leading-relaxed max-w-3xl mb-6 sm:mb-8 whitespace-pre-line">{summary}</p>
             )}
 
             {/* Action row */}
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-xl hover:bg-primary/90 transition-all shadow-xl shadow-primary/30 text-sm"
+                className="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3.5 rounded-full hover:bg-red-700 hover:-translate-y-0.5 transition-all shadow-xl shadow-primary/40 text-sm"
               >
                 <Send size={14} /> {ctaLabel}
               </a>
               <button
                 onClick={copyLink}
-                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl transition-all border border-white/20 text-sm"
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3.5 rounded-full transition-all border border-white/20 backdrop-blur-md text-sm"
               >
                 {copied ? <><Check size={14} /> 已复制!</> : <><Share2 size={14} /> 分享</>}
               </button>
