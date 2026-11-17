@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { AlertCircle, CheckCircle2, X } from "lucide-react";
 import { useInView } from "@/hooks/use-in-view";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -11,6 +13,60 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
 import { isCorporateEmail, CORPORATE_EMAIL_ERROR } from "@/lib/emailValidation";
+
+type Notice = { type: "error" | "success"; message: string };
+
+// In-page notification that replaces the browser's native showError().
+function FormNotice({ notice, onClose }: { notice: Notice; onClose: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 6000);
+    return () => clearTimeout(t);
+  }, [notice, onClose]);
+
+  const isError = notice.type === "error";
+  if (typeof document === "undefined") return null;
+  // Portal to <body>: the form card uses CSS transforms, which would otherwise
+  // pin this "fixed" element inside the card instead of the viewport.
+  return createPortal(
+    <div
+      role="alert"
+      aria-live="assertive"
+      className="fixed inset-x-4 top-24 z-[9999] mx-auto max-w-md animate-in fade-in slide-in-from-top-4 duration-300"
+    >
+      <div
+        className={cn(
+          "flex items-start gap-3 rounded-2xl border bg-white p-4 shadow-2xl",
+          isError ? "border-red-200" : "border-green-200"
+        )}
+      >
+        <div
+          className={cn(
+            "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
+            isError ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"
+          )}
+        >
+          {isError ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}
+        </div>
+        <div className="flex-1 pt-0.5">
+          <p className="text-sm font-semibold text-gray-900">
+            {isError ? "请检查您的信息" : "提交成功"}
+          </p>
+          <p className="mt-0.5 text-sm leading-relaxed text-gray-600">{notice.message}</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="关闭"
+          className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 
 // Helper for Turnstile global object
 declare global {
@@ -76,6 +132,11 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const showError = (message: string) => setNotice({ type: "error", message });
+  const closeNotice = React.useCallback(() => setNotice(null), []);
 
   const resetTurnstile = () => {
     if (typeof window !== "undefined" && window.turnstile) {
@@ -113,16 +174,21 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
     e.preventDefault();
 
     // Trim validation — block spaces-only submissions
-    if (!formData.firstName.trim()) { alert("请填写名字"); return; }
-    if (!formData.lastName.trim()) { alert("请填写姓氏"); return; }
+    if (!formData.firstName.trim()) { showError("请填写名字"); return; }
+    if (!formData.lastName.trim()) { showError("请填写姓氏"); return; }
     const emailCheck = isValidEmail(formData.email);
-    if (!emailCheck.valid) { alert(emailCheck.reason!); return; }
-    if (!formData.phone.trim()) { alert("请填写手机号码"); return; }
-    if (formData.phone.replace(/\D/g, "").length < 7) { alert("手机号码格式不正确"); return; }
-    if (!formData.company.trim()) { alert("请填写公司名称"); return; }
-    if (!formData.reason) { alert("请选择考虑JIIPE的原因"); return; }
+    if (!emailCheck.valid) {
+      setEmailError(emailCheck.reason!);
+      emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      emailRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    if (!formData.phone.trim()) { showError("请填写手机号码"); return; }
+    if (formData.phone.replace(/\D/g, "").length < 7) { showError("手机号码格式不正确"); return; }
+    if (!formData.company.trim()) { showError("请填写公司名称"); return; }
+    if (!formData.reason) { showError("请选择考虑JIIPE的原因"); return; }
     if (formData.reason === "Other" && !formData.reasonOther.trim()) {
-      alert("请提供详细信息");
+      showError("请提供详细信息");
       return;
     }
 
@@ -141,7 +207,7 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
       )?.value;
 
     if (!isLocal && !token) {
-      alert("Turnstile verification failed. Please refresh and try again.");
+      showError("安全验证正在加载，请稍候再试。");
       setIsSubmitting(false);
       resetTurnstile(); // Reset on missing token
       return;
@@ -177,13 +243,18 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
           router.push("/thank-you");
         } else {
           const data = await res.json().catch(() => null);
-          alert(data?.error || "Submission failed. Please try again.");
+          if (data?.field === "email") {
+            setEmailError(data.error);
+            emailRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            showError(data?.error || "提交失败，请稍后再试。");
+          }
           resetTurnstile(); // Reset on server error
         }
       })
       .catch((err) => {
         console.error("Background form submit failed:", err);
-        alert("Submission error. Please try again.");
+        showError("网络连接异常，请检查网络后重试。");
         resetTurnstile(); // Reset on network error
       })
       .finally(() => setIsSubmitting(false));
@@ -194,6 +265,7 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "email" && emailError) setEmailError(null);
   };
 
   return (
@@ -237,6 +309,7 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
           )}
         >
           <CardContent className="p-4 md:p-10">
+            {notice && <FormNotice notice={notice} onClose={closeNotice} />}
             <form className="space-y-8" onSubmit={handleSubmit}>
               {/* ... form fields tetap sama ... */}
 
@@ -275,12 +348,30 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
               <div className="space-y-2">
                 <Label className="font-medium">电子邮箱*</Label>
                 <Input
+                  ref={emailRef}
                   name="email"
                   type="email"
+                  placeholder="name@yourcompany.com"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={() => {
+                    const v = formData.email.trim();
+                    if (v.includes("@") && !isCorporateEmail(v)) setEmailError(CORPORATE_EMAIL_ERROR);
+                  }}
+                  aria-invalid={!!emailError}
+                  aria-describedby={emailError ? "email-error" : undefined}
+                  className={cn(emailError && "border-red-500 bg-red-50/40 focus-visible:ring-red-500")}
                   required
                 />
+                {emailError && (
+                  <p
+                    id="email-error"
+                    className="flex items-start gap-1.5 text-sm text-red-600 animate-in fade-in slide-in-from-top-1 duration-200"
+                  >
+                    <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                    <span>{emailError}</span>
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label className="font-medium">公司名称*</Label>
