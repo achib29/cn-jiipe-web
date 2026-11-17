@@ -42,8 +42,9 @@ export function isCorporateEmail(email: unknown): boolean {
   if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) return false;
   if (FREE_EMAIL_DOMAINS.has(domain)) return false;
   // Also catch subdomains like "mail.yahoo.com"
-  for (const free of FREE_EMAIL_DOMAINS) {
-    if (domain.endsWith("." + free)) return false;
+  const parts = domain.split(".");
+  for (let i = 1; i < parts.length - 1; i++) {
+    if (FREE_EMAIL_DOMAINS.has(parts.slice(i).join("."))) return false;
   }
   return true;
 }
