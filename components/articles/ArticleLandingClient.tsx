@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
+import { isCorporateEmail, CORPORATE_EMAIL_ERROR } from "@/lib/emailValidation";
 import {
   Copy, Check, Calendar, Tag, ChevronRight, ChevronDown,
   ArrowUp, Send, Loader2, X, CheckCircle, AlertCircle,
@@ -477,8 +478,8 @@ function ArticleRFIForm() {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!re.test(trimmed)) return { valid: false, reason: "邮箱格式不正确" };
     const domain = trimmed.split("@")[1];
-    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain)) {
-      return { valid: false, reason: "请使用企业邮箱或常用个人邮箱" };
+    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain) || !isCorporateEmail(trimmed)) {
+      return { valid: false, reason: CORPORATE_EMAIL_ERROR };
     }
     return { valid: true };
   };
@@ -528,7 +529,10 @@ function ArticleRFIForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, cfTurnstileResponse: token }),
       });
-      if (!res.ok) throw new Error("Server error");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Server error");
+      }
 
       // Fire GA4 / gtag event for analytics tracking
       if (typeof window !== "undefined" && (window as any).gtag) {
@@ -552,8 +556,9 @@ function ArticleRFIForm() {
       // ✅ Show inline thank-you overlay without leaving the page
       setSubmittedName(formData.lastName || formData.firstName);
       setShowThankYou(true);
-    } catch {
-      setToast({ type: "error", message: "提交失败，请稍后再试。" });
+    } catch (err: any) {
+      const msg = err?.message && err.message !== "Server error" ? err.message : "提交失败，请稍后再试。";
+      setToast({ type: "error", message: msg });
     } finally {
       setIsSubmitting(false);
     }
@@ -621,7 +626,7 @@ function ArticleRFIForm() {
                     <div><label className={lbl}>名 *</label><input required className={inp} placeholder="名" value={formData.firstName} onChange={set("firstName")} /></div>
                     <div><label className={lbl}>姓 *</label><input required className={inp} placeholder="姓" value={formData.lastName} onChange={set("lastName")} /></div>
                   </div>
-                  <div><label className={lbl}>电子邮件 *</label><input required type="email" className={inp} placeholder="your@email.com" value={formData.email} onChange={set("email")} /></div>
+                  <div><label className={lbl}>电子邮件 *</label><input required type="email" className={inp} placeholder="name@yourcompany.com" value={formData.email} onChange={set("email")} /></div>
                   <div><label className={lbl}>电话号码 *</label><input required className={inp} placeholder="+86 xxx xxxx xxxx" value={formData.phone} onChange={set("phone")} /></div>
                   <button type="button" onClick={() => { const err = validateStep(1); if (err) { setToast({ type: "error", message: err }); return; } setStep(2); }} className="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2">
                     下一步 <ChevronRight size={18} />

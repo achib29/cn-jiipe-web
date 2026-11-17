@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import OpenAI from "openai";
 import pool from "../../lib/db";
 import { RowDataPacket } from "mysql2";
+import { isCorporateEmail, CORPORATE_EMAIL_ERROR } from "../../lib/emailValidation";
 
 // === Validasi Env ===
 const resendKey = process.env.RESEND_API_KEY;
@@ -87,8 +88,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const emailDomain = (email || "").trim().toLowerCase().split("@")[1] || "";
-  if (BLOCKED_DISPOSABLE_DOMAINS.includes(emailDomain)) {
-    return res.status(400).json({ error: "Please use a business or personal email address." });
+  if (BLOCKED_DISPOSABLE_DOMAINS.includes(emailDomain) || !isCorporateEmail(email)) {
+    return res.status(400).json({ error: CORPORATE_EMAIL_ERROR, field: "email" });
   }
 
   const reasonDisplay = reason === "Other" && reasonOther ? `Other (${reasonOther})` : reason;

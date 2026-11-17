@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CompanyCountrySelect from "@/components/ui/CompanyCountrySelect";
+import { isCorporateEmail, CORPORATE_EMAIL_ERROR } from "@/lib/emailValidation";
 
 // Helper for Turnstile global object
 declare global {
@@ -102,8 +103,8 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!re.test(trimmed)) return { valid: false, reason: "邮箱格式不正确" };
     const domain = trimmed.split("@")[1];
-    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain)) {
-      return { valid: false, reason: "请使用企业邮箱或常用个人邮箱" };
+    if (BLOCKED_DISPOSABLE_DOMAINS.includes(domain) || !isCorporateEmail(trimmed)) {
+      return { valid: false, reason: CORPORATE_EMAIL_ERROR };
     }
     return { valid: true };
   };
@@ -159,7 +160,7 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
         ...(isLocal ? {} : { cfTurnstileResponse: token }),
       }),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.ok) {
           // Fire GA4 event before redirect
           if (typeof window !== 'undefined' && (window as any).gtag) {
@@ -175,7 +176,8 @@ export default function ContactSection({ initialData }: { initialData?: ContactC
           }
           router.push("/thank-you");
         } else {
-          alert("Submission failed. Please try again.");
+          const data = await res.json().catch(() => null);
+          alert(data?.error || "Submission failed. Please try again.");
           resetTurnstile(); // Reset on server error
         }
       })
