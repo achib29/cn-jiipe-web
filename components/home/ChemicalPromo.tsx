@@ -82,7 +82,7 @@ export function ChemicalFloatCard() {
     <div
       data-chem-card
       aria-hidden={!visible}
-      className={`fixed bottom-4 right-4 z-40 w-[min(320px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-black/5 bg-white shadow-2xl transition-all duration-500 ease-out motion-reduce:transition-none md:bottom-6 md:right-6 ${
+      className={`fixed inset-x-0 bottom-4 z-40 mx-auto w-[min(340px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-black/5 bg-white shadow-2xl transition-all duration-500 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:mx-0 md:w-[320px] ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"
       }`}
     >
