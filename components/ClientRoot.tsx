@@ -4,6 +4,9 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import ClientScripts from "@/components/ClientScripts";
 
+// Floating ChatSimple chat button. Temporarily hidden; set to true to show it again.
+const SHOW_CHAT_WIDGET = false;
+
 export default function ClientRoot({ children, footerData }: { children: React.ReactNode, footerData?: any }) {
   const pathname = usePathname();
   const isThankYouPage = pathname === "/thank-you";
@@ -15,7 +18,7 @@ export default function ClientRoot({ children, footerData }: { children: React.R
       <main>{children}</main>
       {!isThankYouPage && <Footer initialData={footerData} />}
       {/* ChatSimple Widget */}
-      {!isThankYouPage && (
+      {SHOW_CHAT_WIDGET && !isThankYouPage && (
         <>
           <chat-bot
             platform_id="acbaaf56-c3d3-4c77-aa37-ac44cc4c0919"

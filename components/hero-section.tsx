@@ -5,6 +5,7 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { sendGAEvent } from '@next/third-parties/google';
+import { ChemicalHeroLabel, ChemicalHeroButton, ChemicalFloatCard } from '@/components/home/ChemicalPromo';
 
 interface HeroContent {
   title_line1?: { en: string; cn: string };
@@ -71,6 +72,7 @@ export default function HeroSection({ initialData }: { initialData?: HeroContent
       {/* Hero Content */}
       <div className="container mx-auto px-4 z-10 mt-[-60px] sm:mt-16 md:mt-20">
         <div className="max-w-[90%] sm:max-w-xl md:max-w-3xl">
+          <ChemicalHeroLabel />
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             <span className="whitespace-nowrap">{get(content, 'title_line1')}</span>
             <br />
@@ -103,6 +105,8 @@ export default function HeroSection({ initialData }: { initialData?: HeroContent
               </a>
             </Button>
 
+            <ChemicalHeroButton />
+
             <Link href="#contact" passHref>
               <Button
                 size="lg"
@@ -115,6 +119,8 @@ export default function HeroSection({ initialData }: { initialData?: HeroContent
           </div>
         </div>
       </div>
+
+      <ChemicalFloatCard />
 
       {/* Scroll Indicator */}
       <a
